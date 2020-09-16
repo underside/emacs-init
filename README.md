@@ -1,1 +1,4 @@
-# emacs-init
+* Short description  
+This is my personal Emacs configuration file. 
+
+init.el file has lower priority than .emacs
