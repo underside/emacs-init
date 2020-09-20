@@ -133,22 +133,13 @@
   (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'hide-detailes)
 
-;;Shell,eshell
+;;Shell,eshell,term
 ;;colours in terminal
-(add-hook 'shell-mode-hook
-      (lambda ()
-        (face-remap-set-base 'comint-highlight-prompt :inherit nil)))
-
-;;clear shell buffer by Ctr+L
-(defun eshell-clear-buffer ()
-  "Clear terminal."
-  (interactive)
-  (let ((inhibit-read-only t))
-    (erase-buffer)
-    (eshell-send-input)))
-(add-hook 'eshell-mode-hook
-      '(lambda()
-          (local-set-key (kbd "C-l") 'eshell-clear-buffer)))
+;;xterm-color package, add colors to shell
+;; (use-package xterm-color
+;;   :config
+;;   (setq comint-output-filter-functions
+;;         (remove 'ansi-color-process-output comint-output-filter-functions)))
 
 ;;Themes,fonts,UI
 ;;enable pixelwise resizing frames
@@ -163,11 +154,6 @@
                     :weight 'normal
                     :width 'normal)
 
-;;xterm-color package, add colors to shell
-(use-package xterm-color
-  :config
-  (setq comint-output-filter-functions
-        (remove 'ansi-color-process-output comint-output-filter-functions)))
 
 ;;Helm
 (use-package async
@@ -424,6 +410,19 @@
   (global-set-key (kbd "s-P") 'magit-status-with-prefix-arg)
   (global-set-key (kbd "s-g") 'magit-status))
 
+;;Groovy
+(use-package groovy-mode
+  :ensure t
+)
+
+;;Jenkins
+(use-package jenkinsfile-mode
+  :ensure t
+)
+
+
+
+
 
 ;; SPELL CHECKING
 ;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
@@ -451,7 +450,7 @@
  '(helm-completion-style (quote emacs))
  '(package-selected-packages
    (quote
-    (evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint zenburn-theme yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint zenburn-theme yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(recentf-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
