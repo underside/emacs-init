@@ -70,6 +70,8 @@
 
 ;;=====Electric-modes settings
 (electric-pair-mode    1) ;; closed open brackets automatically {},[],()
+(setq-default electric-indent-inhibit t) ;;not indent previous line when press RET
+
 
 ;; mode line settings
 (line-number-mode t)
@@ -102,12 +104,18 @@
 ;;newline when press Enter
 (global-set-key (kbd "RET") 'newline)
 
-;;Indentation settings(from habrahabr.ru)
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width          2)
-(setq-default c-basic-offset     2)
-(setq-default standart-indent    2)
-(setq-default lisp-body-indent   2)
+;;Indentation settings
+(setq-default
+indent-tabs-mode nil
+tab-width          4
+c-basic-offset     4
+standart-indent    4
+lisp-body-indent   4
+tab-stop-list (quote (4 8))
+)
+
+
+
 
 ;;Backups settings
 (setq make-backup-files nil;;do not make backup
@@ -146,14 +154,14 @@
 (setq frame-resize-pixelwise t)
 
 ;;Font
-;; Set default font
-;;font must be installed in OS apt install fonts-hack
+;;Set default font
+;;font must be installed in OS
+;;For Ubuntu: 'apt install fonts-hack'
 (set-face-attribute 'default nil
                     :family "Hack"
                     :height 140
                     :weight 'normal
                     :width 'normal)
-
 
 ;;Helm
 (use-package async
