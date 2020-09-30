@@ -221,6 +221,7 @@ tab-stop-list (quote (4 8))
   :config
   (setq doom-modeline-height 1)
   (set-face-attribute 'mode-line nil :height 110)
+  (set-face-attribute 'mode-line-inactive nil :height 110)
   )
 
 ;;Bind-keys for using kbd
