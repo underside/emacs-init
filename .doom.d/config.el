@@ -50,7 +50,13 @@
       doom-variable-pitch-font (font-spec :family "Hack" :size 12))
 
 ;;Ivy
+;;fuzzy search in buffer list by enter ":b" in ex mode
 (define-key evil-ex-map "b " 'ivy-switch-buffer)
+;;left/right arrow to move beetween directory levels in councel-find-file
+(define-key ivy-minibuffer-map (kbd "<left>") #'delete-backward-char)
+(define-key ivy-minibuffer-map (kbd "<right>") #'ivy-alt-done)
+
+
 
 ;;Dired
 (defun hide-detailes ()
