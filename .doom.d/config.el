@@ -53,9 +53,10 @@
 ;;fuzzy search in buffer list by enter ":b" in ex mode
 (define-key evil-ex-map "b " 'ivy-switch-buffer)
 ;;left/right arrow to move beetween directory levels in councel-find-file
+(after! ivy
 (define-key ivy-minibuffer-map (kbd "<left>") #'delete-backward-char)
 (define-key ivy-minibuffer-map (kbd "<right>") #'ivy-alt-done)
-
+)
 
 
 ;;Dired
