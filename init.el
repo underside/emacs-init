@@ -534,32 +534,14 @@ tab-stop-list (quote (4 8))
   (yas-global-mode 1))
 
 ;;which-key
-(use-package which-key
-  :ensure t
-  :init
-  :config
-  ;; general improvements to which-key readability
-  (set-face-attribute 'which-key-local-map-description-face nil :weight 'bold)
-  (which-key-setup-side-window-bottom)
-)
-
-;;Ansible and Ansible-vault
-(use-package ansible
-  :ensure t
-)
-
-(use-package ansible-vault
-  :ensure t
-  :config
-   (setq ansible-vault-password-file "~/vault_pass")
-   (add-to-list 'auto-mode-alist '("/encrypted$" . yaml-mode))
-   (add-hook 'yaml-mode-hook
-     (lambda ()
-       (and (string= (file-name-base) "encrypted") (ansible-vault-mode 1))))
-)
-
-
-
+;; (use-package which-key
+;;   :ensure t
+;;   :init
+;;   :config
+;;   ;; general improvements to which-key readability
+;;   (set-face-attribute 'which-key-local-map-description-face nil :weight 'bold)
+;;   (which-key-setup-side-window-bottom)
+;; )
 
 
 
