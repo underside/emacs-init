@@ -1,15 +1,16 @@
 ;;Extra Repos and use-package installation
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
+(setq package-archives '(("org"       . "http://orgmode.org/elpa/")
+                         ("gnu"       . "http://elpa.gnu.org/packages/")
+                         ("melpa"     . "https://melpa.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")))
 (package-initialize)
 
-;; keep the installed packages in .emacs.d
-;;(setq package-user-dir (expand-file-name "elpa" user-emacs-directory))
+;; Bootstrap `use-package' 
+(unless (package-installed-p 'use-package)  
+  (package-refresh-contents) 
+  (package-install 'use-package)) 
+(require 'use-package)
 
-;; update the package metadata is the local cache is missing
-;(unless package-archive-contents
-  ;(package-refresh-contents))
 
 ;;General settings
 (tooltip-mode      -1)
@@ -74,8 +75,6 @@
 (electric-pair-mode    1) ;; closed open brackets automatically {},[],()
 (setq-default electric-indent-inhibit t) ;;not indent previous line when press RET
 
-
-
 ;;Line wrapping
 (setq word-wrap t)
 (global-visual-line-mode t)
@@ -87,8 +86,6 @@
 ;;highlight matching brackets
 (show-paren-mode 1)
 (setq show-paren-style 'parenthesis)
-
-
 
 ;; No region when it is not highlighted
 (transient-mark-mode 1)
@@ -253,18 +250,19 @@ tab-stop-list (quote (4 8))
   (define-key evil-normal-state-map (kbd "C-j") (lambda ()
 												    (interactive)
 												    (evil-scroll-down nil)))
-  ;;:ls to ibuffer
-  ;; bind ':ls' command to 'ibuffer instead of 'list-buffers
-      (evil-ex-define-cmd "ls" 'ibuffer)
-  ;;evil-mode as default for ibuffer
-  (setq evil-emacs-state-modes (delq 'ibuffer-mode evil-emacs-state-modes))
+;;Buffers
+;;:ls to ibuffer
+;; bind ':ls' command to 'ibuffer instead of 'list-buffers
+ (evil-ex-define-cmd "ls" 'ibuffer)
+;;evil-mode as default for ibuffer
+ (setq evil-emacs-state-modes (delq 'ibuffer-mode evil-emacs-state-modes))
 
-  ;;rebind C-r to U (so U is Redo)
-  (with-eval-after-load 'evil-maps
-	  (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo))
+;;rebind C-r to U (so U is Redo)
+ (with-eval-after-load 'evil-maps
+   (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo))
 
-  ;;more convinient undo
-  (setq evil-want-fine-undo t)
+;;more convinient undo
+ (setq evil-want-fine-undo t)
 
  ;;change cursor color by evil state
  (setq evil-mode-line-format nil)
@@ -347,6 +345,7 @@ tab-stop-list (quote (4 8))
   (setq tramp-debug-buffer t)
   ;(setq tramp-verbose 10)
   (setq password-cache-expiry nil)
+  (setq tramp-default-method "ssh")
 )
 
 ;;yaml-mode
@@ -584,7 +583,7 @@ tab-stop-list (quote (4 8))
  '(org-agenda-files (quote ("/mnt/org/notes/todo_personal.org")))
  '(package-selected-packages
    (quote
-    (ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
 (custom-set-faces
