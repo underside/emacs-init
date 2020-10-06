@@ -23,6 +23,8 @@
 (global-set-key (kbd "<C-down>") 'enlarge-window)
 (global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
 (global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
+;;confirmation before exit Emacs
+(setq confirm-kill-emacs 'y-or-n-p)
 
 ;;Inhibit startup/splash screen, and initial-scratch message
 (setq inhibit-splash-screen   t)
@@ -73,12 +75,6 @@
 (setq-default electric-indent-inhibit t) ;;not indent previous line when press RET
 
 
-;; mode line settings
-(line-number-mode t)
-(column-number-mode t)
-(size-indication-mode t)
-(setq display-time-24hr-format t) ;; 24-hour
-(size-indication-mode          t) ;; file size in persents
 
 ;;Line wrapping
 (setq word-wrap t)
@@ -136,10 +132,10 @@ tab-stop-list (quote (4 8))
 (setq dired-recursive-deletes 'top)
 (setq dired-dwim-target t)
 ;;hide detailes in dired like permissions
-(defun hide-detailes ()
+(defun hide-details ()
   "To be run as hook for `dired-mode'."
   (dired-hide-details-mode 1))
-(add-hook 'dired-mode-hook 'hide-detailes)
+(add-hook 'dired-mode-hook 'hide-details)
 
 ;;Shell,eshell,term
 ;;colours in terminal
@@ -162,6 +158,17 @@ tab-stop-list (quote (4 8))
                     :height 140
                     :weight 'normal
                     :width 'normal)
+
+;;Bind-keys for using kbd
+(use-package bind-key)
+
+;; Modeline settings
+(line-number-mode t)
+(column-number-mode t)
+(size-indication-mode t)
+(setq display-time-24hr-format t) ;; 24-hour
+(size-indication-mode          t) ;; file size in persents
+
 
 ;;Helm
 (use-package async
@@ -198,23 +205,16 @@ tab-stop-list (quote (4 8))
   :ensure t
   )
 
-;;Themes
-;;Zenburn theme
+;; Themes
+;; Zenburn theme
 (use-package zenburn-theme
   :ensure t
   :load-path "themes"
   :config
-  (load-theme 'zenburn t)
+  (load-theme 'zenburn 1)
   )
 
-;; (use-package doom-themes
-;;   :ensure t
-;;   :load-path "themes"
-;;   :config
-;;   (load-theme 'doom-vibrant t)
-;;   (doom-themes-neotree-config)
-;;   )
-
+;;doom-modeline
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
@@ -224,8 +224,6 @@ tab-stop-list (quote (4 8))
   (set-face-attribute 'mode-line-inactive nil :height 110)
   )
 
-;;Bind-keys for using kbd
-(use-package bind-key)
 
 ;;Company-mode
 (use-package company
@@ -352,10 +350,10 @@ tab-stop-list (quote (4 8))
 )
 
 ;;yaml-mode
-;; (use-package yaml-mode
-;;   :config
-;;   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-;; )
+(use-package yaml-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+)
 
 ;;Flycheck
 (use-package flycheck
@@ -373,13 +371,103 @@ tab-stop-list (quote (4 8))
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup))))
 
 ;;Neotree
-(use-package neotree
+;; (use-package neotree
+;;   :ensure t
+;;   :bind
+;;   ("<f8>" . neotree-toggle)
+;;   :config
+;;   (setq neo-smart-open t)
+;; )
+
+;;Treemacs
+(use-package treemacs
   :ensure t
-  :bind
-  ("<f8>" . neotree-toggle)
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
   :config
-  (setq neo-smart-open t)
-)
+  (progn
+    (setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
+          treemacs-deferred-git-apply-delay      0.5
+          treemacs-directory-name-transformer    #'identity
+          treemacs-display-in-side-window        t
+          treemacs-eldoc-display                 t
+          treemacs-file-event-delay              5000
+          treemacs-file-extension-regex          treemacs-last-period-regex-value
+          treemacs-file-follow-delay             0.2
+          treemacs-file-name-transformer         #'identity
+          treemacs-follow-after-init             t
+          treemacs-git-command-pipe              ""
+          treemacs-goto-tag-strategy             'refetch-index
+          treemacs-indentation                   2
+          treemacs-indentation-string            " "
+          treemacs-is-never-other-window         nil
+          treemacs-max-git-entries               5000
+          treemacs-missing-project-action        'ask
+          treemacs-move-forward-on-expand        nil
+          treemacs-no-png-images                 nil
+          treemacs-no-delete-other-windows       t
+          treemacs-project-follow-cleanup        nil
+          treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+          treemacs-position                      'left
+          treemacs-recenter-distance             0.1
+          treemacs-recenter-after-file-follow    nil
+          treemacs-recenter-after-tag-follow     nil
+          treemacs-recenter-after-project-jump   'always
+          treemacs-recenter-after-project-expand 'on-distance
+          treemacs-show-cursor                   nil
+          treemacs-show-hidden-files             t
+          treemacs-silent-filewatch              nil
+          treemacs-silent-refresh                nil
+          treemacs-sorting                       'alphabetic-asc
+          treemacs-space-between-root-nodes      t
+          treemacs-tag-follow-cleanup            t
+          treemacs-tag-follow-delay              1.5
+          treemacs-user-mode-line-format         nil
+          treemacs-user-header-line-format       nil
+          treemacs-width                         35
+          treemacs-workspace-switch-cleanup      nil)
+
+    ;; The default width and height of the icons is 22 pixels. If you are
+    ;; using a Hi-DPI display, uncomment this to double the icon size.
+    ;;(treemacs-resize-icons 44)
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode t)
+    (pcase (cons (not (null (executable-find "git")))
+                 (not (null treemacs-python-executable)))
+      (`(t . t)
+       (treemacs-git-mode 'deferred))
+      (`(t . _)
+       (treemacs-git-mode 'simple))))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("<f8>"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-evil
+  :after treemacs evil
+  :ensure t)
+
+(use-package treemacs-projectile
+  :after treemacs projectile
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :after treemacs dired
+  :ensure t
+  :config (treemacs-icons-dired-mode))
+
+(use-package treemacs-magit
+  :after treemacs magit
+  :ensure t)
+
 
 ;;Projectile
 (use-package projectile
@@ -425,12 +513,9 @@ tab-stop-list (quote (4 8))
 )
 
 ;;Jenkins
-(use-package jenkinsfile-mode
-  :ensure t
-)
-
-
-
+;; (use-package jenkinsfile-mode
+;;   :ensure t
+;; )
 
 
 ;; SPELL CHECKING
@@ -442,12 +527,48 @@ tab-stop-list (quote (4 8))
 (global-set-key (kbd "C-s-\\") 'flyspell-auto-correct-word)
 
 ;; YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
-;; (use-package yasnippet
-;;   :defer t
+(use-package yasnippet
+  :defer t
+  :config
+  (setq yas-snippet-dirs
+        '("~/.emacs.d/snippets"))
+  (yas-global-mode 1))
+
+;;which-key
+;; (use-package which-key
+;;   :init
+;;   (setq which-key-sort-order #'which-key-prefix-then-key-order
+;;         which-key-sort-uppercase-first nil
+;;         which-key-add-column-padding 1
+;;         which-key-max-display-columns nil
+;;         which-key-min-display-lines 6
+;;         which-key-side-window-slot -10)
 ;;   :config
-;;   (setq yas-snippet-dirs
-;;         '("~/.emacs.d/snippets"))
-;;   (yas-global-mode 1))
+;;   ;; general improvements to which-key readability
+;;   (set-face-attribute 'which-key-local-map-description-face nil :weight 'bold)
+;;   (which-key-setup-side-window-bottom)
+;;   (setq-hook! 'which-key-init-buffer-hook line-spacing 3)
+;; )
+
+;;Ansible and Ansible-vault
+(use-package ansible
+  :ensure t
+)
+
+(use-package ansible-vault
+  :ensure t
+  :config
+   (setq ansible-vault-password-file "~/vault_pass")
+   (add-to-list 'auto-mode-alist '("/encrypted$" . yaml-mode))
+   (add-hook 'yaml-mode-hook
+     (lambda ()
+       (and (string= (file-name-base) "encrypted") (ansible-vault-mode 1))))
+)
+
+
+
+
+
 
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
@@ -456,11 +577,16 @@ tab-stop-list (quote (4 8))
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("711efe8b1233f2cf52f338fd7f15ce11c836d0b6240a18fffffc2cbd5bfe61b0" default)))
  '(helm-completion-style (quote emacs))
+ '(org-agenda-files (quote ("/mnt/org/notes/todo_personal.org")))
  '(package-selected-packages
    (quote
-    (jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint zenburn-theme yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
- '(recentf-mode t))
+    (ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+ '(recentf-mode t)
+ '(temp-buffer-resize-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
