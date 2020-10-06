@@ -1,8 +1,7 @@
 ;;Extra Repos and use-package installation
 (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
-                         ("gnu"       . "http://elpa.gnu.org/packages/")
                          ("melpa"     . "https://melpa.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")))
+                         ))
 (package-initialize)
 
 ;; Bootstrap `use-package' 
@@ -181,15 +180,11 @@ tab-stop-list (quote (4 8))
   :bind (
          ("M-x" . helm-M-x)
          ("M-<f5>" . helm-find-files)
-         ([S-f10] . helm-recentf)
          ("C-x r b" . helm-source-filtered-bookmarks)
          ("C-x C-f" . helm-find-files)
          )
   :config
   (helm-mode 1)
-  ;; (global-set-key (kbd "M-x") #'helm-M-x)
-  ;; (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
-  ;; (global-set-key (kbd "C-x C-f") #'helm-find-files)
   (define-key evil-ex-map "b " 'helm-mini)
   (define-key evil-ex-map "e" 'helm-find-files)
   (define-key evil-ex-map "g" 'helm-projectile-grep)
