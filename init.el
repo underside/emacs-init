@@ -2,7 +2,6 @@
 (require 'package)
   (add-to-list
    'package-archives
-   ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
    '("melpa" . "https://melpa.org/packages/")
    t)
 (package-initialize)
