@@ -12,7 +12,6 @@
   (package-install 'use-package)) 
 (require 'use-package)
 
-
 ;;General settings
 (tooltip-mode      -1)
 (menu-bar-mode     -1)
@@ -200,12 +199,22 @@ tab-stop-list (quote (4 8))
 
 ;; Themes
 ;; Zenburn theme
-(use-package zenburn-theme
-  :ensure t
-  :load-path "themes"
-  :config
-  (load-theme 'zenburn 1)
-  )
+;; (use-package zenburn-theme
+;;   :ensure t
+;;   :load-path "themes"
+;;   :config
+;;   (load-theme 'zenburn 1)
+;;   )
+
+(use-package doom-themes
+   :config
+   ;;(load-theme 'doom-wilmersdorf 1)
+   (load-theme 'doom-solarized-dark t)
+   ;; Enable custom neotree theme (all-the-icons must be installed!)
+   (doom-themes-neotree-config)
+   ;; Corrects (and improves) org-mode's native fontification.
+   (doom-themes-org-config)
+)
 
 ;;doom-modeline
 (use-package doom-modeline
@@ -352,6 +361,7 @@ tab-stop-list (quote (4 8))
 
 ;;Flycheck
 (use-package flycheck
+  ;; :init (global-flycheck-mode)
   :config
   (global-flycheck-mode)
 )
@@ -359,14 +369,10 @@ tab-stop-list (quote (4 8))
 ;;Flycheck-yamllint
 (use-package flycheck-yamllint
   :ensure t
-  :defer t
-  :init
-  (progn
-    (eval-after-load 'flycheck
-      '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup))))
-
-
-
+  ;; (progn
+  ;;   (eval-after-load 'flycheck
+  ;;     '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup)))
+)
 ;;Projectile
 (use-package projectile
   :ensure t
