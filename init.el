@@ -166,31 +166,7 @@ tab-stop-list (quote (4 8))
 ;; (setq display-time-24hr-format t) ;; 24-hour
 ;; (size-indication-mode          t) ;; file size in persents
 
-
-;; ;;Helm
-;; (use-package async
-;;   :ensure t
-;;   )
-
-;; (use-package popup
-;;   :ensure t
-;;   )
-
-;; (use-package helm
-;;   :ensure t
-;;   :bind (
-;;          ("M-x" . helm-M-x)
-;;          ("C-x r b" . helm-source-filtered-bookmarks)
-;;          ("C-x C-f" . helm-find-files)
-;;          )
-;;   :config
-;;   (helm-mode 1)
-;;   (define-key evil-ex-map "b " 'helm-mini)
-;;   (define-key evil-ex-map "e" 'helm-find-files)
-;;   (define-key evil-ex-map "g" 'helm-projectile-grep)
-;;   (define-key evil-ex-map "f" 'helm-projectile-find-file)
-;; )
-
+;;Ivy
 (use-package ivy
   :ensure t
   :config 
@@ -198,27 +174,49 @@ tab-stop-list (quote (4 8))
     (setq ivy-use-virtual-buffers t)
     (setq enable-recursive-minibuffers t)
     (setq search-default-mode #'char-fold-to-regexp)
-    (global-set-key "\C-s" 'swiper)
-    (global-set-key (kbd "<f6>") 'ivy-resume)
-    (global-set-key (kbd "M-x") 'counsel-M-x)
-    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-    (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
-    (global-set-key (kbd "<f1> l") 'counsel-find-library)
-    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-    (global-set-key (kbd "C-x l") 'counsel-locate)
-    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
     (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
-    (define-key ivy-minibuffer-map (kbd "<left>") #'delete-backward-char)
-    (define-key ivy-minibuffer-map (kbd "<right>") #'ivy-alt-done)
+  :bind 
+    ("M-y" . counsel-yank-pop)
+    ("\C-s" . swiper)
+    ("<f6>" . ivy-resume)
+    ("M-x" . counsel-M-x)
+    ("C-x C-f" . counsel-find-file)
+    ("<f1> f" . counsel-describe-function)
+    ("<f1> v" . counsel-describe-variable)
+    ("<f1> o" . counsel-describe-symbol)
+    ("<f1> l" . counsel-find-library)
+    ("<f2> i" . counsel-info-lookup-symbol)
+    ("<f2> u" . counsel-unicode-char)
+    ("C-x l" . counsel-locate)
+    ("M-r" . counsel-minibuffer-history)
+    ("<left>" . delete-backward-char)
+    ("<right>" . ivy-alt-done)
+
+
+
+    
+    ;; (global-set-key "\C-s" 'swiper)
+    ;; (global-set-key (kbd "<f6>") 'ivy-resume)
+    ;; (global-set-key (kbd "M-x") 'counsel-M-x)
+    ;; (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    ;; (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+    ;; (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+    ;; (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
+    ;; (global-set-key (kbd "<f1> l") 'counsel-find-library)
+    ;; (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+    ;; (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+    ;; (global-set-key (kbd "C-x l") 'counsel-locate)
+    ;; (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+    ;; (define-key ivy-minibuffer-map (kbd "<left>") #'delete-backward-char)
+    ;; (define-key ivy-minibuffer-map (kbd "<right>") #'ivy-alt-done)
 )
 
 (use-package counsel
-  ;; :after ivy
+  :after ivy
   :ensure t
-  )
+  :bind
+    ("M-y" . counsel-yank-pop)
+)
 
 ;;yaml-mode
 (use-package yaml-mode
