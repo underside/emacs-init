@@ -168,28 +168,64 @@ tab-stop-list (quote (4 8))
 
 
 ;; ;;Helm
-(use-package async
-  :ensure t
-  )
+;; (use-package async
+;;   :ensure t
+;;   )
 
-(use-package popup
-  :ensure t
-  )
+;; (use-package popup
+;;   :ensure t
+;;   )
 
-(use-package helm
+;; (use-package helm
+;;   :ensure t
+;;   :bind (
+;;          ("M-x" . helm-M-x)
+;;          ("C-x r b" . helm-source-filtered-bookmarks)
+;;          ("C-x C-f" . helm-find-files)
+;;          )
+;;   :config
+;;   (helm-mode 1)
+;;   (define-key evil-ex-map "b " 'helm-mini)
+;;   (define-key evil-ex-map "e" 'helm-find-files)
+;;   (define-key evil-ex-map "g" 'helm-projectile-grep)
+;;   (define-key evil-ex-map "f" 'helm-projectile-find-file)
+;; )
+
+(use-package ivy
   :ensure t
-  :bind (
-         ("M-x" . helm-M-x)
-         ("C-x r b" . helm-source-filtered-bookmarks)
-         ("C-x C-f" . helm-find-files)
-         )
-  :config
-  (helm-mode 1)
-  (define-key evil-ex-map "b " 'helm-mini)
-  (define-key evil-ex-map "e" 'helm-find-files)
-  (define-key evil-ex-map "g" 'helm-projectile-grep)
-  (define-key evil-ex-map "f" 'helm-projectile-find-file)
+  :config 
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq enable-recursive-minibuffers t)
+    (setq search-default-mode #'char-fold-to-regexp)
+    (global-set-key "\C-s" 'swiper)
+    (global-set-key (kbd "C-c C-r") 'ivy-resume)
+    (global-set-key (kbd "<f6>") 'ivy-resume)
+    (global-set-key (kbd "M-x") 'counsel-M-x)
+    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+    (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
+    (global-set-key (kbd "<f1> l") 'counsel-find-library)
+    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+    (global-set-key (kbd "C-c g") 'counsel-git)
+    (global-set-key (kbd "C-c j") 'counsel-git-grep)
+    (global-set-key (kbd "C-c k") 'counsel-ag)
+    (global-set-key (kbd "C-x l") 'counsel-locate)
+    (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+    ;; (define-key ivy-minibuffer-map (kbd "<ESC>") 'minibuffer-keyboard-quit)
+    ;; (define-key swiper-map (kbd "<ESC>") 'minibuffer-keyboard-quit)
+    (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
+    (define-key ivy-minibuffer-map (kbd "<left>") #'delete-backward-char)
+    (define-key ivy-minibuffer-map (kbd "<right>") #'ivy-alt-done)
 )
+
+(use-package counsel
+  ;; :after ivy
+  :ensure t
+  )
 
 ;;yaml-mode
 (use-package yaml-mode
