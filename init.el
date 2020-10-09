@@ -180,7 +180,6 @@ tab-stop-list (quote (4 8))
   :ensure t
   :bind (
          ("M-x" . helm-M-x)
-         ("M-<f5>" . helm-find-files)
          ("C-x r b" . helm-source-filtered-bookmarks)
          ("C-x C-f" . helm-find-files)
          )
@@ -199,14 +198,14 @@ tab-stop-list (quote (4 8))
 
 (use-package doom-themes
    :config
+   (load-theme 'doom-zenburn t)
    ;; (load-theme 'doom-one t)
    ;; (load-theme 'doom-spacegrey t)
-   ;; (load-theme 'doom-zenburn t)
    ;; (load-theme 'doom-nord t)
    ;; (load-theme 'doom-wilmersdorf t)
-   (load-theme 'doom-solarized-dark t)
+   ;; (load-theme 'doom-solarized-dark t)
    ;; Enable custom neotree theme (all-the-icons must be installed!)
-   (doom-themes-neotree-config)
+   ;; (doom-themes-neotree-config)
    ;; Corrects (and improves) org-mode's native fontification.
    (doom-themes-org-config)
 )
@@ -458,7 +457,7 @@ tab-stop-list (quote (4 8))
  '(org-agenda-files (quote ("/mnt/org/notes/todo_personal.org")))
  '(package-selected-packages
    (quote
-    (uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
 (custom-set-faces
