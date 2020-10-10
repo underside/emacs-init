@@ -67,7 +67,7 @@
       scroll-preserve-screen-position 1)
 
 ;;Fringe settings
-(fringe-mode '(0 . 0))
+(fringe-mode '(2 . 2))
 (setq-default indicate-empty-lines t)
 (setq-default indicate-buffer-boundaries 'right)
 
@@ -189,26 +189,10 @@ tab-stop-list (quote (4 8))
     ("<f2> u" . counsel-unicode-char)
     ("C-x l" . counsel-locate)
     ("M-r" . counsel-minibuffer-history)
-    ("<left>" . delete-backward-char)
-    ("<right>" . ivy-alt-done)
-
-
-
-    
-    ;; (global-set-key "\C-s" 'swiper)
-    ;; (global-set-key (kbd "<f6>") 'ivy-resume)
-    ;; (global-set-key (kbd "M-x") 'counsel-M-x)
-    ;; (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    ;; (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-    ;; (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-    ;; (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
-    ;; (global-set-key (kbd "<f1> l") 'counsel-find-library)
-    ;; (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-    ;; (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-    ;; (global-set-key (kbd "C-x l") 'counsel-locate)
-    ;; (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
-    ;; (define-key ivy-minibuffer-map (kbd "<left>") #'delete-backward-char)
-    ;; (define-key ivy-minibuffer-map (kbd "<right>") #'ivy-alt-done)
+    (:map  ivy-minibuffer-map
+      ("<left>" . delete-backward-char)
+      ("<right>" . ivy-alt-done)
+    )
 )
 
 (use-package counsel
