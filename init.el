@@ -333,6 +333,7 @@ tab-stop-list (quote (4 8))
   (global-set-key "\C-ca" 'org-agenda)
   (global-set-key "\C-cb" 'org-iswitchb)
   (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-cl" 'org-store-link)
   ;;org-files default
   ;; (setq org-directory "~/.emacs.d/org")
   ;;encrypt in org-mode, cache save pass in session
@@ -342,7 +343,7 @@ tab-stop-list (quote (4 8))
      'org-babel-load-languages
      '((python . t)))
   (setq org-todo-keywords
-        '((sequence "TODO" "|" "DELEGATED" "DONE")))
+        '((sequence "TODO" "|" "DELEGATED" "DONE" "CANSELED")))
 ;;save clocks hostory between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
