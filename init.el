@@ -13,6 +13,11 @@
 (require 'use-package)
 
 ;;General settings
+
+;;Run emacs as server
+;;to connect use command (can be used in X11 either)  emacsclient -create-frame --alternate-editor=""
+(server-start)
+
 (tooltip-mode      -1)
 (menu-bar-mode     -1)
 (tool-bar-mode     -1)
@@ -208,7 +213,8 @@ tab-stop-list (quote (4 8))
   )
 
 (use-package doom-themes
-   :config
+  :ensure t
+  :config
    (load-theme 'doom-zenburn t)
    ;; (load-theme 'doom-one t)
    ;; (load-theme 'doom-spacegrey t)
@@ -222,6 +228,8 @@ tab-stop-list (quote (4 8))
 )
 
 ;;doom-modeline
+;;if icons is not shown install it
+;;Run M-x all-the-icons-install-fonts
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
@@ -319,7 +327,9 @@ tab-stop-list (quote (4 8))
   :ensure t
   :mode  ("\\.org\\'" . org-mode)
          ("\\org.gpg\\'" . org-mode)
+
   :config
+  (global-set-key "\C-cc" 'org-capture)
   (global-set-key "\C-ca" 'org-agenda)
   (global-set-key "\C-cb" 'org-iswitchb)
   (global-set-key "\C-cl" 'org-store-link)
@@ -333,6 +343,19 @@ tab-stop-list (quote (4 8))
      '((python . t)))
   (setq org-todo-keywords
         '((sequence "TODO" "|" "DELEGATED" "DONE")))
+;;save clocks hostory between sessions
+;; clock-in C-c C-x C-i
+;; clock-out C-c C-x C-o
+  (setq org-clock-persist 'history)
+  (org-clock-persistence-insinuate)
+
+;;Org-capture
+;;Template for TODO
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "/mnt/e/ydisk/org/notes/todo.org" "org-capture")
+         "* TODO %?\n  %i\n  %a")
+        ("j" "Journal" entry (file+datetree "/mnt/e/ydisk/org/notes/journal.org")
+         "* %?\nEntered on %U\n  %i\n  %a")))
 
 ;;Org-bullets
 ;;nice looking lists with UTF-8 characters
@@ -353,7 +376,7 @@ tab-stop-list (quote (4 8))
 ;;connect to not default port C-x C-f /ssh:test@host#2222:/tmp
 (use-package tramp
   :config
-  ;(setq tramp-chunksize "500")
+  (setq tramp-chunksize "500")
   (setq tramp-debug-buffer t)
   ;(setq tramp-verbose 10)
   (setq password-cache-expiry nil)
@@ -376,9 +399,10 @@ tab-stop-list (quote (4 8))
 ;;Flycheck-yamllint
 (use-package flycheck-yamllint
   :ensure t
-  ;; (progn
-  ;;   (eval-after-load 'flycheck
-  ;;     '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup)))
+  :config
+  (progn
+    (eval-after-load 'flycheck
+      '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup)))
 )
 ;;Projectile
 (use-package projectile
@@ -444,18 +468,16 @@ tab-stop-list (quote (4 8))
         '("~/.emacs.d/snippets"))
   (yas-global-mode 1))
 
-;;which-key
-;; (use-package which-key
-;;   :ensure t
-;;   :init
-;;   :config
-;;   ;; general improvements to which-key readability
-;;   (set-face-attribute 'which-key-local-map-description-face nil :weight 'bold)
-;;   (which-key-setup-side-window-bottom)
-;; )
+;;Kubernetes
+;;Magit-like porcelain to work with K8s
+(use-package kubernetes
+  :ensure t
+  :commands (kubernetes-overview))
 
-
-
+;; If you want to pull in the Evil compatibility package.
+(use-package kubernetes-evil
+  :ensure t
+  :after kubernetes)
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
 (custom-set-variables
@@ -470,7 +492,7 @@ tab-stop-list (quote (4 8))
  '(org-agenda-files (quote ("/mnt/org/notes/todo_personal.org")))
  '(package-selected-packages
    (quote
-    (adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
 (custom-set-faces
