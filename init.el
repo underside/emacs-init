@@ -12,75 +12,92 @@
   (package-install 'use-package)) 
 (require 'use-package)
 
-;;General settings
+;; General settings
+
+;; Bookmarks
+;;
+(define-key global-map [f9] 'list-bookmarks)
+(define-key global-map [f10] 'bookmark-set)
+;; define file to use
+(setq bookmark-default-file "/mnt/e/ydisk/org/emacs/bookmarks")  
+;; save bookmarks to .emacs.bmk after each entry
+(setq bookmark-save-flag 1)  
 
 ;;Run emacs as server
 ;;to connect use command (can be used in X11 either)  emacsclient -create-frame --alternate-editor=""
-(server-start)
+;;(server-start)
 
 (tooltip-mode      -1)
 (menu-bar-mode     -1)
 (tool-bar-mode     -1)
 (scroll-bar-mode   -1)
+
+;;Do not blink
 (blink-cursor-mode -1)
 (setq use-dialog-box nil)
+
+;;dont use ring
 (setq ring-bell-function 'ignore)
+;;Move Buffer frames using Ctrl-<arrows>
 (global-set-key (kbd "<C-up>") 'shrink-window)
 (global-set-key (kbd "<C-down>") 'enlarge-window)
 (global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
 (global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
+
 ;;confirmation before exit Emacs
 (setq confirm-kill-emacs 'y-or-n-p)
 
-;;Inhibit startup/splash screen, and initial-scratch message
+;; Inhibit startup/splash screen, and initial-scratch message
 (setq inhibit-splash-screen   t)
 (setq inhibit-startup-message t)
+;; Message in scratch buffer
 (setq initial-scratch-message ";;Hello, bro. What's up?")
 
-;;=====Display the name of the current buffer in the title bar
+;; Display the name of the current buffer in the title bar
 (setq frame-title-format "%b")
 
-;;package enable at startup?
+;; package enable at startup?
 (setq package-enable-at-startup nil)
-;;Fix some error
+
+;; Fix some error with packages
 (setq package-check-signature nil)
 
-;;User settings
+;;User name and email
 (setq user-full-name "Yury Ponomarev"
       user-mail-address "underside@ya.ru")
 
-;;=====Desktop autosave
-(desktop-save-mode 1)
+;;Desktop autosave
+;; (desktop-save-mode 1)
 
 ;; enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;;.emacs file always load to register. Available with hotkeys: C-x r j e
 (set-register ?e (cons 'file "~/.emacs.d/init.el"))
-;; (set-register ?t (cons 'file "/mnt/org/notes/todo.org"))
 
 ;; reduce the frequency of garbage collection by making it happen on
-;; each 50MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 50000000)
+;; each 30MB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold 30000000)
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
 
-;; nice scrolling
+;; smooth scrolling
 (setq scroll-margin 0
       scroll-conservatively 100000
       scroll-preserve-screen-position 1)
 
-;;Fringe settings
-(fringe-mode '(2 . 2))
+;; Fringe settings
+(fringe-mode '(2 . 0))
 (setq-default indicate-empty-lines t)
 (setq-default indicate-buffer-boundaries 'right)
 
-;;=====Electric-modes settings
+;;Electric-modes settings
 (electric-pair-mode    1) ;; closed open brackets automatically {},[],()
 (setq-default electric-indent-inhibit t) ;;not indent previous line when press RET
 
-;;Line wrapping
+;; Line wrapping
+;; Cursor moving by visual lines
 (setq word-wrap t)
 (global-visual-line-mode t)
 
@@ -88,21 +105,21 @@
 (setq search-highlight        t)
 (setq query-replace-highlight t)
 
-;;highlight matching brackets
+;; Highlight matching brackets
 (show-paren-mode 1)
 (setq show-paren-style 'parenthesis)
 
 ;; No region when it is not highlighted
 (transient-mark-mode 1)
 
-;;=====Delete selection and clipboard to linux and other copy/paste features
+;; Delete selection and clipboard to linux and other copy/paste features
 (delete-selection-mode t)
 (setq x-select-enable-clipboard t) ;;Clipboard with Linux OS
 
-;;newline when press Enter
-(global-set-key (kbd "RET") 'newline)
+;; Newline when press Enter
+;;(global-set-key (kbd "RET") 'newline)
 
-;;Indentation settings
+;; Indentation settings
 (setq-default
 indent-tabs-mode nil
 tab-width          4
@@ -114,8 +131,7 @@ tab-stop-list (quote (4 8))
 
 
 
-
-;;Backups settings
+;; Backups settings
 (setq make-backup-files nil;;do not make backup
       auto-save-files nil; do not create #autosave files
       create-lockfiles nil; do not create .# files
@@ -129,26 +145,20 @@ tab-stop-list (quote (4 8))
 (setq-default coding-system-for-read    'utf-8)
 (setq default-input-method 'russian-computer)
 
-;;Dired settings
-;;allow remove non-empty dirs
+;; Dired settings
+;; allow remove non-empty dirs
 (setq dired-recursive-deletes 'top)
 (setq dired-dwim-target t)
-;;hide detailes in dired like permissions
+
+;; Hide detailes in dired-mode (permissions etc) 
+;;If you want see detailes press "("
 (defun hide-details ()
   "To be run as hook for `dired-mode'."
   (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'hide-details)
 
-;;Shell,eshell,term
-;;colours in terminal
-;;xterm-color package, add colors to shell
-;; (use-package xterm-color
-;;   :config
-;;   (setq comint-output-filter-functions
-;;         (remove 'ansi-color-process-output comint-output-filter-functions)))
-
-;;Themes,fonts,UI
-;;enable pixelwise resizing frames
+;; Themes,fonts,UI
+;; enable pixelwise resizing frames
 (setq frame-resize-pixelwise t)
 
 ;;Font
@@ -156,6 +166,7 @@ tab-stop-list (quote (4 8))
 ;;font must be installed in OS
 ;;For Ubuntu: 'apt install fonts-hack'
 (set-face-attribute 'default nil
+                    ;; :family "DejaVu Sans Mono"
                     :family "Hack"
                     :height 140
                     :weight 'normal
@@ -205,6 +216,18 @@ tab-stop-list (quote (4 8))
   :ensure t
   :bind
     ("M-y" . counsel-yank-pop)
+)
+
+;;Package that sort results when use Ivy by frequency (like Helm)
+(use-package prescient
+  :ensure t
+)
+
+(use-package ivy-prescient
+  :after prescient
+  :ensure t
+  :config
+(ivy-prescient-mode 1)
 )
 
 ;;yaml-mode
@@ -343,7 +366,7 @@ tab-stop-list (quote (4 8))
      'org-babel-load-languages
      '((python . t)))
   (setq org-todo-keywords
-        '((sequence "TODO" "|" "DELEGATED" "DONE" "CANSELED")))
+        '((sequence "TODO" "|" "DELEGATED" "CANSELED" "DONE" )))
 ;;save clocks hostory between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
@@ -433,7 +456,9 @@ tab-stop-list (quote (4 8))
 (use-package magit
   :ensure t
   :config
-  (global-set-key (kbd "<f4>") 'magit-status))
+  (global-set-key (kbd "<f4>") 'magit-status)
+  (global-set-key (kbd "<f5>") 'magit-branch-checkout)
+)
 
 
 (use-package evil-magit
@@ -457,9 +482,15 @@ tab-stop-list (quote (4 8))
 ;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
 (setq ispell-program-name "aspell")
 ;; Enable spellcheck on the fly for all text modes. This includes org, latex and LaTeX. Spellcheck current word.
-(add-hook 'text-mode-hook 'flyspell-mode)
+
+;;Turn on flyspell for org-mode only
+(add-hook 'org-mode-hook 'flyspell-mode)
+;;keybinds
 (global-set-key (kbd "s-\\") 'ispell-word)
 (global-set-key (kbd "C-s-\\") 'flyspell-auto-correct-word)
+
+;;use aspell
+(setq ispell-list-command "--list")
 
 ;; YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
 (use-package yasnippet
@@ -493,7 +524,7 @@ tab-stop-list (quote (4 8))
  '(org-agenda-files (quote ("/mnt/org/notes/todo_personal.org")))
  '(package-selected-packages
    (quote
-    (jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
 (custom-set-faces
