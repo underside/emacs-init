@@ -184,7 +184,6 @@ tab-stop-list (quote (4 8))
 
 ;;Ivy
 (use-package ivy
-  :ensure t
   :config 
     (ivy-mode 1)
     (setq ivy-use-virtual-buffers t)
@@ -213,30 +212,25 @@ tab-stop-list (quote (4 8))
 
 (use-package counsel
   :after ivy
-  :ensure t
   :bind
     ("M-y" . counsel-yank-pop)
 )
 
 ;;Package that sort results when use Ivy by frequency (like Helm)
 (use-package prescient
-  :ensure t
 )
 
 (use-package ivy-prescient
   :after prescient
-  :ensure t
   :config
 (ivy-prescient-mode 1)
 )
 
 ;;yaml-mode
 (use-package yaml-mode
-  :ensure t
   )
 
 (use-package doom-themes
-  :ensure t
   :config
    (load-theme 'doom-zenburn t)
    ;; (load-theme 'doom-one t)
@@ -254,7 +248,6 @@ tab-stop-list (quote (4 8))
 ;;if icons is not shown install it
 ;;Run M-x all-the-icons-install-fonts
 (use-package doom-modeline
-  :ensure t
   :init (doom-modeline-mode 1)
   :config
   (setq doom-modeline-height 1)
@@ -265,7 +258,6 @@ tab-stop-list (quote (4 8))
 
 ;;Company-mode
 (use-package company
-  :ensure t
   :config
   (add-hook 'after-init-hook 'global-company-mode)
   )
@@ -334,7 +326,6 @@ tab-stop-list (quote (4 8))
 
 ;;Evil-mode plugin evil-matchit
 (use-package evil-matchit
-  :ensure t
   :config
   (global-evil-matchit-mode 1)
 )
@@ -384,7 +375,6 @@ tab-stop-list (quote (4 8))
 ;;Org-bullets
 ;;nice looking lists with UTF-8 characters
 (use-package org-bullets
-  :ensure t
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
@@ -422,7 +412,6 @@ tab-stop-list (quote (4 8))
 
 ;;Flycheck-yamllint
 (use-package flycheck-yamllint
-  :ensure t
   :config
   (progn
     (eval-after-load 'flycheck
@@ -430,9 +419,8 @@ tab-stop-list (quote (4 8))
 )
 ;;Projectile
 (use-package projectile
-  :ensure t
   :config
-  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode +1)
 )
@@ -454,7 +442,6 @@ tab-stop-list (quote (4 8))
 
 ;;Magit
 (use-package magit
-  :ensure t
   :config
   (global-set-key (kbd "<f4>") 'magit-status)
   (global-set-key (kbd "<f5>") 'magit-branch-checkout)
@@ -462,53 +449,48 @@ tab-stop-list (quote (4 8))
 
 
 (use-package evil-magit
-  :ensure t
   :config
   (global-set-key (kbd "s-P") 'magit-status-with-prefix-arg)
   (global-set-key (kbd "s-g") 'magit-status))
 
 ;;Groovy
 (use-package groovy-mode
-  :ensure t
 )
 
 ;;Jenkins
-;; (use-package jenkinsfile-mode
-;;   :ensure t
-;; )
-
+(use-package jenkinsfile-mode
+)
 
 ;; SPELL CHECKING
 ;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
 (setq ispell-program-name "aspell")
-;; Enable spellcheck on the fly for all text modes. This includes org, latex and LaTeX. Spellcheck current word.
 
 ;;Turn on flyspell for org-mode only
 (add-hook 'org-mode-hook 'flyspell-mode)
 ;;keybinds
-(global-set-key (kbd "s-\\") 'ispell-word)
+(global-set-key (kbd "S-\\") 'ispell-word)
 (global-set-key (kbd "C-s-\\") 'flyspell-auto-correct-word)
 
-;;use aspell
-(setq ispell-list-command "--list")
 
 ;; YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
 (use-package yasnippet
   :defer t
   :config
   (setq yas-snippet-dirs
-        '("~/.emacs.d/snippets"))
+        '("/mnt/e/ydisk/org/emacs/snippets"))
   (yas-global-mode 1))
+
+;;some prefab snippets
+(use-package yasnippet-snippets
+)
 
 ;;Kubernetes
 ;;Magit-like porcelain to work with K8s
 (use-package kubernetes
-  :ensure t
   :commands (kubernetes-overview))
 
 ;; If you want to pull in the Evil compatibility package.
 (use-package kubernetes-evil
-  :ensure t
   :after kubernetes)
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
@@ -520,11 +502,25 @@ tab-stop-list (quote (4 8))
  '(custom-safe-themes
    (quote
     ("3df5335c36b40e417fec0392532c1b82b79114a05d5ade62cfe3de63a59bc5c6" "4f01c1df1d203787560a67c1b295423174fd49934deb5e6789abd1e61dba9552" "3c2f28c6ba2ad7373ea4c43f28fcf2eed14818ec9f0659b1c97d4e89c99e091e" "71e5acf6053215f553036482f3340a5445aee364fb2e292c70d9175fb0cc8af7" "9efb2d10bfb38fe7cd4586afb3e644d082cbcdb7435f3d1e8dd9413cbe5e61fc" "5036346b7b232c57f76e8fb72a9c0558174f87760113546d3a9838130f1cdb74" "8d7684de9abb5a770fbfd72a14506d6b4add9a7d30942c6285f020d41d76e0fa" "76bfa9318742342233d8b0b42e824130b3a50dcc732866ff8e47366aed69de11" "990e24b406787568c592db2b853aa65ecc2dcd08146c0d22293259d400174e37" "6b80b5b0762a814c62ce858e9d72745a05dd5fc66f821a1c5023b4f2a76bc910" "be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "6c3b5f4391572c4176908bb30eddc1718344b8eaff50e162e36f271f6de015ca" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" "2f1518e906a8b60fac943d02ad415f1d8b3933a5a7f75e307e6e9a26ef5bf570" "e6ff132edb1bfa0645e2ba032c44ce94a3bd3c15e3929cdf6c049802cf059a2a" "5d09b4ad5649fea40249dd937eaaa8f8a229db1cec9a1a0ef0de3ccf63523014" "37144b437478e4c235824f0e94afa740ee2c7d16952e69ac3c5ed4352209eefb" "711efe8b1233f2cf52f338fd7f15ce11c836d0b6240a18fffffc2cbd5bfe61b0" default)))
+ '(flyspell-default-dictionary ispell-russian-dictionary)
  '(helm-completion-style (quote emacs))
+ '(ispell-dictionary ispell-english-dictionary)
+ '(ispell-dictionary-alist
+   (quote
+    (("russian" "\\cy" "\\Cy" "[-]" nil
+      ("-C" "-d" "ru-yeyo.multi" nil utf-8))
+     ("english" "[a-zA-Z]" "[^a-zA-Z]" "[']" nil
+      ("-d" "en_GB.multi" "--add-extra-dicts=en_GB-variant_1.multi" nil iso-8859-1))
+     (nil "[A-Za-z]" "[^A-Za-z]" "[']" nil
+          ("-C" nil iso-8859-1)))) t)
+ '(ispell-extra-args (quote ("--sug-mode=ultra" "--prefix=c:/mingw_mine")))
+ '(ispell-local-dictionary ispell-russian-dictionary)
+ '(ispell-program-name "aspell")
  '(org-agenda-files (quote ("/mnt/org/notes/todo_personal.org")))
  '(package-selected-packages
    (quote
-    (ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+ '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
 (custom-set-faces
