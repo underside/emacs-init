@@ -173,7 +173,9 @@ tab-stop-list (quote (4 8))
                     :width 'normal)
 
 ;;Bind-keys for using kbd
-(use-package bind-key)
+(use-package bind-key
+  :ensure t
+    )
 
 ;; Modeline settings
 ;; (line-number-mode t)
@@ -184,6 +186,7 @@ tab-stop-list (quote (4 8))
 
 ;;Ivy
 (use-package ivy
+  :ensure t
   :config 
     (ivy-mode 1)
     (setq ivy-use-virtual-buffers t)
@@ -211,6 +214,7 @@ tab-stop-list (quote (4 8))
 )
 
 (use-package counsel
+  :ensure t
   :after ivy
   :bind
     ("M-y" . counsel-yank-pop)
@@ -218,9 +222,11 @@ tab-stop-list (quote (4 8))
 
 ;;Package that sort results when use Ivy by frequency (like Helm)
 (use-package prescient
+  :ensure t
 )
 
 (use-package ivy-prescient
+  :ensure t
   :after prescient
   :config
 (ivy-prescient-mode 1)
@@ -228,9 +234,11 @@ tab-stop-list (quote (4 8))
 
 ;;yaml-mode
 (use-package yaml-mode
+  :ensure t
   )
 
 (use-package doom-themes
+  :ensure t
   :config
    (load-theme 'doom-zenburn t)
    ;; (load-theme 'doom-one t)
@@ -248,6 +256,7 @@ tab-stop-list (quote (4 8))
 ;;if icons is not shown install it
 ;;Run M-x all-the-icons-install-fonts
 (use-package doom-modeline
+  :ensure t
   :init (doom-modeline-mode 1)
   :config
   (setq doom-modeline-height 1)
@@ -258,6 +267,7 @@ tab-stop-list (quote (4 8))
 
 ;;Company-mode
 (use-package company
+  :ensure t
   :config
   (add-hook 'after-init-hook 'global-company-mode)
   )
@@ -326,6 +336,7 @@ tab-stop-list (quote (4 8))
 
 ;;Evil-mode plugin evil-matchit
 (use-package evil-matchit
+  :ensure t
   :config
   (global-evil-matchit-mode 1)
 )
@@ -375,6 +386,7 @@ tab-stop-list (quote (4 8))
 ;;Org-bullets
 ;;nice looking lists with UTF-8 characters
 (use-package org-bullets
+  :ensure t
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
@@ -389,6 +401,7 @@ tab-stop-list (quote (4 8))
 ;;add in /etc/ssh/ssh_config StrictHostKeyChecking no
 ;;connect to not default port C-x C-f /ssh:test@host#2222:/tmp
 (use-package tramp
+  :ensure t
   :config
   (setq tramp-chunksize "500")
   (setq tramp-debug-buffer t)
@@ -399,19 +412,22 @@ tab-stop-list (quote (4 8))
 
 ;;yaml-mode
 (use-package yaml-mode
+  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 )
 
 ;;Flycheck
 (use-package flycheck
-  ;; :init (global-flycheck-mode)
+  :ensure t
+  :init (global-flycheck-mode)
   :config
   (global-flycheck-mode 1)
 )
 
 ;;Flycheck-yamllint
 (use-package flycheck-yamllint
+  :ensure t
   :config
   (progn
     (eval-after-load 'flycheck
@@ -419,6 +435,7 @@ tab-stop-list (quote (4 8))
 )
 ;;Projectile
 (use-package projectile
+  :ensure t
   :config
   (define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -428,7 +445,8 @@ tab-stop-list (quote (4 8))
 
 ;;Markdown mode
 (use-package markdown-mode
-:defer t
+  :ensure t
+  :defer t
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
@@ -442,6 +460,7 @@ tab-stop-list (quote (4 8))
 
 ;;Magit
 (use-package magit
+  :ensure t
   :config
   (global-set-key (kbd "<f4>") 'magit-status)
   (global-set-key (kbd "<f5>") 'magit-branch-checkout)
@@ -449,16 +468,19 @@ tab-stop-list (quote (4 8))
 
 
 (use-package evil-magit
+  :ensure t
   :config
   (global-set-key (kbd "s-P") 'magit-status-with-prefix-arg)
   (global-set-key (kbd "s-g") 'magit-status))
 
 ;;Groovy
 (use-package groovy-mode
+  :ensure t
 )
 
 ;;Jenkins
 (use-package jenkinsfile-mode
+  :ensure t
 )
 
 ;; SPELL CHECKING
@@ -474,6 +496,7 @@ tab-stop-list (quote (4 8))
 
 ;; YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
 (use-package yasnippet
+  :ensure t
   :defer t
   :config
   (setq yas-snippet-dirs
@@ -482,15 +505,18 @@ tab-stop-list (quote (4 8))
 
 ;;some prefab snippets
 (use-package yasnippet-snippets
+  :ensure t
 )
 
 ;;Kubernetes
 ;;Magit-like porcelain to work with K8s
 (use-package kubernetes
+  :ensure t
   :commands (kubernetes-overview))
 
 ;; If you want to pull in the Evil compatibility package.
 (use-package kubernetes-evil
+  :ensure t
   :after kubernetes)
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
