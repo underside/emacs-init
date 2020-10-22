@@ -347,6 +347,7 @@ tab-stop-list (quote (4 8))
   :config
   (global-evil-matchit-mode 1)
 )
+
 ;;Evil-mode plugin evil-surround
 (use-package evil-surround
   :ensure t
@@ -370,13 +371,16 @@ tab-stop-list (quote (4 8))
 
   ;;encrypt in org-mode, cache save pass in session
   (setq epa-file-cache-passphrase-for-symmetric-encryption t)
-
+)
 
 ;;Agenda
 ;; ~/org is a symlink to /mnt/e/ydisk/org/notes
 ;; include all .org files from notes dir in agenda
 (setq org-agenda-files '("~/org/notes/todo.org" "~/org/notes/todo_private.org"))
-
+;;Show next 10 days, not only this week
+(setq org-agenda-span 10)
+;;show agenda since today 
+(setq org-agenda-start-on-weekday nil)
 
 ;;Babel settings
   (org-babel-do-load-languages
