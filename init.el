@@ -1,8 +1,10 @@
 ;;Extra Repos and use-package installation
+
 (require 'package)
   (add-to-list
    'package-archives
    '("melpa" . "https://melpa.org/packages/")
+   
    t)
 (package-initialize)
 
@@ -19,7 +21,7 @@
 (define-key global-map [f9] 'list-bookmarks)
 (define-key global-map [f10] 'bookmark-set)
 ;; define file to use
-(setq bookmark-default-file "~/org/emacs/bookmarks")  
+(setq bookmark-default-file "~/ydisk/org/emacs/bookmarks")  
 ;; save bookmarks to .emacs.bmk after each entry
 (setq bookmark-save-flag 1)  
 
@@ -256,7 +258,7 @@ tab-stop-list (quote (4 8))
    ;; Enable custom neotree theme (all-the-icons must be installed!)
    ;; (doom-themes-neotree-config)
    ;; Corrects (and improves) org-mode's native fontification.
-   ;; (doom-themes-org-config)
+   (doom-themes-org-config)
 )
 
 ;;doom-modeline
@@ -278,6 +280,7 @@ tab-stop-list (quote (4 8))
   :config
   (add-hook 'after-init-hook 'global-company-mode)
   )
+
 
 ;;Evil
 (use-package evil
@@ -373,21 +376,28 @@ tab-stop-list (quote (4 8))
   (setq epa-file-cache-passphrase-for-symmetric-encryption t)
 )
 
+
+(use-package ob-http
+  :ensure t
+)
+
+;;Babel settings
+  (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((python . t)
+       (http . t)))
+
 ;;Agenda
 ;; ~/org is a symlink to /mnt/e/ydisk/org/notes
 ;; include all .org files from notes dir in agenda
-(setq org-agenda-files '("~/org/notes/todo.org" "~/org/notes/todo_private.org"))
+(setq org-agenda-files '("~/ydisk/org/notes/todo.org"))
 ;;Show next 10 days, not only this week
 (setq org-agenda-span 10)
 ;;show agenda since today 
 (setq org-agenda-start-on-weekday nil)
 
-;;Babel settings
-  (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((python . t)))
   (setq org-todo-keywords
-        '((sequence "TODO" "|" "DELEGATED" "CANSELED" "DONE" )))
+        '((sequence "TODO" "|" "DELEGATED" "DONE" )))
 ;;save clocks hostory between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
@@ -397,9 +407,9 @@ tab-stop-list (quote (4 8))
 ;; Org-capture
 ;;Template for TODO
 (setq org-capture-templates
-      '(("t" "Todo" entry (file+headline "~/org/notes/todo.org" "org-capture")
+      '(("t" "Todo" entry (file+headline "~/ydisk/org/notes/todo.org" "org-capture")
          "* TODO %?\n  %i\n  %a")
-        ("j" "Journal" entry (file+datetree "~/org/notes/todo.org")
+        ("j" "Journal" entry (file+datetree "~/ydisk/org/notes/todo.org")
          "* %?\nEntered on %U\n  %i\n  %a")))
 
 ;; gpg encryption
@@ -456,13 +466,92 @@ tab-stop-list (quote (4 8))
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup)))
 )
 ;;Projectile
-;; (use-package projectile
-;;   :ensure t
-;;   :config
-;;   (define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
-;;   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-;;   (projectile-mode +1)
-;; )
+(use-package projectile
+  :ensure t
+  :config
+  (define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (projectile-mode +1)
+)
+
+
+;;Treemacs
+(use-package treemacs
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (progn
+    (setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
+          treemacs-deferred-git-apply-delay      0.5
+          treemacs-directory-name-transformer    #'identity
+          treemacs-display-in-side-window        t
+          treemacs-eldoc-display                 t
+          treemacs-file-event-delay              5000
+          treemacs-file-extension-regex          treemacs-last-period-regex-value
+          treemacs-file-follow-delay             0.2
+          treemacs-file-name-transformer         #'identity
+          treemacs-follow-after-init             t
+          treemacs-git-command-pipe              ""
+          treemacs-goto-tag-strategy             'refetch-index
+          treemacs-indentation                   2
+          treemacs-indentation-string            " "
+          treemacs-is-never-other-window         nil
+          treemacs-max-git-entries               5000
+          treemacs-missing-project-action        'ask
+          treemacs-move-forward-on-expand        nil
+          treemacs-no-png-images                 nil
+          treemacs-no-delete-other-windows       t
+          treemacs-project-follow-cleanup        nil
+          treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+          treemacs-position                      'left
+          treemacs-recenter-distance             0.1
+          treemacs-recenter-after-file-follow    nil
+          treemacs-recenter-after-tag-follow     nil
+          treemacs-recenter-after-project-jump   'always
+          treemacs-recenter-after-project-expand 'on-distance
+          treemacs-show-cursor                   nil
+          treemacs-show-hidden-files             t
+          treemacs-silent-filewatch              nil
+          treemacs-silent-refresh                nil
+          treemacs-sorting                       'alphabetic-asc
+          treemacs-space-between-root-nodes      t
+          treemacs-tag-follow-cleanup            t
+          treemacs-tag-follow-delay              1.5
+          treemacs-user-mode-line-format         nil
+          treemacs-user-header-line-format       nil
+          treemacs-width                         35
+          treemacs-workspace-switch-cleanup      nil)
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode t)
+    (pcase (cons (not (null (executable-find "git")))
+                 (not (null treemacs-python-executable)))
+      (`(t . t)
+       (treemacs-git-mode 'deferred))
+      (`(t . _)
+       (treemacs-git-mode 'simple))))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("<f8>"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-evil
+  :after treemacs evil
+  :ensure t)
+
+(use-package treemacs-projectile
+  :after treemacs projectile
+  :ensure t)
+
 
 
 ;;Markdown mode
@@ -496,9 +585,9 @@ tab-stop-list (quote (4 8))
   (global-set-key (kbd "s-g") 'magit-status))
 
 ;;Groovy
-(use-package groovy-mode
-  :ensure t
-)
+;; (use-package groovy-mode
+;;   :ensure t
+;; )
 
 ;;Jenkins
 (use-package jenkinsfile-mode
@@ -522,7 +611,7 @@ tab-stop-list (quote (4 8))
   :defer t
   :config
   (setq yas-snippet-dirs
-        '("/mnt/e/ydisk/org/emacs/snippets"))
+        '("~/ydisk/org/emacs/snippets"))
   (yas-global-mode 1))
 
 ;;some prefab snippets
@@ -540,6 +629,21 @@ tab-stop-list (quote (4 8))
 (use-package kubernetes-evil
   :ensure t
   :after kubernetes)
+
+
+;; Golang
+(use-package go-mode
+  :ensure t
+  :mode (("\\.go\\'" . go-mode))
+)
+
+(use-package flycheck-gometalinter
+  :ensure t
+  :config
+  (progn
+    (flycheck-gometalinter-setup)))
+
+
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
 (custom-set-variables
@@ -563,7 +667,7 @@ tab-stop-list (quote (4 8))
  '(ispell-program-name "aspell")
  '(package-selected-packages
    (quote
-    (htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
