@@ -174,6 +174,21 @@ tab-stop-list (quote (4 8))
                     :weight 'normal
                     :width 'normal)
 
+(use-package doom-themes
+  :ensure t
+  :config
+   ;; (load-theme 'doom-zenburn t)
+   ;; (load-theme 'doom-one t)
+   ;; (load-theme 'doom-spacegrey t)
+   ;; (load-theme 'doom-nord t)
+   ;; (load-theme 'doom-wilmersdorf t)
+   (load-theme 'doom-solarized-dark t)
+   ;; Enable custom neotree theme (all-the-icons must be installed!)
+   ;; (doom-themes-neotree-config)
+   ;; Corrects (and improves) org-mode's native fontification.
+   (doom-themes-org-config)
+)
+
 ;;Bind-keys for using kbd
 (use-package bind-key
   :ensure t
@@ -184,6 +199,14 @@ tab-stop-list (quote (4 8))
   :ensure t
   :config
     (beacon-mode 1)
+)
+
+;;Exec-path-from-shell
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-copy-env "GOPATH")
+  (exec-path-from-shell-copy-env "PATH")
 )
 
 ;; Modeline settings
@@ -246,20 +269,6 @@ tab-stop-list (quote (4 8))
   :ensure t
   )
 
-(use-package doom-themes
-  :ensure t
-  :config
-   (load-theme 'doom-zenburn t)
-   ;; (load-theme 'doom-one t)
-   ;; (load-theme 'doom-spacegrey t)
-   ;; (load-theme 'doom-nord t)
-   ;; (load-theme 'doom-wilmersdorf t)
-   ;; (load-theme 'doom-solarized-dark t)
-   ;; Enable custom neotree theme (all-the-icons must be installed!)
-   ;; (doom-themes-neotree-config)
-   ;; Corrects (and improves) org-mode's native fontification.
-   (doom-themes-org-config)
-)
 
 ;;doom-modeline
 ;;if icons is not shown install it
@@ -279,6 +288,9 @@ tab-stop-list (quote (4 8))
   :ensure t
   :config
   (add-hook 'after-init-hook 'global-company-mode)
+  (add-hook 'go-mode-hook (lambda ()
+    (set (make-local-variable 'company-backends) '(company-go))
+    (company-mode)))
   )
 
 
@@ -385,7 +397,9 @@ tab-stop-list (quote (4 8))
   (org-babel-do-load-languages
      'org-babel-load-languages
      '((python . t)
-       (http . t)))
+       (go . t)
+
+       ))
 
 ;;Agenda
 ;; ~/org is a symlink to /mnt/e/ydisk/org/notes
@@ -455,6 +469,13 @@ tab-stop-list (quote (4 8))
   :init (global-flycheck-mode)
   :config
   (global-flycheck-mode 1)
+  (add-hook 'go-mode-hook 'flycheck-mode)
+  (add-hook 'python-mode-hook 'flycheck-mode)
+  (add-hook 'python-mode-hook 'flycheck-mode)
+  (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change))
+  (setq flycheck-highlighting-mode 'lines)
+  (setq flycheck-indication-mode 'left-fringe)
+  (setq flycheck-checker-error-threshold 2000)
 )
 
 ;;Flycheck-yamllint
@@ -464,7 +485,13 @@ tab-stop-list (quote (4 8))
   (progn
     (eval-after-load 'flycheck
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup)))
+    
+
+
 )
+
+
+
 ;;Projectile
 (use-package projectile
   :ensure t
@@ -611,7 +638,7 @@ tab-stop-list (quote (4 8))
   :defer t
   :config
   (setq yas-snippet-dirs
-        '("~/ydisk/org/emacs/snippets"))
+        '("~/workspace/org/emacs/snippets"))
   (yas-global-mode 1))
 
 ;;some prefab snippets
@@ -630,18 +657,42 @@ tab-stop-list (quote (4 8))
   :ensure t
   :after kubernetes)
 
-
 ;; Golang
+;; add to below strings ~/.bashrc
+;; export GOROOT=/usr/local/go
+;; export GOPATH=$HOME/go/
+;; export PATH=$PATH:$GOROOT/bin
+;; export PATH=$PATH:$GOPATH/bin
+
+;;Install modules in OS
+;; go get github.com/nsf/gocode
+
+
+;; go settings
+(add-hook 'before-save-hook 'gofmt-before-save)
+(add-hook 'go-mode-hook 'yas-minor-mode)
+
+
 (use-package go-mode
   :ensure t
   :mode (("\\.go\\'" . go-mode))
 )
 
-(use-package flycheck-gometalinter
+(use-package company-go
   :ensure t
-  :config
-  (progn
-    (flycheck-gometalinter-setup)))
+  :after company
+)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -667,7 +718,7 @@ tab-stop-list (quote (4 8))
  '(ispell-program-name "aspell")
  '(package-selected-packages
    (quote
-    (flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (ob-go exec-path-from-shell company-go multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
