@@ -21,7 +21,7 @@
 (define-key global-map [f9] 'list-bookmarks)
 (define-key global-map [f10] 'bookmark-set)
 ;; define file to use
-(setq bookmark-default-file "~/ydisk/org/emacs/bookmarks")  
+(setq bookmark-default-file "~/workspace/org/emacs/bookmarks")  
 ;; save bookmarks to .emacs.bmk after each entry
 (setq bookmark-save-flag 1)  
 
@@ -69,7 +69,8 @@
       user-mail-address "underside@ya.ru")
 
 ;;Desktop autosave
-;; (desktop-save-mode 1)
+(desktop-save-mode 1)
+(savehist-mode 1)
 
 ;; enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -95,8 +96,11 @@
 (setq-default indicate-buffer-boundaries 'right)
 
 ;;Electric-modes settings
-(electric-pair-mode    1) ;; closed open brackets automatically {},[],()
-(setq-default electric-indent-inhibit t) ;;not indent previous line when press RET
+;; closed open brackets automatically {},[],()
+(electric-pair-mode    1) 
+
+;;not indent previous line when press RET
+;; (setq-default electric-indent-inhibit t) 
 
 ;; Line wrapping
 ;; Cursor moving by visual lines
@@ -170,7 +174,7 @@ tab-stop-list (quote (4 8))
 (set-face-attribute 'default nil
                     ;; :family "DejaVu Sans Mono"
                     :family "Hack"
-                    :height 140
+                    :height 130
                     :weight 'normal
                     :width 'normal)
 
@@ -178,11 +182,11 @@ tab-stop-list (quote (4 8))
   :ensure t
   :config
    ;; (load-theme 'doom-zenburn t)
-   ;; (load-theme 'doom-one t)
+   (load-theme 'doom-one t)
    ;; (load-theme 'doom-spacegrey t)
    ;; (load-theme 'doom-nord t)
    ;; (load-theme 'doom-wilmersdorf t)
-   (load-theme 'doom-solarized-dark t)
+   ;; (load-theme 'doom-solarized-dark t)
    ;; Enable custom neotree theme (all-the-icons must be installed!)
    ;; (doom-themes-neotree-config)
    ;; Corrects (and improves) org-mode's native fontification.
@@ -398,6 +402,7 @@ tab-stop-list (quote (4 8))
      'org-babel-load-languages
      '((python . t)
        (go . t)
+       (shell . t)
 
        ))
 
@@ -718,7 +723,7 @@ tab-stop-list (quote (4 8))
  '(ispell-program-name "aspell")
  '(package-selected-packages
    (quote
-    (ob-go exec-path-from-shell company-go multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (json-mode ob-go exec-path-from-shell company-go multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
