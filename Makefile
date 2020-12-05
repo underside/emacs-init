@@ -37,4 +37,9 @@ git_env:
 	-git config --global user.email ""
 	-git config --global credential.helper store
 
+general_conf:
+	-echo 'export $YAMLLINT_CONFIG_FILE=~/.yamllint.yaml' >> ~/.bashrc
+	-source ~/.bashrc
+	-cp conf/.yamllint.yaml ~/.yamllint.yaml
+
 

@@ -397,6 +397,10 @@ tab-stop-list (quote (4 8))
   :ensure t
 )
 
+(use-package ob-go
+  :ensure t
+)
+
 ;;Babel settings
   (org-babel-do-load-languages
      'org-babel-load-languages
