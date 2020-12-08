@@ -3,7 +3,8 @@ help:  ## This is help dialog. Enter "make" to get help
 	@echo '	 packages            Install general packages that usually needed in freshly installed Linux'
 	@echo '	 golang_packages     Install packages golang development'
 	@echo '	 golang_env          Set ENV vars for golang dev'
-	@echo '	 git_env            Setup git env settings: git username and email '
+	@echo '	 git_env             Setup git env settings: git username and email '
+	@echo '	 general_conf        Setup general settings: yamllint, '
 	@echo ''
 
 packages:
@@ -38,8 +39,6 @@ git_env:
 	-git config --global credential.helper store
 
 general_conf:
-	-echo 'export $YAMLLINT_CONFIG_FILE=~/.yamllint.yaml' >> ~/.bashrc
-	-source ~/.bashrc
-	-cp conf/.yamllint.yaml ~/.yamllint.yaml
+	-cp ./conf/yamllint_config ~/.config/yamllint/config.yaml
 
 
