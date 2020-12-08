@@ -1,4 +1,4 @@
-;;Extra Repos and use-package installation
+;Extra Repos and use-package installation
 
 (require 'package)
   (add-to-list
@@ -135,7 +135,8 @@ lisp-body-indent   4
 tab-stop-list (quote (4 8))
 )
 
-
+;; ediff
+(setq-default ediff-forward-word-function 'forward-char)
 
 ;; Backups settings
 (setq make-backup-files nil;;do not make backup
@@ -231,7 +232,6 @@ tab-stop-list (quote (4 8))
     (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
   :bind 
     ("M-y" . counsel-yank-pop)
-    ("\C-s" . swiper)
     ("<f6>" . ivy-resume)
     ("M-x" . counsel-M-x)
     ("C-x C-f" . counsel-find-file)
@@ -256,17 +256,13 @@ tab-stop-list (quote (4 8))
     ("M-y" . counsel-yank-pop)
 )
 
-;;Package that sort results when use Ivy by frequency (like Helm)
-(use-package prescient
+(use-package swiper
   :ensure t
+  :after ivy
+  :bind
+    ("C-s" . swiper)
 )
 
-(use-package ivy-prescient
-  :ensure t
-  :after prescient
-  :config
-(ivy-prescient-mode 1)
-)
 
 ;;yaml-mode
 (use-package yaml-mode
@@ -413,14 +409,14 @@ tab-stop-list (quote (4 8))
 ;;Agenda
 ;; ~/org is a symlink to /mnt/e/ydisk/org/notes
 ;; include all .org files from notes dir in agenda
-(setq org-agenda-files '("~/ydisk/org/notes/todo.org"))
+(setq org-agenda-files '("~/workspace/org/notes/todo.org"))
 ;;Show next 10 days, not only this week
 (setq org-agenda-span 10)
 ;;show agenda since today 
 (setq org-agenda-start-on-weekday nil)
 
   (setq org-todo-keywords
-        '((sequence "TODO" "|" "DELEGATED" "DONE" )))
+        '((sequence "TODO" "HOLD" "|" "DONE" )))
 ;;save clocks hostory between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
@@ -430,9 +426,9 @@ tab-stop-list (quote (4 8))
 ;; Org-capture
 ;;Template for TODO
 (setq org-capture-templates
-      '(("t" "Todo" entry (file+headline "~/ydisk/org/notes/todo.org" "org-capture")
+      '(("t" "Todo" entry (file+headline "~/workspace/org/notes/todo.org" "org-capture")
          "* TODO %?\n  %i\n  %a")
-        ("j" "Journal" entry (file+datetree "~/ydisk/org/notes/todo.org")
+        ("j" "Journal" entry (file+datetree "~/workspace/org/notes/todo.org")
          "* %?\nEntered on %U\n  %i\n  %a")))
 
 ;; gpg encryption
@@ -505,9 +501,11 @@ tab-stop-list (quote (4 8))
 (use-package projectile
   :ensure t
   :config
-  (define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  ;; (define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
+  ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode +1)
+
 )
 
 
