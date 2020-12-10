@@ -53,7 +53,7 @@
 (setq inhibit-splash-screen   t)
 (setq inhibit-startup-message t)
 ;; Message in scratch buffer
-(setq initial-scratch-message ";;Hello, bro. What's up?")
+(setq initial-scratch-message ";;Hi, bro. What's up?")
 
 ;; Display the name of the current buffer in the title bar
 (setq frame-title-format "%b")
@@ -230,7 +230,7 @@ tab-stop-list (quote (4 8))
     (setq enable-recursive-minibuffers t)
     ;; (setq search-default-mode #'char-fold-to-regexp)
     (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
-    (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+    (setq ivy-re-builders-alist '((t . ivy--regex-plus)))
   :bind 
     ("M-y" . counsel-yank-pop)
     ("<f6>" . ivy-resume)
@@ -281,17 +281,6 @@ tab-stop-list (quote (4 8))
   (setq doom-modeline-height 1)
   (set-face-attribute 'mode-line nil :height 110)
   (set-face-attribute 'mode-line-inactive nil :height 110)
-  )
-
-
-;;Company-mode
-(use-package company
-  :ensure t
-  :config
-  (add-hook 'after-init-hook 'global-company-mode)
-  (add-hook 'go-mode-hook (lambda ()
-    (set (make-local-variable 'company-backends) '(company-go))
-    (company-mode)))
   )
 
 
@@ -462,6 +451,42 @@ tab-stop-list (quote (4 8))
   (setq tramp-default-method "ssh")
 )
 
+;;Company-mode
+(use-package company
+  :ensure t
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
+  (add-hook 'go-mode-hook (lambda ()
+    (set (make-local-variable 'company-backends) '(company-go))
+    (company-mode)))
+  (setq company-tooltip-limit 20)
+  (setq company-idle-delay 0) 
+  (setq company-echo-delay 0)                          
+ (setq company-begin-commands '(self-insert-command))
+)
+;;lsp-mode
+;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+(setq lsp-keymap-prefix "s-l")
+
+(use-package lsp-mode
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+            (go-mode . lsp)
+            ;; if you want which-key integration
+            (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp)
+
+;; optionally
+(use-package lsp-ui :commands lsp-ui-mode)
+
+;; if you are ivy user
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+;; optional if you want which-key integration
+(use-package which-key
+    :config
+    (which-key-mode))
+
 ;;yaml-mode
 (use-package yaml-mode
   :ensure t
@@ -476,7 +501,6 @@ tab-stop-list (quote (4 8))
   :config
   (global-flycheck-mode 1)
   (add-hook 'go-mode-hook 'flycheck-mode)
-  (add-hook 'python-mode-hook 'flycheck-mode)
   (add-hook 'python-mode-hook 'flycheck-mode)
   (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change))
   (setq flycheck-highlighting-mode 'lines)
@@ -503,9 +527,11 @@ tab-stop-list (quote (4 8))
   :ensure t
   :config
   ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  ;; (define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
-  ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode +1)
+  :bind
+  (:map global-map
+        ("C-c p"       . projectile-find-file)
+  )
 
 )
 
@@ -557,7 +583,7 @@ tab-stop-list (quote (4 8))
           treemacs-tag-follow-delay              1.5
           treemacs-user-mode-line-format         nil
           treemacs-user-header-line-format       nil
-          treemacs-width                         35
+          treemacs-width                         30
           treemacs-workspace-switch-cleanup      nil)
 
     (treemacs-follow-mode t)
@@ -672,10 +698,6 @@ tab-stop-list (quote (4 8))
 ;; export PATH=$PATH:$GOROOT/bin
 ;; export PATH=$PATH:$GOPATH/bin
 
-;;Install modules in OS
-;; go get github.com/nsf/gocode
-
-
 ;; go settings
 (add-hook 'before-save-hook 'gofmt-before-save)
 (add-hook 'go-mode-hook 'yas-minor-mode)
@@ -683,25 +705,9 @@ tab-stop-list (quote (4 8))
 
 (use-package go-mode
   :ensure t
+  :defer t
   :mode (("\\.go\\'" . go-mode))
 )
-
-(use-package company-go
-  :ensure t
-  :after company
-)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
@@ -726,7 +732,7 @@ tab-stop-list (quote (4 8))
  '(ispell-program-name "aspell")
  '(package-selected-packages
    (quote
-    (json-mode ob-go exec-path-from-shell company-go multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
