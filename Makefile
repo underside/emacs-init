@@ -25,7 +25,7 @@ golang_packages:
 	-go get -u golang.org/x/tools/cmd/goimports
 	-sudo go get -u golang.org/x/tools/cmd/godoc
 
-golang_env:
+golang_env_linux:
 	-echo 'export PATH=$$PATH:/usr/local/go/bin' >> ~/.bashrc
 	-echo 'export GOPATH=$$PATH:/home/y/go' >> ~/.bashrc
 	-echo 'export GOROOT=$$PATH:/usr/local/go' >> ~/.bashrc
@@ -39,6 +39,7 @@ git_env:
 	-git config --global credential.helper store
 
 general_conf:
+	-mkdir -p ~/.config/yamllint
 	-cp ./conf/yamllint_config ~/.config/yamllint/config.yaml
 
 

@@ -112,7 +112,9 @@
 (setq query-replace-highlight t)
 
 ;; Highlight matching brackets
-(show-paren-mode 1)
+;;Parantes-matchning--------------------------
+;;Match parenthesis through highlighting rather than retarded jumps. Good!
+(show-paren-mode t)
 (setq show-paren-style 'parenthesis)
 
 ;; No region when it is not highlighted
@@ -124,7 +126,6 @@
 
 ;; Newline when press Enter
 ;;(global-set-key (kbd "RET") 'newline)
-
 ;; Indentation settings
 (setq-default
 indent-tabs-mode nil
@@ -137,6 +138,16 @@ tab-stop-list (quote (4 8))
 
 ;; ediff
 (setq-default ediff-forward-word-function 'forward-char)
+;;Don't use strange separate control-window.
+(customize-set-variable 'ediff-window-setup-function 'ediff-setup-windows-plain)
+
+;;Side by side comparison is easier than vertical split
+;;(tob-bottom-stacked) window
+(customize-set-variable 'ediff-split-window-function 'split-window-horizontally)
+
+
+
+
 
 ;; Backups settings
 (setq make-backup-files nil;;do not make backup
@@ -204,6 +215,9 @@ tab-stop-list (quote (4 8))
   :ensure t
   :config
     (beacon-mode 1)
+    (setq beacon-blink-when-window-scrolls nil)
+    (setq beacon-blink-when-point-moves nil)
+    (setq beacon-size 20)                
 )
 
 ;;Exec-path-from-shell
@@ -215,11 +229,11 @@ tab-stop-list (quote (4 8))
 )
 
 ;; Modeline settings
-;; (line-number-mode t)
-;; (column-number-mode t)
-;; (size-indication-mode t)
-;; (setq display-time-24hr-format t) ;; 24-hour
-;; (size-indication-mode          t) ;; file size in persents
+(line-number-mode t)
+(column-number-mode t)
+(size-indication-mode t)
+(setq display-time-24hr-format t) ;; 24-hour
+(size-indication-mode          t) ;; file size in persents
 
 ;;Ivy
 (use-package ivy
@@ -274,14 +288,14 @@ tab-stop-list (quote (4 8))
 ;;doom-modeline
 ;;if icons is not shown install it
 ;;Run M-x all-the-icons-install-fonts
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-height 1)
-  (set-face-attribute 'mode-line nil :height 110)
-  (set-face-attribute 'mode-line-inactive nil :height 110)
-  )
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :init (doom-modeline-mode 1)
+;;   :config
+;;   (setq doom-modeline-height 1)
+;;   (set-face-attribute 'mode-line nil :height 110)
+;;   (set-face-attribute 'mode-line-inactive nil :height 110)
+;;   )
 
 
 ;;Evil
@@ -345,6 +359,10 @@ tab-stop-list (quote (4 8))
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
 )
+
+;; only warn about deleting modified buffers.
+  (setq ibuffer-expert t)
+
 
 ;;Evil-mode plugin evil-matchit
 (use-package evil-matchit
@@ -462,11 +480,17 @@ tab-stop-list (quote (4 8))
   (setq company-tooltip-limit 20)
   (setq company-idle-delay 0) 
   (setq company-echo-delay 0)                          
- (setq company-begin-commands '(self-insert-command))
+  (setq company-minimum-prefix-length 1)
+  (setq company-begin-commands '(self-insert-command))
 )
-;;lsp-mode
-;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-(setq lsp-keymap-prefix "s-l")
+;;lsp-mode (language server for different code lang)
+;;install needed plugin first
+;;GO111MODULE=on go get golang.org/x/tools/gopls@latest
+;; optional if you want which-key integration
+;; install new backend with command: lsp-install-server --> check backend in list
+(use-package which-key
+    :config
+    (which-key-mode))
 
 (use-package lsp-mode
     :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
@@ -474,18 +498,25 @@ tab-stop-list (quote (4 8))
             ;; if you want which-key integration
             (lsp-mode . lsp-enable-which-key-integration))
     :commands lsp)
-
-;; optionally
-(use-package lsp-ui :commands lsp-ui-mode)
-
-;; if you are ivy user
-(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-
-;; optional if you want which-key integration
-(use-package which-key
     :config
-    (which-key-mode))
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "s-l")
+
+;; show tooltips 
+(use-package lsp-ui
+    :ensure t
+    :commands lsp-ui-mode)
+
+;; ivy integration
+(use-package lsp-ivy
+    :ensure t
+    :commands
+    lsp-ivy-workspace-symbol)
+
+;; error list in tree view
+(use-package lsp-treemacs
+    :commands lsp-treemacs-errors-list)
+
 
 ;;yaml-mode
 (use-package yaml-mode
