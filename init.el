@@ -65,7 +65,7 @@
 (setq package-check-signature nil)
 
 ;;User name and email
-(setq user-full-name "Yury Ponomarev"
+(setq user-full-name "Iurii Ponomarev"
       user-mail-address "underside@ya.ru")
 
 ;;Desktop autosave
@@ -122,7 +122,7 @@
 
 ;; Delete selection and clipboard to linux and other copy/paste features
 (delete-selection-mode t)
-(setq x-select-enable-clipboard t) ;;Clipboard with Linux OS
+(setq select-enable-clipboard t) 
 
 ;; Newline when press Enter
 ;;(global-set-key (kbd "RET") 'newline)
@@ -145,16 +145,11 @@ tab-stop-list (quote (4 8))
 ;;(tob-bottom-stacked) window
 (customize-set-variable 'ediff-split-window-function 'split-window-horizontally)
 
-
-
-
-
 ;; Backups settings
 (setq make-backup-files nil;;do not make backup
       auto-save-files nil; do not create #autosave files
       create-lockfiles nil; do not create .# files
 )
-
 
 ;;Locale settings
 (setq locale-coding-system 'utf-8)
@@ -199,8 +194,6 @@ tab-stop-list (quote (4 8))
    ;; (load-theme 'doom-nord t)
    ;; (load-theme 'doom-wilmersdorf t)
    ;; (load-theme 'doom-solarized-dark t)
-   ;; Enable custom neotree theme (all-the-icons must be installed!)
-   ;; (doom-themes-neotree-config)
    ;; Corrects (and improves) org-mode's native fontification.
    (doom-themes-org-config)
 )
@@ -211,14 +204,14 @@ tab-stop-list (quote (4 8))
     )
 
 ;;Flash cursor area when it's jump widely
-(use-package beacon
-  :ensure t
-  :config
-    (beacon-mode 1)
-    (setq beacon-blink-when-window-scrolls nil)
-    (setq beacon-blink-when-point-moves nil)
-    (setq beacon-size 20)                
-)
+;; (use-package beacon
+;;   :ensure t
+;;   :config
+;;     (beacon-mode 1)
+;;     (setq beacon-blink-when-window-scrolls nil)
+;;     (setq beacon-blink-when-point-moves nil)
+;;     (setq beacon-size 20)                
+;; )
 
 ;;Exec-path-from-shell
 (use-package exec-path-from-shell
@@ -234,6 +227,31 @@ tab-stop-list (quote (4 8))
 (size-indication-mode t)
 (setq display-time-24hr-format t) ;; 24-hour
 (size-indication-mode          t) ;; file size in persents
+;; show dirictory where file is modifying
+(defun mode-line-buffer-file-parent-directory ()
+  (when buffer-file-name
+    (concat "[" (file-name-nondirectory (directory-file-name (file-name-directory buffer-file-name))) "]")))
+(setq-default mode-line-buffer-identification
+      (cons (car mode-line-buffer-identification) '((:eval (mode-line-buffer-file-parent-directory)))))
+
+;; (setq mode-line-format
+;;           (list
+;;            ;; current buffer name
+;;            "%b "
+;;            ;; major mode-name
+;;            "%m "
+;;            ;; value of current line number
+;;            "%l:"
+;;            ;; value of current line number
+;;            "%c "
+;; )) 
+
+;;rainbow delimiters
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+)
 
 ;;Ivy
 (use-package ivy
@@ -278,25 +296,10 @@ tab-stop-list (quote (4 8))
     ("C-s" . swiper)
 )
 
-
 ;;yaml-mode
 (use-package yaml-mode
   :ensure t
   )
-
-
-;;doom-modeline
-;;if icons is not shown install it
-;;Run M-x all-the-icons-install-fonts
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :init (doom-modeline-mode 1)
-;;   :config
-;;   (setq doom-modeline-height 1)
-;;   (set-face-attribute 'mode-line nil :height 110)
-;;   (set-face-attribute 'mode-line-inactive nil :height 110)
-;;   )
-
 
 ;;Evil
 (use-package evil
@@ -343,6 +346,7 @@ tab-stop-list (quote (4 8))
  (setq evil-replace-state-cursor '("green" bar))
  (setq evil-operator-state-cursor '("red" hollow))
 
+
 ;; escape quits
 (defun minibuffer-keyboard-quit ()
 	(interactive)
@@ -388,8 +392,6 @@ tab-stop-list (quote (4 8))
   :config
   (global-set-key "\C-cc" 'org-capture)
   (global-set-key "\C-ca" 'org-agenda)
-  (global-set-key "\C-cb" 'org-iswitchb)
-  (global-set-key "\C-cl" 'org-store-link)
   (global-set-key "\C-cl" 'org-store-link)
 
   ;;encrypt in org-mode, cache save pass in session
@@ -425,7 +427,7 @@ tab-stop-list (quote (4 8))
 
   (setq org-todo-keywords
         '((sequence "TODO" "HOLD" "|" "DONE" )))
-;;save clocks hostory between sessions
+;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
   (setq org-clock-persist 'history)
@@ -443,9 +445,6 @@ tab-stop-list (quote (4 8))
 ;;enter pass for gpg files inside Emacs
 (setq epa-pinentry-mode 'loopback)
 
-
-
-
 ;;Org-bullets
 ;;nice looking lists with UTF-8 characters
 (use-package org-bullets
@@ -455,7 +454,6 @@ tab-stop-list (quote (4 8))
 
 )
 
-;;
 ;;Tramp
 ;;add in /etc/ssh/ssh_config StrictHostKeyChecking no
 ;;connect to not default port C-x C-f /ssh:test@host#2222:/tmp
@@ -487,7 +485,6 @@ tab-stop-list (quote (4 8))
 ;;install needed plugin first
 ;;GO111MODULE=on go get golang.org/x/tools/gopls@latest
 ;; optional if you want which-key integration
-;; install new backend with command: lsp-install-server --> check backend in list
 (use-package which-key
     :config
     (which-key-mode))
@@ -495,6 +492,7 @@ tab-stop-list (quote (4 8))
 (use-package lsp-mode
     :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
             (go-mode . lsp)
+            (python-mode . lsp)
             ;; if you want which-key integration
             (lsp-mode . lsp-enable-which-key-integration))
     :commands lsp)
@@ -516,7 +514,6 @@ tab-stop-list (quote (4 8))
 ;; error list in tree view
 (use-package lsp-treemacs
     :commands lsp-treemacs-errors-list)
-
 
 ;;yaml-mode
 (use-package yaml-mode
@@ -547,11 +544,7 @@ tab-stop-list (quote (4 8))
     (eval-after-load 'flycheck
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup)))
     
-
-
 )
-
-
 
 ;;Projectile
 (use-package projectile
@@ -563,9 +556,7 @@ tab-stop-list (quote (4 8))
   (:map global-map
         ("C-c p"       . projectile-find-file)
   )
-
 )
-
 
 ;;Treemacs
 (use-package treemacs
@@ -644,8 +635,6 @@ tab-stop-list (quote (4 8))
   :after treemacs projectile
   :ensure t)
 
-
-
 ;;Markdown mode
 (use-package markdown-mode
   :ensure t
@@ -669,17 +658,11 @@ tab-stop-list (quote (4 8))
   (global-set-key (kbd "<f5>") 'magit-branch-checkout)
 )
 
-
 (use-package evil-magit
   :ensure t
   :config
   (global-set-key (kbd "s-P") 'magit-status-with-prefix-arg)
   (global-set-key (kbd "s-g") 'magit-status))
-
-;;Groovy
-;; (use-package groovy-mode
-;;   :ensure t
-;; )
 
 ;;Jenkins
 (use-package jenkinsfile-mode
@@ -695,7 +678,6 @@ tab-stop-list (quote (4 8))
 ;;keybinds
 (global-set-key (kbd "S-\\") 'ispell-word)
 (global-set-key (kbd "C-s-\\") 'flyspell-auto-correct-word)
-
 
 ;; YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
 (use-package yasnippet
@@ -733,11 +715,15 @@ tab-stop-list (quote (4 8))
 (add-hook 'before-save-hook 'gofmt-before-save)
 (add-hook 'go-mode-hook 'yas-minor-mode)
 
-
 (use-package go-mode
   :ensure t
   :defer t
   :mode (("\\.go\\'" . go-mode))
+)
+
+(use-package python-mode
+  :ensure t
+  :mode (("\\.py\\'" . python-mode))
 )
 
 
@@ -750,6 +736,8 @@ tab-stop-list (quote (4 8))
  '(custom-safe-themes
    (quote
     ("3df5335c36b40e417fec0392532c1b82b79114a05d5ade62cfe3de63a59bc5c6" "4f01c1df1d203787560a67c1b295423174fd49934deb5e6789abd1e61dba9552" "3c2f28c6ba2ad7373ea4c43f28fcf2eed14818ec9f0659b1c97d4e89c99e091e" "71e5acf6053215f553036482f3340a5445aee364fb2e292c70d9175fb0cc8af7" "9efb2d10bfb38fe7cd4586afb3e644d082cbcdb7435f3d1e8dd9413cbe5e61fc" "5036346b7b232c57f76e8fb72a9c0558174f87760113546d3a9838130f1cdb74" "8d7684de9abb5a770fbfd72a14506d6b4add9a7d30942c6285f020d41d76e0fa" "76bfa9318742342233d8b0b42e824130b3a50dcc732866ff8e47366aed69de11" "990e24b406787568c592db2b853aa65ecc2dcd08146c0d22293259d400174e37" "6b80b5b0762a814c62ce858e9d72745a05dd5fc66f821a1c5023b4f2a76bc910" "be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "6c3b5f4391572c4176908bb30eddc1718344b8eaff50e162e36f271f6de015ca" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" "2f1518e906a8b60fac943d02ad415f1d8b3933a5a7f75e307e6e9a26ef5bf570" "e6ff132edb1bfa0645e2ba032c44ce94a3bd3c15e3929cdf6c049802cf059a2a" "5d09b4ad5649fea40249dd937eaaa8f8a229db1cec9a1a0ef0de3ccf63523014" "37144b437478e4c235824f0e94afa740ee2c7d16952e69ac3c5ed4352209eefb" "711efe8b1233f2cf52f338fd7f15ce11c836d0b6240a18fffffc2cbd5bfe61b0" default)))
+ '(ediff-split-window-function (quote split-window-horizontally) t)
+ '(ediff-window-setup-function (quote ediff-setup-windows-plain) t)
  '(helm-completion-style (quote emacs))
  '(ispell-dictionary-alist
    (quote
@@ -763,7 +751,7 @@ tab-stop-list (quote (4 8))
  '(ispell-program-name "aspell")
  '(package-selected-packages
    (quote
-    (which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (python-mode rainbow-delimiters diminish lsp-ivy lsp-ui deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
