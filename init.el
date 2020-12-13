@@ -476,8 +476,8 @@ tab-stop-list (quote (4 8))
     (set (make-local-variable 'company-backends) '(company-go))
     (company-mode)))
   (setq company-tooltip-limit 20)
-  (setq company-idle-delay 0) 
-  (setq company-echo-delay 0)                          
+  (setq company-idle-delay 0.3) 
+  (setq company-echo-delay 0.3)                          
   (setq company-minimum-prefix-length 1)
   (setq company-begin-commands '(self-insert-command))
 )
@@ -495,25 +495,22 @@ tab-stop-list (quote (4 8))
             (python-mode . lsp)
             ;; if you want which-key integration
             (lsp-mode . lsp-enable-which-key-integration))
-    :commands lsp)
     :config
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "s-l")
+    (setq lsp-keymap-prefix "C-c l")
+)
 
 ;; show tooltips 
 (use-package lsp-ui
     :ensure t
     :commands lsp-ui-mode)
 
-;; ivy integration
+ivy integration
 (use-package lsp-ivy
     :ensure t
     :commands
     lsp-ivy-workspace-symbol)
 
-;; error list in tree view
-(use-package lsp-treemacs
-    :commands lsp-treemacs-errors-list)
 
 ;;yaml-mode
 (use-package yaml-mode
@@ -721,11 +718,6 @@ tab-stop-list (quote (4 8))
   :mode (("\\.go\\'" . go-mode))
 )
 
-(use-package python-mode
-  :ensure t
-  :mode (("\\.py\\'" . python-mode))
-)
-
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
 (custom-set-variables
@@ -751,7 +743,7 @@ tab-stop-list (quote (4 8))
  '(ispell-program-name "aspell")
  '(package-selected-packages
    (quote
-    (python-mode rainbow-delimiters diminish lsp-ivy lsp-ui deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (rainbow-delimiters diminish lsp-ivy lsp-ui deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
