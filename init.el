@@ -18,8 +18,9 @@
 
 ;; Bookmarks
 ;;
-(define-key global-map [f9] 'list-bookmarks)
-(define-key global-map [f10] 'bookmark-set)
+;; (define-key global-map [f9] 'list-bookmarks)
+;; (define-key global-map [f10] 'bookmark-set)
+
 ;; define file to use
 (setq bookmark-default-file "~/workspace/org/emacs/bookmarks")  
 ;; save bookmarks to .emacs.bmk after each entry
@@ -40,6 +41,21 @@
 
 ;;dont use ring
 (setq ring-bell-function 'ignore)
+;; Global keybinds
+;; revert buffer using F5 key 
+(global-set-key
+  (kbd "<f5>")
+  (lambda (&optional force-reverting)
+    "Interactive call to revert-buffer. Ignoring the auto-save
+ file and not requesting for confirmation. When the current buffer
+ is modified, the command refuses to revert it, unless you specify
+ the optional argument: force-reverting to true."
+    (interactive "P")
+    ;;(message "force-reverting value is %s" force-reverting)
+    (if (or force-reverting (not (buffer-modified-p)))
+        (revert-buffer :ignore-auto :noconfirm)
+      (error "The buffer has been modified"))))
+
 ;;Move Buffer frames using Ctrl-<arrows>
 (global-set-key (kbd "<C-up>") 'shrink-window)
 (global-set-key (kbd "<C-down>") 'enlarge-window)
@@ -170,6 +186,11 @@ tab-stop-list (quote (4 8))
   (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'hide-details)
 
+;; eww browser (Emacs)
+;; use eww as default for URL
+(setq browse-url-browser-function 'eww-browse-url)
+
+
 ;; Themes,fonts,UI
 ;; enable pixelwise resizing frames
 (setq frame-resize-pixelwise t)
@@ -228,23 +249,39 @@ tab-stop-list (quote (4 8))
 (setq display-time-24hr-format t) ;; 24-hour
 (size-indication-mode          t) ;; file size in persents
 ;; show dirictory where file is modifying
-(defun mode-line-buffer-file-parent-directory ()
-  (when buffer-file-name
-    (concat "[" (file-name-nondirectory (directory-file-name (file-name-directory buffer-file-name))) "]")))
-(setq-default mode-line-buffer-identification
-      (cons (car mode-line-buffer-identification) '((:eval (mode-line-buffer-file-parent-directory)))))
+;; (defun mode-line-buffer-file-parent-directory ()
+;;   (when buffer-file-name
+;;     (concat "[" (file-name-nondirectory (directory-file-name (file-name-directory buffer-file-name))) "]")))
+;; (setq-default mode-line-buffer-identification
+;;       (cons (car mode-line-buffer-identification) '((:eval (mode-line-buffer-file-parent-directory)))))
 
-;; (setq mode-line-format
-;;           (list
-;;            ;; current buffer name
-;;            "%b "
-;;            ;; major mode-name
-;;            "%m "
-;;            ;; value of current line number
-;;            "%l:"
-;;            ;; value of current line number
-;;            "%c "
-;; )) 
+
+(setq-default mode-line-format
+          (list
+           ;; The mnemonics of keyboard, terminal, and buffer coding systems.
+           "%Z "
+           ;; shows * when file edited but not saved
+           "%+ "
+           ;; current buffer name
+           "%* "
+           ;; current buffer name
+           "%b "
+           ;; value of current line number
+           "%l:"
+           ;; value of current line number
+           "%c "
+           ;; percent of buffer 
+           "%P "
+           ;; major mode-name
+           "%m "
+           ;; show current GIT branch
+           '(vc-mode vc-mode)
+           ;; path to file
+           "  %f "
+)) 
+
+;; show git branch in modeline 
+(add-hook 'after-init-hook 'git-status-in-modeline t)
 
 ;;rainbow delimiters
 (use-package rainbow-delimiters
@@ -393,7 +430,6 @@ tab-stop-list (quote (4 8))
   (global-set-key "\C-cc" 'org-capture)
   (global-set-key "\C-ca" 'org-agenda)
   (global-set-key "\C-cl" 'org-store-link)
-
   ;;encrypt in org-mode, cache save pass in session
   (setq epa-file-cache-passphrase-for-symmetric-encryption t)
 )
@@ -505,7 +541,7 @@ tab-stop-list (quote (4 8))
     :ensure t
     :commands lsp-ui-mode)
 
-ivy integration
+;;ivy integration
 (use-package lsp-ivy
     :ensure t
     :commands
@@ -652,7 +688,7 @@ ivy integration
   :ensure t
   :config
   (global-set-key (kbd "<f4>") 'magit-status)
-  (global-set-key (kbd "<f5>") 'magit-branch-checkout)
+  (global-set-key (kbd "<f3>") 'magit-branch-checkout)
 )
 
 (use-package evil-magit
