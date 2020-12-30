@@ -34,7 +34,6 @@
 (menu-bar-mode     -1)
 (tool-bar-mode     -1)
 (scroll-bar-mode   -1)
-
 ;;Do not blink
 (blink-cursor-mode -1)
 (setq use-dialog-box nil)
@@ -72,7 +71,11 @@
 (setq initial-scratch-message ";;Hi, bro. What's up?")
 
 ;; Display the name of the current buffer in the title bar
-(setq frame-title-format "%b")
+(setq frame-title-format
+      '(buffer-file-name "%b : %f" ; File buffer
+        (dired-directory dired-directory ; Dired buffer
+         (revert-buffer-function "%b" ; Buffer Menu
+          ("%b - Dir: " default-directory))))) ; Plain buffer
 
 ;; package enable at startup?
 (setq package-enable-at-startup nil)
@@ -271,13 +274,13 @@ tab-stop-list (quote (4 8))
            ;; value of current line number
            "%c "
            ;; percent of buffer 
-           "%P "
+           "%p "
            ;; major mode-name
            "%m "
            ;; show current GIT branch
            '(vc-mode vc-mode)
            ;; path to file
-           "  %f "
+           ;; "  %f "
 )) 
 
 ;; show git branch in modeline 
@@ -290,48 +293,34 @@ tab-stop-list (quote (4 8))
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 )
 
-;;Ivy
-(use-package ivy
+;;Helm
+(use-package async
   :ensure t
-  :config 
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq enable-recursive-minibuffers t)
-    ;; (setq search-default-mode #'char-fold-to-regexp)
-    (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
-    (setq ivy-re-builders-alist '((t . ivy--regex-plus)))
-  :bind 
-    ("M-y" . counsel-yank-pop)
-    ("<f6>" . ivy-resume)
-    ("M-x" . counsel-M-x)
-    ("C-x C-f" . counsel-find-file)
-    ("<f1> f" . counsel-describe-function)
-    ("<f1> v" . counsel-describe-variable)
-    ("<f1> o" . counsel-describe-symbol)
-    ("<f1> l" . counsel-find-library)
-    ("<f2> i" . counsel-info-lookup-symbol)
-    ("<f2> u" . counsel-unicode-char)
-    ("C-x l" . counsel-locate)
-    ("M-r" . counsel-minibuffer-history)
-    (:map  ivy-minibuffer-map
-      ("<left>" . delete-backward-char)
-      ("<right>" . ivy-alt-done)
-    )
+  )
+
+(use-package popup
+  :ensure t
+  )
+
+(use-package helm
+  :ensure t
+  :bind (
+         ("M-x" . helm-M-x)
+         ("C-x r b" . helm-source-filtered-bookmarks)
+         ("C-x C-f" . helm-find-files)
+         )
+  :config
+  (helm-mode 1)
+  (define-key evil-ex-map "b " 'helm-mini)
 )
 
-(use-package counsel
+(use-package helm-swoop
   :ensure t
-  :after ivy
-  :bind
-    ("M-y" . counsel-yank-pop)
-)
+  :bind (
+         ("C-s" . helm-swoop)
+         )
+  )
 
-(use-package swiper
-  :ensure t
-  :after ivy
-  :bind
-    ("C-s" . swiper)
-)
 
 ;;yaml-mode
 (use-package yaml-mode
@@ -352,8 +341,6 @@ tab-stop-list (quote (4 8))
   (setq evil-move-cursor-back nil)
   ;;copy sentence - Y (standart Vim behavior)
   (setq evil-want-Y-yank-to-eol t)
-  ;;show ivy-switch-buffer by pressing "b" in execution mode
-  (define-key evil-ex-map "b " 'ivy-switch-buffer)
   ;;C-k and C-j for page down/up
   (define-key evil-normal-state-map (kbd "C-k") (lambda ()
 												    (interactive)
@@ -537,16 +524,15 @@ tab-stop-list (quote (4 8))
 )
 
 ;; show tooltips 
-(use-package lsp-ui
-    :ensure t
-    :commands lsp-ui-mode)
+;; if turned off - minibuffer in use, with eldoc-mode enabled
+;; (use-package lsp-ui
+;;     :ensure t
+;;     :commands lsp-ui-mode)
 
-;;ivy integration
-(use-package lsp-ivy
+;; helm integration
+(use-package helm-lsp
     :ensure t
-    :commands
-    lsp-ivy-workspace-symbol)
-
+    )
 
 ;;yaml-mode
 (use-package yaml-mode
@@ -743,6 +729,7 @@ tab-stop-list (quote (4 8))
 ;; export GOPATH=$HOME/go/
 ;; export PATH=$PATH:$GOROOT/bin
 ;; export PATH=$PATH:$GOPATH/bin
+
 ;; go settings
 (add-hook 'before-save-hook 'gofmt-before-save)
 (add-hook 'go-mode-hook 'yas-minor-mode)
@@ -778,7 +765,7 @@ tab-stop-list (quote (4 8))
  '(ispell-program-name "aspell")
  '(package-selected-packages
    (quote
-    (rainbow-delimiters diminish lsp-ivy lsp-ui deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode ivy-prescient prescient jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (helm-swoop helm-flycheck rainbow-delimiters diminish lsp-ivy lsp-ui deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient vterm htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode  jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async doom-modeline org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
