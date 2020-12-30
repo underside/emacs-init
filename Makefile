@@ -13,7 +13,8 @@ packages:
 	-sudo apt install -y emacs
 
 golang_packages:
-	-sudo tar -C /usr/local -xzf go1.15.5.linux-amd64.tar.gz
+	-wget https://golang.org/dl/go1.15.6.linux-amd64.tar.gz
+	-sudo tar -C /usr/local -xzf go1.15.6.linux-amd64.tar.gz
 	-sudo apt install golang-mode
 	-go get -u github.com/nsf/gocode
 	-go get -u github.com/rogpeppe/godef

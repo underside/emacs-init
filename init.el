@@ -698,9 +698,9 @@ tab-stop-list (quote (4 8))
   (global-set-key (kbd "s-g") 'magit-status))
 
 ;;Jenkins
-(use-package jenkinsfile-mode
-  :ensure t
-)
+;; (use-package jenkinsfile-mode
+;;   :ensure t
+;; )
 
 ;; SPELL CHECKING
 ;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
@@ -743,7 +743,6 @@ tab-stop-list (quote (4 8))
 ;; export GOPATH=$HOME/go/
 ;; export PATH=$PATH:$GOROOT/bin
 ;; export PATH=$PATH:$GOPATH/bin
-
 ;; go settings
 (add-hook 'before-save-hook 'gofmt-before-save)
 (add-hook 'go-mode-hook 'yas-minor-mode)
