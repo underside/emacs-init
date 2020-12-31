@@ -306,8 +306,14 @@ tab-stop-list (quote (4 8))
   :ensure t
   :bind (
          ("M-x" . helm-M-x)
+         ("M-y" . helm-show-kill-ring)
          ("C-x r b" . helm-source-filtered-bookmarks)
          ("C-x C-f" . helm-find-files)
+         ("C-c h r" . helm-register)
+         ("C-c h g" . helm-google-suggest)
+  :map helm-map
+         ; rebind tab to run persistent action
+         ("<tab>" . helm-execute-persistent-action) 
          )
   :config
   (helm-mode 1)
