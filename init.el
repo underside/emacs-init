@@ -1,3 +1,4 @@
+
 ;Extra Repos and use-package installation
 
 (require 'package)
@@ -304,6 +305,7 @@ tab-stop-list (quote (4 8))
 
 (use-package helm
   :ensure t
+  :demand t
   :bind (
          ("M-x" . helm-M-x)
          ("M-y" . helm-show-kill-ring)
@@ -314,10 +316,16 @@ tab-stop-list (quote (4 8))
   :map helm-map
          ; rebind tab to run persistent action
          ("<tab>" . helm-execute-persistent-action) 
+         ("[tab]" . helm-next-line)
+         ("[backtab]" . helm-previous-line)
+         ("<C-tab>" . helm-select-action)
+         ("C-S-SPC" . helm-next-source)
+
          )
   :config
   (helm-mode 1)
   (define-key evil-ex-map "b " 'helm-mini)
+
   ;; open Helm buffer in separate frame instead of using opened buffers
   (setq helm-display-function 'helm-display-buffer-in-own-frame
         helm-display-buffer-reuse-frame t
