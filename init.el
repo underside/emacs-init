@@ -40,6 +40,7 @@
 
 ;;dont use ring
 (setq ring-bell-function 'ignore)
+
 ;; Global keybinds
 ;; revert buffer using F5 key 
 (global-set-key
@@ -54,6 +55,14 @@
     (if (or force-reverting (not (buffer-modified-p)))
         (revert-buffer :ignore-auto :noconfirm)
       (error "The buffer has been modified"))))
+;; Use F7 for grep-find (curent dired folder using as base path)
+(global-set-key (kbd "<f7>") 'grep-find)
+
+;; Use F12 to run shell command
+(global-set-key (kbd "<f12>") 'shell-command)
+
+;; Use F12 to run shell command
+(global-set-key (kbd "<f6>") 'dired)
 
 ;;Move Buffer frames using Ctrl-<arrows>
 (global-set-key (kbd "<C-up>") 'shrink-window)
@@ -194,13 +203,25 @@ tab-stop-list (quote (4 8))
 (setq browse-url-browser-function 'eww-browse-url)
 
 ;; Term settings
+
 ;; open multiple terminals with index
 (defun new-ansi-term ()
   (interactive)
   (if (string= "*ansi-term*" (buffer-name))
       (rename-uniquely))
-  (ansi-term "/bin/bash"))
+  (ansi-term "/bin/bash")
+  ;; (term-line-mode)   
+  )
 (global-set-key (kbd "C-S-t") 'new-ansi-term) ;; mappe sur C-T
+
+;; open multiple terminals with index for shell
+;; (defun new-shell ()
+;;   (interactive)
+;;   (if (string= "*shell*" (buffer-name))
+;;           (rename-uniquely))
+;;   (shell))
+;; (global-set-key (kbd "C-S-t") 'new-shell) ;; mappe sur C-T
+
 
 ;; Themes,fonts,UI
 ;; enable pixelwise resizing frames
@@ -217,17 +238,19 @@ tab-stop-list (quote (4 8))
                     :weight 'normal
                     :width 'normal)
 
+;; nice pack of doom-themes
 (use-package doom-themes
   :ensure t
   :config
-   ;; (load-theme 'doom-zenburn t)
-   (load-theme 'doom-one t)
+   ;; Corrects (and improves) org-mode's native fontification.
+   (doom-themes-org-config)
+   ;; (load-theme 'doom-one t)
+   (load-theme 'doom-zenburn t)
+   ;; (load-theme 'doom-solarized-dark t)
+   ;; (load-theme 'doom-material t)
    ;; (load-theme 'doom-spacegrey t)
    ;; (load-theme 'doom-nord t)
    ;; (load-theme 'doom-wilmersdorf t)
-   ;; (load-theme 'doom-solarized-dark t)
-   ;; Corrects (and improves) org-mode's native fontification.
-   (doom-themes-org-config)
 )
 
 ;;Bind-keys for using kbd
@@ -246,6 +269,7 @@ tab-stop-list (quote (4 8))
 ;; )
 
 ;;Exec-path-from-shell
+;; needed to use external tools from PATH
 (use-package exec-path-from-shell
   :ensure t
   :config
@@ -259,12 +283,6 @@ tab-stop-list (quote (4 8))
 (size-indication-mode t)
 (setq display-time-24hr-format t) ;; 24-hour
 (size-indication-mode          t) ;; file size in persents
-;; show dirictory where file is modifying
-;; (defun mode-line-buffer-file-parent-directory ()
-;;   (when buffer-file-name
-;;     (concat "[" (file-name-nondirectory (directory-file-name (file-name-directory buffer-file-name))) "]")))
-;; (setq-default mode-line-buffer-identification
-;;       (cons (car mode-line-buffer-identification) '((:eval (mode-line-buffer-file-parent-directory)))))
 
 (setq-default mode-line-format
           (list
@@ -274,10 +292,16 @@ tab-stop-list (quote (4 8))
            "%+ "
            ;; current buffer name
            "%* "
-           ;; current buffer name
-           "%b "
+           ;; ;; current buffer name
+           ;; "%b "
+           ;; current buffer name and parent dir
+(defun mode-line-buffer-file-parent-directory ()
+  (when buffer-file-name
+    (concat "["(file-name-nondirectory (directory-file-name (file-name-directory buffer-file-name)))"]")))
+(setq-default mode-line-buffer-identification
+      (cons (car mode-line-buffer-identification) '((:eval (mode-line-buffer-file-parent-directory)))))
            ;; value of current line number
-           "%l:"
+           "   %l:"
            ;; value of current line number
            "%c "
            ;; percent of buffer 
@@ -286,8 +310,8 @@ tab-stop-list (quote (4 8))
            "%m "
            ;; show current GIT branch
            '(vc-mode vc-mode)
-           ;;path to file
-           "  %f "
+           ;; full path to file
+           ;; "  %f "
 )) 
 
 ;; show git branch in modeline 
@@ -300,62 +324,64 @@ tab-stop-list (quote (4 8))
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 )
 
-;;Helm
-(use-package async
+;;Ivy
+(use-package ivy
   :ensure t
-  )
+  :config 
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq enable-recursive-minibuffers t)
+    ;; (setq search-default-mode #'char-fold-to-regexp)
+    (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
 
-;; (use-package popup
-;;   :ensure t
-;;   )
+    ;; the way how Ivy handling matching in minibuffer
+    (setq ivy-re-builders-alist
+          '((swiper . ivy--regex-plus)
+            (t      . ivy--regex-plus)))
+  ;;show ivy-switch-buffer by pressing "b" in execution mode
+    (define-key evil-ex-map "b " 'ivy-switch-buffer)
+  :bind 
+    ("M-y" . counsel-yank-pop)
+    ("M-x" . counsel-M-x)
+    ("C-x C-f" . counsel-find-file)
+    ("<f1> f" . counsel-describe-function)
+    ("<f1> v" . counsel-describe-variable)
+    ("<f1> o" . counsel-describe-symbol)
+    ("<f1> l" . counsel-find-library)
+    ("<f2> i" . counsel-info-lookup-symbol)
+    ("<f2> u" . counsel-unicode-char)
+    ("C-x l" . counsel-locate)
+    ("M-r" . counsel-minibuffer-history)
+    (:map  ivy-minibuffer-map
+      ("<left>" . delete-backward-char)
+      ("<right>" . ivy-alt-done)
+    )
+    ;; (:map global-map
+    ;;       ("C-c p"       . counsel-projectile-find-file)
+    ;; )
 
-(use-package helm
-  :ensure t
-  :demand t
-  :bind (
-         ("M-x" . helm-M-x)
-         ("M-y" . helm-show-kill-ring)
-         ("C-x r b" . helm-source-filtered-bookmarks)
-         ("C-x C-f" . helm-find-files)
-         ("C-c h r" . helm-register)
-         ("C-c h g" . helm-google-suggest)
-  :map helm-map
-         ; rebind tab to run persistent action
-         ("<tab>" . helm-execute-persistent-action) 
-         ("[tab]" . helm-next-line)
-         ("[backtab]" . helm-previous-line)
-         ("<C-tab>" . helm-select-action)
-         ("C-S-SPC" . helm-next-source)
-
-         )
-  :config
-  (helm-mode 1)
-
-  ;; open popup buffer in separate frame instead of using opened buffers
- (setq helm-display-function 'helm-display-buffer-in-own-frame
-       helm-display-buffer-reuse-frame t
-       helm-use-undecorated-frame-option t)
-;;
 )
 
-(use-package helm-swoop
+(use-package counsel
   :ensure t
-  :bind (
-         ("C-s" . helm-swoop)
-         )
-  )
+  :after ivy
+  :bind
+    ("M-y" . counsel-yank-pop)
+)
 
-(use-package helm-company
+(use-package swiper
   :ensure t
-  )
-
+  :after ivy
+  :bind
+    ("C-s" . swiper)
+)
 
 ;;yaml-mode
 (use-package yaml-mode
   :ensure t
   )
 
-;;Evil
+;;Evil-mode
 (use-package evil
   :ensure t
   :init
@@ -379,8 +405,9 @@ tab-stop-list (quote (4 8))
 ;; bind ':ls' command to 'ibuffer instead of 'list-buffers
  (evil-ex-define-cmd "ls" 'ibuffer)
 
-;; define :b to open bufferlist search 
-  (define-key evil-ex-map "b " 'helm-mini)
+;; define :b to open bufferlist search. Press : + b + space to start fuzzy search between opened buffers 
+ (define-key evil-ex-map "b " 'ivy-switch-buffer)
+
 ;;evil-mode as default for ibuffer
  (setq evil-emacs-state-modes (delq 'ibuffer-mode evil-emacs-state-modes))
 
@@ -401,6 +428,7 @@ tab-stop-list (quote (4 8))
 
 
 ;; escape quits
+;; escape from any opened stuff like minibuffers etc
 (defun minibuffer-keyboard-quit ()
 	(interactive)
 	(if (and delete-selection-mode transient-mark-mode mark-active)
@@ -435,7 +463,6 @@ tab-stop-list (quote (4 8))
   :config
   (global-evil-surround-mode 1)
 )
-
 
 ;;Org-mode settings
 (use-package org
@@ -478,8 +505,9 @@ tab-stop-list (quote (4 8))
 ;;show agenda since today 
 (setq org-agenda-start-on-weekday nil)
 
+;; Any keywords can be used here
   (setq org-todo-keywords
-        '((sequence "TODO" "HOLD" "|" "DONE" )))
+        '((sequence "TODO" "HOLD" "|" "REVIEW" "REASSIGN" "DONE" )))
 ;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
@@ -499,7 +527,7 @@ tab-stop-list (quote (4 8))
 (setq epa-pinentry-mode 'loopback)
 
 ;;Org-bullets
-;;nice looking lists with UTF-8 characters
+;;nice looking lists in org-mode with UTF-8 characters
 (use-package org-bullets
   :ensure t
   :config
@@ -560,26 +588,34 @@ tab-stop-list (quote (4 8))
     (which-key-mode))
 
 (use-package lsp-mode
-    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-            (go-mode . lsp)
-            (python-mode . lsp)
-            ;; if you want which-key integration
-            (lsp-mode . lsp-enable-which-key-integration))
+    :hook
+        (sh-mode . lsp)
+        (python-mode . lsp)
+    :commands lsp
     :config
-    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "C-c l")
+        (setq lsp-enable-symbol-highlighting nil)
+        (setq lsp-keymap-prefix "C-c l")
 )
 
-;; show tooltips 
-;; if turned off - minibuffer in use, with eldoc-mode enabled
-;; (use-package lsp-ui
-;;     :ensure t
-;;     :commands lsp-ui-mode)
-
-;; helm integration
-(use-package helm-lsp
+(use-package company-lsp
     :ensure t
-    )
+    :config
+    (push 'company-lsp company-backends))
+
+
+;; eglot can be used instead of lsp-mode, but in my exp lsp-mode faster
+;; eglot (language server client)
+;; eglot same stuff as lsp-mode (language server client)
+;; install pyls for Python with all plugins
+;; pip install 'python-language-server[all]'
+;; (use-package eglot
+;;     :ensure t
+;;     :config
+;;     (add-hook 'python-mode-hook 'eglot-ensure)
+;;     (add-hook 'go-mode-hook 'eglot-ensure)
+;;     (add-hook 'shell-script-mode-hook 'eglot-ensure)
+;; )
+
 
 ;;yaml-mode
 (use-package yaml-mode
@@ -620,8 +656,7 @@ tab-stop-list (quote (4 8))
   (projectile-mode +1)
   :bind
   (:map global-map
-        ("C-c p"       . projectile-find-file)
-  )
+        ("C-c p"       . projectile-find-file))
 )
 
 ;;Treemacs
@@ -671,7 +706,7 @@ tab-stop-list (quote (4 8))
           treemacs-tag-follow-delay              1.5
           treemacs-user-mode-line-format         nil
           treemacs-user-header-line-format       nil
-          treemacs-width                         30
+          treemacs-width                         58
           treemacs-workspace-switch-cleanup      nil)
 
     (treemacs-follow-mode t)
@@ -788,6 +823,16 @@ tab-stop-list (quote (4 8))
 )
 
 
+(use-package gitlab
+  :ensure t
+  :config
+  (setq gitlab-host "https://digihub-wbench.psst.t-online.corp/gitlab"
+            gitlab-token-id "vozJx68ybR4ACztyYNys")
+)
+
+
+
+
 ;;------DO NOT TOUCH CONFIG BELOW-----
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -799,8 +844,6 @@ tab-stop-list (quote (4 8))
     ("e72f5955ec6d8585b8ddb2accc2a4cb78d28629483ef3dcfee00ef3745e2292f" "3df5335c36b40e417fec0392532c1b82b79114a05d5ade62cfe3de63a59bc5c6" "4f01c1df1d203787560a67c1b295423174fd49934deb5e6789abd1e61dba9552" "3c2f28c6ba2ad7373ea4c43f28fcf2eed14818ec9f0659b1c97d4e89c99e091e" "71e5acf6053215f553036482f3340a5445aee364fb2e292c70d9175fb0cc8af7" "9efb2d10bfb38fe7cd4586afb3e644d082cbcdb7435f3d1e8dd9413cbe5e61fc" "5036346b7b232c57f76e8fb72a9c0558174f87760113546d3a9838130f1cdb74" "8d7684de9abb5a770fbfd72a14506d6b4add9a7d30942c6285f020d41d76e0fa" "76bfa9318742342233d8b0b42e824130b3a50dcc732866ff8e47366aed69de11" "990e24b406787568c592db2b853aa65ecc2dcd08146c0d22293259d400174e37" "6b80b5b0762a814c62ce858e9d72745a05dd5fc66f821a1c5023b4f2a76bc910" "be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "6c3b5f4391572c4176908bb30eddc1718344b8eaff50e162e36f271f6de015ca" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" "2f1518e906a8b60fac943d02ad415f1d8b3933a5a7f75e307e6e9a26ef5bf570" "e6ff132edb1bfa0645e2ba032c44ce94a3bd3c15e3929cdf6c049802cf059a2a" "5d09b4ad5649fea40249dd937eaaa8f8a229db1cec9a1a0ef0de3ccf63523014" "37144b437478e4c235824f0e94afa740ee2c7d16952e69ac3c5ed4352209eefb" "711efe8b1233f2cf52f338fd7f15ce11c836d0b6240a18fffffc2cbd5bfe61b0" default)))
  '(ediff-split-window-function (quote split-window-horizontally) t)
  '(ediff-window-setup-function (quote ediff-setup-windows-plain) t)
- '(helm-completion-style (quote emacs))
- '(helm-popup-tip-mode t)
  '(ispell-dictionary-alist
    (quote
     (("russian" "\\cy" "\\Cy" "[-]" nil
@@ -813,7 +856,7 @@ tab-stop-list (quote (4 8))
  '(ispell-program-name "aspell")
  '(package-selected-packages
    (quote
-    (helm-company helm-swoop helm-flycheck rainbow-delimiters diminish lsp-ui deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode helm-ag uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee groovy-mode popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package helm flycheck evil-surround evil-matchit doom-themes company)))
+    (password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company)))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t))
