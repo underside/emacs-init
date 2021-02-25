@@ -823,14 +823,6 @@ tab-stop-list (quote (4 8))
 )
 
 
-(use-package gitlab
-  :ensure t
-  :config
-  (setq gitlab-host "https://digihub-wbench.psst.t-online.corp/gitlab"
-            gitlab-token-id "vozJx68ybR4ACztyYNys")
-)
-
-
 
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
