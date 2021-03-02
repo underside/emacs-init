@@ -1,18 +1,29 @@
 ;Extra Repos and use-package installation
 
-(require 'package)
-  (add-to-list
-   'package-archives
-   '("melpa" . "https://melpa.org/packages/")
-   
-   t)
-(package-initialize)
 
-;; Bootstrap `use-package'
-(unless (package-installed-p 'use-package)  
-  (package-refresh-contents) 
-  (package-install 'use-package)) 
-(require 'use-package)
+;; straight.el instead of package.el
+;; if below code 's not work in corporate network, just clone repo
+;; https://github.com/raxod502/straight.el.git to ~/.emacs.d/straight/repos/straight.el
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+
+;; ;; Bootstrap `use-package'
+;; (unless (package-installed-p 'use-package)  
+;;   (package-refresh-contents) 
+;;   (package-install 'use-package)) 
+;; (require 'use-package)
 
 ;; General settings
 
@@ -240,22 +251,15 @@ shell exits, the buffer is killed."
                     ((eq major-mode 'dired-mode)
                      (dired-get-filename nil t))))
            (filename (concat " " )))
-      (read-shell-command "Terminal command: "
+      (read-shell-command "vterm command: "
                           (cons filename 0)
                           (cons 'shell-command-history 1)
                           (list filename)))))
   (with-current-buffer (vterm (concat "*" command "*"))
     (set-process-sentinel vterm--process #'run-in-vterm-kill)
     (vterm-send-string command)
-    (vterm-send-return)))
-
-
-
-
-
-
-
-
+    (vterm-send-return)
+    ))
 
 
 
@@ -503,7 +507,7 @@ shell exits, the buffer is killed."
 
 ;;Org-mode settings
 (use-package org
-  ;; :ensure t
+  :ensure t
   :mode  ("\\.org\\'" . org-mode)
          ("\\org.gpg\\'" . org-mode)
 
@@ -619,12 +623,14 @@ shell exits, the buffer is killed."
 ;;install needed plugin first
 ;;GO111MODULE=on go get golang.org/x/tools/gopls@latest
 ;; optional if you want which-key integration
+;; pip install 'python-language-server[all]'
 (use-package which-key
     :ensure t
     :config
     (which-key-mode))
 
 (use-package lsp-mode
+    :ensure t
     :hook
         (sh-mode . lsp)
         (python-mode . lsp)
@@ -797,11 +803,6 @@ shell exits, the buffer is killed."
   (global-set-key (kbd "s-P") 'magit-status-with-prefix-arg)
   (global-set-key (kbd "s-g") 'magit-status))
 
-;;Jenkins
-;; (use-package jenkinsfile-mode
-;;   :ensure t
-;; )
-
 ;; SPELL CHECKING
 ;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
 (setq ispell-program-name "aspell")
@@ -859,6 +860,11 @@ shell exits, the buffer is killed."
 (use-package vterm
     :ensure t)
 
+;; custom recepy - straight.el required
+(straight-use-package
+ '(el-patch :type git :host github :repo "correl/ox-confluence-en"))
+
+
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
 (custom-set-variables
@@ -882,7 +888,7 @@ shell exits, the buffer is killed."
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(ispell-program-name "aspell")
  '(package-selected-packages
-   '(vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
