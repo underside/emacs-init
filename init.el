@@ -1,10 +1,7 @@
-;Extra Repos and use-package installation
-
-
+;; Extra Repos and use-package installation
 ;; straight.el instead of package.el
 ;; if below code 's not work in corporate network, just clone repo
 ;; https://github.com/raxod502/straight.el.git to ~/.emacs.d/straight/repos/straight.el
-
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -70,7 +67,8 @@
 (global-set-key (kbd "<f7>") 'grep-find)
 
 ;; Use F12 to run shell command
-(global-set-key (kbd "<f12>") 'run-in-vterm)
+;; (global-set-key (kbd "<f12>") 'vterm-command)
+(global-set-key (kbd "<f12>") 'async-shell-command)
 
 ;; Use F12 to run shell command
 (global-set-key (kbd "<f6>") 'dired)
@@ -80,6 +78,8 @@
 (global-set-key (kbd "<C-down>") 'enlarge-window)
 (global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
 (global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "<M-l>") 'switch-to-buffer)
+
 
 ;;confirmation before exit Emacs
 (setq confirm-kill-emacs 'y-or-n-p)
@@ -228,14 +228,18 @@ tab-stop-list (quote (4 8))
 ;; vterm hotkeys
 (global-set-key (kbd "C-S-t") 'vterm) ;; mappe sur C-T
 
-;; use vterm instead of shell when run M-x shell-command
+
+;; use vterm instead of shell when run M-x shell-command (turn off by default)
+;; set vterm as default shell
+(setq-default shell-default-shell 'vterm)
+
 (defun run-in-vterm-kill (process event)
   "A process sentinel. Kills PROCESS's buffer if it is live."
   (let ((b (process-buffer process)))
     (and (buffer-live-p b)
          (kill-buffer b))))
 
-(defun run-in-vterm (command)
+(defun vterm-command (command)
   "Execute string COMMAND in a new vterm.
 Interactively, prompt for COMMAND with the current buffer's file
 name supplied. When called from Dired, supply the name of the
@@ -502,8 +506,17 @@ shell exits, the buffer is killed."
 (use-package evil-surround
   :ensure t
   :config
-  (global-evil-surround-mode 1)
-)
+  (global-evil-surround-mode 1))
+
+;; Evil and vterm
+(defun evil-collection-vterm-escape-stay ()
+"Go back to normal state but don't move
+cursor backwards. Moving cursor backwards is the default vim behavior but it is
+not appropriate in some cases like terminals."
+(setq-local evil-move-cursor-back nil))
+
+(add-hook 'vterm-mode-hook #'evil-collection-vterm-escape-stay)
+
 
 ;;Org-mode settings
 (use-package org
@@ -548,7 +561,7 @@ shell exits, the buffer is killed."
 
 ;; Any keywords can be used here
   (setq org-todo-keywords
-        '((sequence "TODO" "HOLD" "|" "REVIEW" "REASSIGN" "DONE" )))
+        '((sequence "TODO" "HOLD" "REVIEW" "|"  "REASSIGN" "CANCELED" "DONE" )))
 ;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
