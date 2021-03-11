@@ -77,14 +77,13 @@
 (global-set-key (kbd "<C-up>") 'shrink-window)
 (global-set-key (kbd "<C-down>") 'enlarge-window)
 (global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
-(global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "<M-l>") 'switch-to-buffer)
+(global-set-key (kbd "<C-right>") 'enlarge-window-horizontally) 
 
-
-;;confirmation before exit Emacs
+;;confirmation before exit emacs
 (setq confirm-kill-emacs 'y-or-n-p)
 
-;; Inhibit startup/splash screen, and initial-scratch message
+
+;; inhibit startup/splash screen, and initial-scratch message
 (setq inhibit-splash-screen   t)
 (setq inhibit-startup-message t)
 ;; Message in scratch buffer
@@ -381,10 +380,11 @@ shell exits, the buffer is killed."
 
     ;; the way how Ivy handling matching in minibuffer
     (setq ivy-re-builders-alist
-          '((swiper . ivy--regex-plus)
-            (t      . ivy--regex-plus)))
-  ;;show ivy-switch-buffer by pressing "b" in execution mode
-    (define-key evil-ex-map "b " 'ivy-switch-buffer)
+          '(
+            (swiper . ivy--regex-plus)
+            (t      . ivy--regex-plus)
+            )
+          )
   :bind 
     ("M-y" . counsel-yank-pop)
     ("M-x" . counsel-M-x)
@@ -448,8 +448,10 @@ shell exits, the buffer is killed."
 												    (interactive)
 												    (evil-scroll-down nil)))
 ;; bind ':ls' command to 'ibuffer instead of 'list-buffers
- (evil-ex-define-cmd "ls" 'ibuffer)
-
+ (define-key evil-ex-map "ls" 'ibuffer)
+ (define-key evil-normal-state-map (kbd "M-l") 'switch-to-buffer)
+;;
+ 
 ;; define :b to open bufferlist search. Press : + b + space to start fuzzy search between opened buffers 
  (define-key evil-ex-map "b " 'ivy-switch-buffer)
 
@@ -877,6 +879,10 @@ not appropriate in some cases like terminals."
 (straight-use-package
  '(el-patch :type git :host github :repo "correl/ox-confluence-en"))
 
+;; package used for export org files to Jira/Confluence markup 
+;; for export use M-x ox-jira-export-as-jira 
+(use-package ox-jira
+    :ensure t)
 
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
