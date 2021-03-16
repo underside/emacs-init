@@ -79,6 +79,9 @@
 (global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
 (global-set-key (kbd "<C-right>") 'enlarge-window-horizontally) 
 
+
+(global-set-key (kbd "<f11>") 'snipp)
+
 ;;confirmation before exit emacs
 (setq confirm-kill-emacs 'y-or-n-p)
 
@@ -208,6 +211,23 @@ tab-stop-list (quote (4 8))
   (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'hide-details)
 
+
+;; Self-made snippets
+;; Download snippet using filename
+;;  
+(defun snipp (fn) 
+  "Load snippet from the file using filename."
+(interactive "sExtension: ")
+   (insert-file-contents (concat "~/workspace/org/snipp/" fn))
+  (if nil (message "argument is nil")))
+
+
+;; Abbrev table example
+;; (define-abbrev-table 'global-abbrev-table '(
+;;     ("afaict" "as far as I can tell" nil 1)
+;; ))
+
+
 ;; eww browser (Emacs)
 ;; use eww as default for URL
 (setq browse-url-browser-function 'eww-browse-url)
@@ -224,8 +244,10 @@ tab-stop-list (quote (4 8))
 ;;   )
 ;; (global-set-key (kbd "C-S-t") 'new-ansi-term) ;; mappe sur C-T
 ;; ----------
+;; Config with native-compile and vterm
 ;; vterm hotkeys
 (global-set-key (kbd "C-S-t") 'vterm) ;; mappe sur C-T
+
 
 
 ;; use vterm instead of shell when run M-x shell-command (turn off by default)
@@ -450,6 +472,7 @@ shell exits, the buffer is killed."
 ;; bind ':ls' command to 'ibuffer instead of 'list-buffers
  (define-key evil-ex-map "ls" 'ibuffer)
  (define-key evil-normal-state-map (kbd "M-l") 'switch-to-buffer)
+ (define-key evil-normal-state-map (kbd "M-k") 'kill-buffer)
 ;;
  
 ;; define :b to open bufferlist search. Press : + b + space to start fuzzy search between opened buffers 
@@ -832,16 +855,18 @@ not appropriate in some cases like terminals."
 (use-package yasnippet
   :ensure t
   :defer t
+  :diminish yas-minor-mode
   :config
-  (setq yas-snippet-dirs '("~/workspace/org/emacs/snippets"))
+  (setq yas-snippet-dirs '("~/workspace/org/snipp"))
   (yas-global-mode 1))
-  ;; :bind 
-  ;;   ("M-y" . counsel-yank-pop)
+
 
 ;;some prefab snippets
 (use-package yasnippet-snippets
-  :ensure t
-)
+  :after yasnippet
+  :config
+  (yasnippet-snippets-initialize))
+
 
 ;;Kubernetes
 ;;Magit-like porcelain to work with K8s
@@ -883,6 +908,8 @@ not appropriate in some cases like terminals."
 ;; for export use M-x ox-jira-export-as-jira 
 (use-package ox-jira
     :ensure t)
+
+
 
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
