@@ -6,7 +6,7 @@
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
+ (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
@@ -23,6 +23,9 @@
 ;; (require 'use-package)
 
 ;; General settings
+(windmove-default-keybindings)
+
+
 
 ;; Bookmarks
 ;;
@@ -366,17 +369,17 @@ shell exits, the buffer is killed."
     (concat "["(file-name-nondirectory (directory-file-name (file-name-directory buffer-file-name)))"]")))
 (setq-default mode-line-buffer-identification
       (cons (car mode-line-buffer-identification) '((:eval (mode-line-buffer-file-parent-directory)))))
-           ;; value of current line number
+;;            ;; value of current line number
            "   %l:"
-           ;; value of current line number
+;;            ;; value of current line number
            "%c "
-           ;; percent of buffer 
+;;            ;; percent of buffer 
            "%p "
-           ;; major mode-name
+;;            ;; major mode-name
            "%m "
-           ;; show current GIT branch
+;;            ;; show current GIT branch
            '(vc-mode vc-mode)
-           ;; full path to file
+;;            ;; full path to file
            ;; "  %f "
 )) 
 
@@ -515,7 +518,7 @@ shell exits, the buffer is killed."
 (global-set-key [escape] 'evil-exit-emacs-state)
 )
 
-
+;; Buffers settings
 ;; only warn about deleting modified buffers.
   (setq ibuffer-expert t)
 
@@ -870,14 +873,14 @@ not appropriate in some cases like terminals."
 
 ;;Kubernetes
 ;;Magit-like porcelain to work with K8s
-(use-package kubernetes
-  :ensure t
-  :commands (kubernetes-overview))
-
+;; it works quite slow, so it better to use K9s console util
+;; (use-package kubernetes
+;;   :ensure t
+;;   :commands (kubernetes-overview))
 ;; If you want to pull in the Evil compatibility package.
-(use-package kubernetes-evil
-  :ensure t
-  :after kubernetes)
+;; (use-package kubernetes-evil
+;;   :ensure t
+;;   :after kubernetes)
 
 ;; Golang
 ;; add to below strings ~/.bashrc
