@@ -1,26 +1,14 @@
-;; Extra Repos and use-package installation
-;; straight.el instead of package.el
-;; if below code 's not work in corporate network, just clone repo
-;; https://github.com/raxod502/straight.el.git to ~/.emacs.d/straight/repos/straight.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
- (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+;; Package managing (MELPA etc)
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 
-;; ;; Bootstrap `use-package'
-;; (unless (package-installed-p 'use-package)  
-;;   (package-refresh-contents) 
-;;   (package-install 'use-package)) 
-;; (require 'use-package)
+
+;; ;; Bootstrap use-package
+(unless (package-installed-p 'use-package)  
+  (package-refresh-contents) 
+  (package-install 'use-package)) 
+(require 'use-package)
 
 ;; General settings
 (windmove-default-keybindings)
@@ -303,7 +291,7 @@ shell exits, the buffer is killed."
 (set-face-attribute 'default nil
                     ;; :family "DejaVu Sans Mono"
                     :family "Hack"
-                    :height 130
+                    :height 140
                     :weight 'normal
                     :width 'normal)
 
@@ -313,8 +301,8 @@ shell exits, the buffer is killed."
   :config
    ;; Corrects (and improves) org-mode's native fontification.
    (doom-themes-org-config)
-   (load-theme 'doom-one t)
-   ;; (load-theme 'doom-zenburn t)
+   ;; (load-theme 'doom-one t)
+   (load-theme 'doom-zenburn t)
    ;; (load-theme 'doom-solarized-dark t)
    ;; (load-theme 'doom-material t)
    ;; (load-theme 'doom-spacegrey t)
@@ -904,11 +892,11 @@ not appropriate in some cases like terminals."
     :ensure t)
 
 ;; custom recepy - straight.el required
-(straight-use-package
- '(el-patch :type git :host github :repo "correl/ox-confluence-en"))
+;; (straight-use-package
+;;  '(el-patch :type git :host github :repo "correl/ox-confluence-en"))
 
 ;; package used for export org files to Jira/Confluence markup 
-;; for export use M-x ox-jira-export-as-jira 
+; for export use M-x ox-jira-export-as-jira 
 (use-package ox-jira
     :ensure t)
 
