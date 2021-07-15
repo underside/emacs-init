@@ -3,7 +3,6 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 
-
 ;; ;; Bootstrap use-package
 (unless (package-installed-p 'use-package)  
   (package-refresh-contents) 
@@ -13,6 +12,14 @@
 ;; General settings
 (windmove-default-keybindings)
 
+;; el-get
+;; So the idea is that you copy/paste this code into your *scratch* buffer,
+;; hit C-j, and you have a working el-get.
+;; (url-retrieve
+;;  "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el"
+;;  (lambda (s)
+;;    (goto-char (point-max))
+;;    (eval-print-last-sexp)))
 
 
 ;; Bookmarks
@@ -301,13 +308,14 @@ shell exits, the buffer is killed."
   :config
    ;; Corrects (and improves) org-mode's native fontification.
    (doom-themes-org-config)
-   ;; (load-theme 'doom-one t)
+   ;; (load-theme 'doom-wilmersdorf t)
    (load-theme 'doom-zenburn t)
+   ;; (load-theme 'doom-one t)
+   ;; (load-theme 'doom-oceanic-next t)
    ;; (load-theme 'doom-solarized-dark t)
    ;; (load-theme 'doom-material t)
    ;; (load-theme 'doom-spacegrey t)
    ;; (load-theme 'doom-nord t)
-   ;; (load-theme 'doom-wilmersdorf t)
 )
 
 ;;Bind-keys for using kbd
@@ -544,6 +552,8 @@ not appropriate in some cases like terminals."
   (global-set-key "\C-cc" 'org-capture)
   (global-set-key "\C-ca" 'org-agenda)
   (global-set-key "\C-cl" 'org-store-link)
+  ;; turn off confirmation before evaluate code block
+  (setq org-confirm-babel-evaluate nil)
   ;;encrypt in org-mode, cache save pass in session
   (setq epa-file-cache-passphrase-for-symmetric-encryption t)
 )
@@ -558,11 +568,12 @@ not appropriate in some cases like terminals."
 )
 
 ;;Babel settings
-  (org-babel-do-load-languages
+(org-babel-do-load-languages
      'org-babel-load-languages
      '((python . t)
        (go . t)
        (shell . t)
+       (http . t)
 
        ))
 
@@ -669,6 +680,11 @@ not appropriate in some cases like terminals."
         (setq lsp-keymap-prefix "C-c l")
 )
 
+(use-package lsp-ui
+    :ensure t
+    :config
+)
+
 
 ;; eglot can be used instead of lsp-mode, but in my exp lsp-mode faster
 ;; eglot (language server client)
@@ -773,7 +789,7 @@ not appropriate in some cases like terminals."
           treemacs-tag-follow-delay              1.5
           treemacs-user-mode-line-format         nil
           treemacs-user-header-line-format       nil
-          treemacs-width                         58
+          treemacs-width                         38
           treemacs-workspace-switch-cleanup      nil)
 
     (treemacs-follow-mode t)
@@ -861,14 +877,16 @@ not appropriate in some cases like terminals."
 
 ;;Kubernetes
 ;;Magit-like porcelain to work with K8s
-;; it works quite slow, so it better to use K9s console util
-;; (use-package kubernetes
-;;   :ensure t
-;;   :commands (kubernetes-overview))
+(use-package kubernetes
+  :ensure t
+  :commands (kubernetes-overview)
+  :config
+  (setq kubernetes-poll-frequency 3600
+        kubernetes-redraw-frequency 3600))
 ;; If you want to pull in the Evil compatibility package.
-;; (use-package kubernetes-evil
-;;   :ensure t
-;;   :after kubernetes)
+(use-package kubernetes-evil
+  :ensure t
+  :after kubernetes)
 
 ;; Golang
 ;; add to below strings ~/.bashrc
@@ -876,7 +894,6 @@ not appropriate in some cases like terminals."
 ;; export GOPATH=$HOME/go/
 ;; export PATH=$PATH:$GOROOT/bin
 ;; export PATH=$PATH:$GOPATH/bin
-
 ;; go settings
 (add-hook 'before-save-hook 'gofmt-before-save)
 (add-hook 'go-mode-hook 'yas-minor-mode)
@@ -891,13 +908,17 @@ not appropriate in some cases like terminals."
 (use-package vterm
     :ensure t)
 
-;; custom recepy - straight.el required
-;; (straight-use-package
-;;  '(el-patch :type git :host github :repo "correl/ox-confluence-en"))
 
 ;; package used for export org files to Jira/Confluence markup 
 ; for export use M-x ox-jira-export-as-jira 
 (use-package ox-jira
+    :ensure t)
+
+
+(use-package restclient
+    :ensure t)
+
+(use-package ob-restclient
     :ensure t)
 
 
@@ -925,11 +946,11 @@ not appropriate in some cases like terminals."
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(ispell-program-name "aspell")
  '(package-selected-packages
-   '(confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
- '(warning-suppress-types '((comp))))
+ '(warning-suppress-types '((comp) (comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
