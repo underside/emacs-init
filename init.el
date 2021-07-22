@@ -3,6 +3,10 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 
+;;Manualy installed packages
+;; without use-package
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+
 ;; ;; Bootstrap use-package
 (unless (package-installed-p 'use-package)  
   (package-refresh-contents) 
@@ -921,7 +925,27 @@ not appropriate in some cases like terminals."
 (use-package ob-restclient
     :ensure t)
 
-
+;; mode for templates and web files
+(use-package web-mode
+    :ensure t
+    :config
+    :mode
+        (("\\.phtml\\'" . web-mode))
+        (("\\.tpl\\.php\\'" . web-mode))
+        (("\\.[agj]sp\\'" . web-mode))
+        (("\\.as[cp]x\\'" . web-mode))
+        (("\\.erb\\'" . web-mode))
+        (("\\.mustache\\'" . web-mode))
+        (("\\.djhtml\\'" . web-mode))
+        (("\\.html?\\'" . web-mode))
+     :config
+        (setq web-mode-engines-alist
+            '(("php"    . "\\.phtml\\'")
+              ("blade"  . "\\.blade\\.")
+              ("go"  . "\\.tpl\\.")
+              )
+        )
+)
 
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
@@ -946,11 +970,11 @@ not appropriate in some cases like terminals."
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(ispell-program-name "aspell")
  '(package-selected-packages
-   '(auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
- '(warning-suppress-types '((comp) (comp))))
+ '(warning-suppress-types '((comp) (comp) (comp) (comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
