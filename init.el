@@ -107,6 +107,9 @@
 ;; Fix some error with packages
 (setq package-check-signature nil)
 
+;; this option needed for evil and evil-collection
+(setq evil-want-keybinding nil)
+
 ;;User name and email
 (setq user-full-name "Iurii Ponomarev"
       user-mail-address "underside@ya.ru")
@@ -337,14 +340,18 @@ shell exits, the buffer is killed."
 ;;     (setq beacon-size 20)                
 ;; )
 
+
+;;jj
 ;;Exec-path-from-shell
 ;; needed to use external tools from PATH
 (use-package exec-path-from-shell
   :ensure t
   :config
   (exec-path-from-shell-copy-env "GOPATH")
+  (exec-path-from-shell-copy-env "GOROOT")
   (exec-path-from-shell-copy-env "PATH")
 )
+
 
 ;; Modeline settings
 (line-number-mode t)
@@ -530,9 +537,10 @@ shell exits, the buffer is killed."
   (global-evil-matchit-mode 1)
 )
 
-;;Evil-mode plugin evil-surround
+;;plugin evil-surround
 (use-package evil-surround
   :ensure t
+  :after evil-mode
   :config
   (global-evil-surround-mode 1))
 
@@ -548,7 +556,6 @@ not appropriate in some cases like terminals."
 
 ;;Org-mode settings
 (use-package org
-  :ensure t
   :mode  ("\\.org\\'" . org-mode)
          ("\\org.gpg\\'" . org-mode)
 
@@ -643,15 +650,10 @@ not appropriate in some cases like terminals."
   :config
   ;; add company backends
   (add-to-list 'company-backends 'company-shell)
-  (add-to-list 'company-backends 'company-go)
   (add-to-list 'company-backends 'company-python)
 
   ;; company-hooks for different modes
   (add-hook 'after-init-hook 'global-company-mode)
-  (add-hook 'go-mode-hook (lambda ()
-                              (set (make-local-variable 
-                                    'company-backends) '(company-go)
-                                    )))
   (add-hook 'shell-mode-hook
             (lambda ()
                 (set (make-local-variable 'company-backends) '(company-shell))))
@@ -663,11 +665,11 @@ not appropriate in some cases like terminals."
   (setq company-minimum-prefix-length 1)
   (setq company-begin-commands '(self-insert-command))
 )
-;;lsp-mode (language server for different code lang)
+;;lsp-mode
 ;;install needed plugin first
 ;;GO111MODULE=on go get golang.org/x/tools/gopls@latest
 ;; optional if you want which-key integration
-;; pip install 'python-language-server[all]'
+;; for python  pip install 'python-language-server[all]'
 (use-package which-key
     :ensure t
     :config
@@ -678,10 +680,18 @@ not appropriate in some cases like terminals."
     :hook
         (sh-mode . lsp)
         (python-mode . lsp)
+        (go-mode . lsp)
     :commands lsp
     :config
         (setq lsp-enable-symbol-highlighting nil)
-        (setq lsp-keymap-prefix "C-c l")
+        ;; (setq lsp-keymap-prefix "C-c l")
+        (add-hook 'go-mode-hook #'lsp-deferred)
+        ;; Set up before-save hooks to format buffer and add/delete imports.
+        ;; Make sure you don't have other gofmt/goimports hooks enabled.
+        (defun lsp-go-install-save-hooks ()
+        (add-hook 'before-save-hook #'lsp-format-buffer t t)
+        (add-hook 'before-save-hook #'lsp-organize-imports t t))
+        (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 )
 
 (use-package lsp-ui
@@ -690,18 +700,11 @@ not appropriate in some cases like terminals."
 )
 
 
-;; eglot can be used instead of lsp-mode, but in my exp lsp-mode faster
-;; eglot (language server client)
-;; eglot same stuff as lsp-mode (language server client)
-;; install pyls for Python with all plugins
-;; pip install 'python-language-server[all]'
-;; (use-package eglot
-;;     :ensure t
-;;     :config
-;;     (add-hook 'python-mode-hook 'eglot-ensure)
-;;     (add-hook 'go-mode-hook 'eglot-ensure)
-;;     (add-hook 'shell-script-mode-hook 'eglot-ensure)
-;; )
+
+(use-package go-mode
+  :ensure t
+  :mode (("\\.go\\'" . go-mode))
+)
 
 
 ;;yaml-mode
@@ -846,11 +849,13 @@ not appropriate in some cases like terminals."
   (global-set-key (kbd "<f3>") 'magit-branch-checkout)
 )
 
-(use-package evil-magit
+;;big pack of evil-related libraries
+(use-package evil-collection
   :ensure t
+  :after evil-mode
   :config
-  (global-set-key (kbd "s-P") 'magit-status-with-prefix-arg)
-  (global-set-key (kbd "s-g") 'magit-status))
+  (evil-collection-init)
+  )
 
 ;; SPELL CHECKING
 ;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
@@ -862,50 +867,12 @@ not appropriate in some cases like terminals."
 (global-set-key (kbd "S-\\") 'ispell-word)
 (global-set-key (kbd "C-s-\\") 'flyspell-auto-correct-word)
 
-;; YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
-(use-package yasnippet
-  :ensure t
-  :defer t
-  :diminish yas-minor-mode
-  :config
-  (setq yas-snippet-dirs '("~/workspace/org/snipp"))
-  (yas-global-mode 1))
-
-
-;;some prefab snippets
-(use-package yasnippet-snippets
-  :after yasnippet
-  :config
-  (yasnippet-snippets-initialize))
-
-
-;;Kubernetes
-;;Magit-like porcelain to work with K8s
-(use-package kubernetes
-  :ensure t
-  :commands (kubernetes-overview)
-  :config
-  (setq kubernetes-poll-frequency 3600
-        kubernetes-redraw-frequency 3600))
-;; If you want to pull in the Evil compatibility package.
-(use-package kubernetes-evil
-  :ensure t
-  :after kubernetes)
-
 ;; Golang
 ;; add to below strings ~/.bashrc
 ;; export GOROOT=/usr/local/go
-;; export GOPATH=$HOME/go/
-;; export PATH=$PATH:$GOROOT/bin
-;; export PATH=$PATH:$GOPATH/bin
-;; go settings
-(add-hook 'before-save-hook 'gofmt-before-save)
-(add-hook 'go-mode-hook 'yas-minor-mode)
+;; export GOPATH=$HOME/go
+;; export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
-(use-package go-mode
-  :ensure t
-  :mode (("\\.go\\'" . go-mode))
-)
 
 ;; vterm terminal
 ;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
@@ -958,8 +925,6 @@ not appropriate in some cases like terminals."
    '("e72f5955ec6d8585b8ddb2accc2a4cb78d28629483ef3dcfee00ef3745e2292f" "3df5335c36b40e417fec0392532c1b82b79114a05d5ade62cfe3de63a59bc5c6" "4f01c1df1d203787560a67c1b295423174fd49934deb5e6789abd1e61dba9552" "3c2f28c6ba2ad7373ea4c43f28fcf2eed14818ec9f0659b1c97d4e89c99e091e" "71e5acf6053215f553036482f3340a5445aee364fb2e292c70d9175fb0cc8af7" "9efb2d10bfb38fe7cd4586afb3e644d082cbcdb7435f3d1e8dd9413cbe5e61fc" "5036346b7b232c57f76e8fb72a9c0558174f87760113546d3a9838130f1cdb74" "8d7684de9abb5a770fbfd72a14506d6b4add9a7d30942c6285f020d41d76e0fa" "76bfa9318742342233d8b0b42e824130b3a50dcc732866ff8e47366aed69de11" "990e24b406787568c592db2b853aa65ecc2dcd08146c0d22293259d400174e37" "6b80b5b0762a814c62ce858e9d72745a05dd5fc66f821a1c5023b4f2a76bc910" "be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "6c3b5f4391572c4176908bb30eddc1718344b8eaff50e162e36f271f6de015ca" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" "2f1518e906a8b60fac943d02ad415f1d8b3933a5a7f75e307e6e9a26ef5bf570" "e6ff132edb1bfa0645e2ba032c44ce94a3bd3c15e3929cdf6c049802cf059a2a" "5d09b4ad5649fea40249dd937eaaa8f8a229db1cec9a1a0ef0de3ccf63523014" "37144b437478e4c235824f0e94afa740ee2c7d16952e69ac3c5ed4352209eefb" "711efe8b1233f2cf52f338fd7f15ce11c836d0b6240a18fffffc2cbd5bfe61b0" default))
  '(ediff-split-window-function 'split-window-horizontally t)
  '(ediff-window-setup-function 'ediff-setup-windows-plain t)
- '(helm-completion-style 'emacs)
- '(helm-popup-tip-mode t)
  '(ispell-dictionary-alist
    '(("russian" "\\cy" "\\Cy" "[-]" nil
       ("-C" "-d" "ru-yeyo.multi" nil utf-8))
@@ -970,7 +935,7 @@ not appropriate in some cases like terminals."
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(ispell-program-name "aspell")
  '(package-selected-packages
-   '(web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key dap-yaml dap-go dap-mode lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer kubernetes-evil kubernetes adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
@@ -981,5 +946,3 @@ not appropriate in some cases like terminals."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(all-the-icons-dsilver ((t (:foreground "white smoke")))))
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
