@@ -7,7 +7,7 @@
 ;; without use-package
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-;; ;; Bootstrap use-package
+;; Bootstrap use-package
 (unless (package-installed-p 'use-package)  
   (package-refresh-contents) 
   (package-install 'use-package)) 
@@ -15,16 +15,6 @@
 
 ;; General settings
 (windmove-default-keybindings)
-
-;; el-get
-;; So the idea is that you copy/paste this code into your *scratch* buffer,
-;; hit C-j, and you have a working el-get.
-;; (url-retrieve
-;;  "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el"
-;;  (lambda (s)
-;;    (goto-char (point-max))
-;;    (eval-print-last-sexp)))
-
 
 ;; Bookmarks
 ;;
@@ -36,10 +26,6 @@
 ;; save bookmarks to .emacs.bmk after each entry
 (setq bookmark-save-flag 1)  
 
-;;Run emacs as server
-;;to connect use command (can be used in X11 either)  emacsclient -create-frame --alternate-editor=""
-;;(server-start)
-
 (tooltip-mode      -1)
 (menu-bar-mode     -1)
 (tool-bar-mode     -1)
@@ -50,53 +36,6 @@
 
 ;;dont use ring
 (setq ring-bell-function 'ignore)
-
-;; Global keybinds
-
-;; custom minor mode to override all modes with needed keys
-;; TODO it should be rework in some final stuff
-;; (defvar my-kbd-mode-map
-;;   (let ((map (make-sparse-keymap)))
-;;     (define-key map (kbd "M-l") 'switch-to-buffer)
-;;     map)
-;;   "my-kbd-mode keymap.")
-;; (define-minor-mode my-kbd
-;;   "A minor mode so that my key settings override annoying major modes."
-;;   :init-value t
-;;   :lighter "my-kbd")
-;; (my-kbd 1)
-
-;; revert buffer using F5 key 
-(global-set-key
-  (kbd "<f5>")
-  (lambda (&optional force-reverting)
-    "Interactive call to revert-buffer. Ignoring the auto-save
- file and not requesting for confirmation. When the current buffer
- is modified, the command refuses to revert it, unless you specify
- the optional argument: force-reverting to true."
-    (interactive "P")
-    ;;(message "force-reverting value is %s" force-reverting)
-    (if (or force-reverting (not (buffer-modified-p)))
-        (revert-buffer :ignore-auto :noconfirm)
-      (error "The buffer has been modified"))))
-;; Use F7 for grep-find (curent dired folder using as base path)
-(global-set-key (kbd "<f7>") 'grep-find)
-
-;; Use F12 to run shell command
-;; (global-set-key (kbd "<f12>") 'vterm-command)
-(global-set-key (kbd "<f12>") 'async-shell-command)
-
-;; Use F12 to run shell command
-(global-set-key (kbd "<f6>") 'dired)
-
-;;Move Buffer frames using Ctrl-<arrows>
-(global-set-key (kbd "<C-up>") 'shrink-window)
-(global-set-key (kbd "<C-down>") 'enlarge-window)
-(global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
-(global-set-key (kbd "<C-right>") 'enlarge-window-horizontally) 
-
-
-(global-set-key (kbd "<f11>") 'snipp)
 
 ;;confirmation before exit emacs
 (setq confirm-kill-emacs 'y-or-n-p)
@@ -187,7 +126,6 @@
 (setq select-enable-clipboard t) 
 
 ;; Newline when press Enter
-;;(global-set-key (kbd "RET") 'newline)
 ;; Indentation settings
 (setq-default
 indent-tabs-mode nil
@@ -235,7 +173,7 @@ tab-stop-list (quote (4 8))
 
 ;; Self-made snippets
 ;; Download snippet using filename
-;;  
+;;snipp  
 (defun snipp (fn) 
   "Load snippet from the file using filename."
 (interactive "sExtension: ")
@@ -253,8 +191,9 @@ tab-stop-list (quote (4 8))
 ;; use eww as default for URL
 (setq browse-url-browser-function 'eww-browse-url)
 
-;; Term settings
-;; ----------config for Emacs without native-compile from source 
+
+;; ===Config for Emacs without native-compile from source 
+;; Term settings (if vterm is installed, this config is not needed)
 ;; open multiple terminals with index
 ;; (defun new-ansi-term ()
 ;;   (interactive)
@@ -264,10 +203,11 @@ tab-stop-list (quote (4 8))
 ;;   ;; (term-line-mode)   
 ;;   )
 ;; (global-set-key (kbd "C-S-t") 'new-ansi-term) ;; mappe sur C-T
+
 ;; ----------
 ;; Config with native-compile and vterm
 ;; vterm hotkeys
-(global-set-key (kbd "C-S-t") 'vterm) ;; run vterm with Ctrl+Shift+T 
+;; (global-set-key (kbd "C-S-t") 'vterm) ;; run vterm with Ctrl+Shift+T 
 
 ;; use vterm instead of shell when run M-x shell-command (turn off by default)
 ;; set vterm as default shell
@@ -306,8 +246,6 @@ shell exits, the buffer is killed."
     ))
 
 
-
-
 ;; Themes,fonts,UI
 ;; enable pixelwise resizing frames
 (setq frame-resize-pixelwise t)
@@ -330,8 +268,8 @@ shell exits, the buffer is killed."
    ;; Corrects (and improves) org-mode's native fontification.
    (doom-themes-org-config)
    ;; (load-theme 'doom-wilmersdorf t)
-   (load-theme 'doom-zenburn t)
-   ;; (load-theme 'doom-one t)
+   ;; (load-theme 'doom-zenburn t)
+   (load-theme 'doom-one t)
    ;; (load-theme 'doom-oceanic-next t)
    ;; (load-theme 'doom-solarized-dark t)
    ;; (load-theme 'doom-material t)
@@ -344,18 +282,6 @@ shell exits, the buffer is killed."
   :ensure t
     )
 
-;;Flash cursor area when it's jump widely
-;; (use-package beacon
-;;   :ensure t
-;;   :config
-;;     (beacon-mode 1)
-;;     (setq beacon-blink-when-window-scrolls nil)
-;;     (setq beacon-blink-when-point-moves nil)
-;;     (setq beacon-size 20)                
-;; )
-
-
-;;jj
 ;;Exec-path-from-shell
 ;; needed to use external tools from PATH
 (use-package exec-path-from-shell
@@ -368,6 +294,7 @@ shell exits, the buffer is killed."
 
 
 ;; Modeline settings
+;;Doom-modeline
 ;;Run M-x all-the-icons-install-fonts for this package
 (use-package doom-modeline
   :ensure t
@@ -385,7 +312,7 @@ shell exits, the buffer is killed."
     (setq doom-modeline-buffer-encoding nil)
 
 
-;;----OLD custom manual config for Modeline
+;;=== custom Modeline
 ;; (line-number-mode t)
 ;; (column-number-mode t)
 ;; (size-indication-mode t)
@@ -423,7 +350,6 @@ shell exits, the buffer is killed."
 ;; )) 
 ;; ;; show git branch in modeline 
 ;; (add-hook 'after-init-hook 'git-status-in-modeline t)
-
 
 
 ;;rainbow delimiters
@@ -466,10 +392,6 @@ shell exits, the buffer is killed."
       ("<left>" . delete-backward-char)
       ("<right>" . ivy-alt-done)
     )
-    ;; (:map global-map
-    ;;       ("C-c p"       . counsel-projectile-find-file)
-    ;; )
-
 )
 
 (use-package counsel
@@ -540,25 +462,7 @@ shell exits, the buffer is killed."
  (setq evil-operator-state-cursor '("red" hollow))
 
 
-;; escape quits
-;; escape from any opened stuff like minibuffers etc
-(defun minibuffer-keyboard-quit ()
-	(interactive)
-	(if (and delete-selection-mode transient-mark-mode mark-active)
-		(setq deactivate-mark  t)
-		(when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-		(abort-recursive-edit)))
-(define-key evil-normal-state-map [escape] 'keyboard-quit)
-(define-key evil-visual-state-map [escape] 'keyboard-quit)
-(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
-(global-set-key [escape] 'evil-exit-emacs-state)
-)
-
-;; Buffers settings
+;; ===Buffers settings
 ;; only warn about deleting modified buffers.
   (setq ibuffer-expert t)
 
@@ -592,18 +496,11 @@ not appropriate in some cases like terminals."
   :mode  ("\\.org\\'" . org-mode)
          ("\\org.gpg\\'" . org-mode)
   :config
-  (global-set-key "\C-cc" 'org-capture)
-  (global-set-key "\C-ca" 'org-agenda)
-  (global-set-key "\C-cl" 'org-store-link)
-
-  ;; turn off Alt-l in org-mode
-    (add-hook 'org-mode-hook (lambda ()
-        (local-unset-key (kbd "M-l"))))
-
   ;; turn off confirmation before evaluate code block
   (setq org-confirm-babel-evaluate nil)
   ;;encrypt in org-mode, cache save pass in session
   (setq epa-file-cache-passphrase-for-symmetric-encryption t)
+
 )
 
 
@@ -859,9 +756,6 @@ not appropriate in some cases like terminals."
   :after treemacs evil
   :ensure t)
 
-(use-package treemacs-projectile
-  :after treemacs projectile
-  :ensure t)
 
 ;;Markdown mode
 (use-package markdown-mode
@@ -870,13 +764,8 @@ not appropriate in some cases like terminals."
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :bind (:map markdown-mode-map
-              ("s-k" . 'markdown-insert-link)
-              ("C-s-<down>" . 'markdown-narrow-to-subtree)
-              ("C-s-<up>" . 'widen)
-              ("s-O" . 'markdown-export-html-to-clipboard-full)
-              ("M-s-O" . 'markdown-export-html-to-clipboard-no-1st-line))
   :init (setq markdown-command '("pandoc" "--no-highlight")))
+
 
 ;;Magit
 (use-package magit
@@ -886,40 +775,13 @@ not appropriate in some cases like terminals."
   (global-set-key (kbd "<f3>") 'magit-branch-checkout)
 )
 
-;;big pack of evil-related libraries
-(use-package evil-collection
-  :ensure t
-  :after evil-mode
-  :config
 
-
-(defvar my-intercept-mode-map (make-sparse-keymap)
-  "High precedence keymap.")
-
-(define-minor-mode my-intercept-mode
-  "Global minor mode for higher precedence evil keybindings."
-  :global t)
-
-;; make Alt-l work in org-mode
-(my-intercept-mode)
-(dolist (state '(normal visual insert))
-  (evil-make-intercept-map
-   ;; NOTE: This requires an evil version from 2018-03-20 or later
-   (evil-get-auxiliary-keymap my-intercept-mode-map state t t)
-   state))
-(evil-define-key 'normal my-intercept-mode-map
-  (kbd "M-l") 'switch-to-buffer)
-    (setq evil-collection-init t)
-)
 ;; SPELL CHECKING
 ;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
 (setq ispell-program-name "aspell")
 
 ;;Turn on flyspell for org-mode only
 (add-hook 'org-mode-hook 'flyspell-mode)
-;;keybinds
-(global-set-key (kbd "S-\\") 'ispell-word)
-(global-set-key (kbd "C-s-\\") 'flyspell-auto-correct-word)
 
 ;; Golang
 ;; add to below strings ~/.bashrc
@@ -948,7 +810,6 @@ not appropriate in some cases like terminals."
 
 ;; mode for templates and web files
 (use-package web-mode
-    :ensure t
     :config
     :mode
         (("\\.phtml\\'" . web-mode))
@@ -968,7 +829,78 @@ not appropriate in some cases like terminals."
         )
 )
 
+;;===Keybindings
+;;big pack of evil-related libraries
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :config
+    (evil-collection-init)
+)
+;; escape quits
+;; escape from any opened stuff like minibuffers etc
+(defun minibuffer-keyboard-quit ()
+	(interactive)
+	(if (and delete-selection-mode transient-mark-mode mark-active)
+		(setq deactivate-mark  t)
+		(when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+		(abort-recursive-edit)))
+(define-key evil-normal-state-map [escape] 'keyboard-quit)
+(define-key evil-visual-state-map [escape] 'keyboard-quit)
+(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+(global-set-key [escape] 'evil-exit-emacs-state)
+)
 
+  ;; ;; Hooks
+  ;; (add-hook 'magit-mode-hook
+  ;;           (lambda ()
+  ;;               (local-set-key (kbd "<escape>") 'magit-kill-this-buffer)
+  ;;               ))
+
+;;Minor-mode to override all keybindings in all modes
+;;mykbd
+(defvar mykbd-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "M-l") 'switch-to-buffer)
+    (define-key map (kbd "M-l") 'kill-buffer)
+    (define-key map (kbd "<f11>") 'snipp) ;; custom snippet func
+    (define-key map (kbd "<f12>") 'async-shell-command)
+    (define-key map (kbd "<f6>") 'dired)
+    (define-key map (kbd "<f7>") 'grep-find)
+    (define-key map (kbd "<C-up>") 'shrink-window)
+    (define-key map (kbd "<C-down>") 'enlarge-window)
+    (define-key map (kbd "<C-left>") 'shrink-window-horizontally)
+    (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
+    (define-key map (kbd "C-S-t") 'vterm)
+    (define-key map (kbd "C-c p") 'projectile-find-file)
+    ;; (define-key map (kbd "<escape>") 'keyboard-escape-quit)
+    map)
+  "mykbd-minor-mode keymap.")
+
+(define-minor-mode mykbd-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
+(mykbd-minor-mode 1)
+
+
+;; revert buffer using F5 key 
+(global-set-key
+  (kbd "<f5>")
+  (lambda (&optional force-reverting)
+    "Interactive call to revert-buffer. Ignoring the auto-save
+ file and not requesting for confirmation. When the current buffer
+ is modified, the command refuses to revert it, unless you specify
+ the optional argument: force-reverting to true."
+    (interactive "P")
+    ;;(message "force-reverting value is %s" force-reverting)
+    (if (or force-reverting (not (buffer-modified-p)))
+        (revert-buffer :ignore-auto :noconfirm)
+      (error "The buffer has been modified"))))
 
 
 
@@ -994,7 +926,7 @@ not appropriate in some cases like terminals."
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(ispell-program-name "aspell")
  '(package-selected-packages
-   '(doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
