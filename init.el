@@ -52,6 +52,20 @@
 (setq ring-bell-function 'ignore)
 
 ;; Global keybinds
+
+;; custom minor mode to override all modes with needed keys
+;; TODO it should be rework in some final stuff
+;; (defvar my-kbd-mode-map
+;;   (let ((map (make-sparse-keymap)))
+;;     (define-key map (kbd "M-l") 'switch-to-buffer)
+;;     map)
+;;   "my-kbd-mode keymap.")
+;; (define-minor-mode my-kbd
+;;   "A minor mode so that my key settings override annoying major modes."
+;;   :init-value t
+;;   :lighter "my-kbd")
+;; (my-kbd 1)
+
 ;; revert buffer using F5 key 
 (global-set-key
   (kbd "<f5>")
@@ -86,6 +100,8 @@
 
 ;;confirmation before exit emacs
 (setq confirm-kill-emacs 'y-or-n-p)
+
+
 
 
 ;; inhibit startup/splash screen, and initial-scratch message
@@ -251,9 +267,7 @@ tab-stop-list (quote (4 8))
 ;; ----------
 ;; Config with native-compile and vterm
 ;; vterm hotkeys
-(global-set-key (kbd "C-S-t") 'vterm) ;; mappe sur C-T
-
-
+(global-set-key (kbd "C-S-t") 'vterm) ;; run vterm with Ctrl+Shift+T 
 
 ;; use vterm instead of shell when run M-x shell-command (turn off by default)
 ;; set vterm as default shell
@@ -577,11 +591,15 @@ not appropriate in some cases like terminals."
 (use-package org
   :mode  ("\\.org\\'" . org-mode)
          ("\\org.gpg\\'" . org-mode)
-
   :config
   (global-set-key "\C-cc" 'org-capture)
   (global-set-key "\C-ca" 'org-agenda)
   (global-set-key "\C-cl" 'org-store-link)
+
+  ;; turn off Alt-l in org-mode
+    (add-hook 'org-mode-hook (lambda ()
+        (local-unset-key (kbd "M-l"))))
+
   ;; turn off confirmation before evaluate code block
   (setq org-confirm-babel-evaluate nil)
   ;;encrypt in org-mode, cache save pass in session
@@ -873,7 +891,7 @@ not appropriate in some cases like terminals."
   :ensure t
   :after evil-mode
   :config
-  (evil-collection-init)
+  (setq evil-collection-init)
   )
 
 ;; SPELL CHECKING
@@ -932,6 +950,11 @@ not appropriate in some cases like terminals."
               )
         )
 )
+
+
+
+
+
 
 
 ;;------DO NOT TOUCH CONFIG BELOW-----
