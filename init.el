@@ -354,44 +354,63 @@ shell exits, the buffer is killed."
 
 
 ;; Modeline settings
-(line-number-mode t)
-(column-number-mode t)
-(size-indication-mode t)
-(setq display-time-24hr-format t) ;; 24-hour
-(size-indication-mode          t) ;; file size in persents
+;;Run M-x all-the-icons-install-fonts for this package
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
+  :config
+    (setq doom-modeline-height 8)
+    ;;fonts
+    (set-face-attribute 'mode-line nil :family "Hack" :height 120)
+    (set-face-attribute 'mode-line-inactive nil :family "Hack" :height 120)
+    ;; git info length
+    (setq doom-modeline-vcs-max-length 12)
+    ;;rm indent info
+    (setq doom-modeline-indent-info nil)
+    ;;remove encoding info
+    (setq doom-modeline-buffer-encoding nil)
 
-(setq-default mode-line-format
-          (list
-           ;; The mnemonics of keyboard, terminal, and buffer coding systems.
-           "%Z "
-           ;; shows * when file edited but not saved
-           "%+ "
-           ;; current buffer name
-           "%* "
-           ;; ;; current buffer name
-           ;; "%b "
-           ;; current buffer name and parent dir
-(defun mode-line-buffer-file-parent-directory ()
-  (when buffer-file-name
-    (concat "["(file-name-nondirectory (directory-file-name (file-name-directory buffer-file-name)))"]")))
-(setq-default mode-line-buffer-identification
-      (cons (car mode-line-buffer-identification) '((:eval (mode-line-buffer-file-parent-directory)))))
-;;            ;; value of current line number
-           "   %l:"
-;;            ;; value of current line number
-           "%c "
-;;            ;; percent of buffer 
-           "%p "
-;;            ;; major mode-name
-           "%m "
-;;            ;; show current GIT branch
-           '(vc-mode vc-mode)
-;;            ;; full path to file
-           ;; "  %f "
-)) 
 
-;; show git branch in modeline 
-(add-hook 'after-init-hook 'git-status-in-modeline t)
+;;----OLD custom manual config for Modeline
+;; (line-number-mode t)
+;; (column-number-mode t)
+;; (size-indication-mode t)
+;; (setq display-time-24hr-format t) ;; 24-hour
+;; (size-indication-mode          t) ;; file size in persents
+
+;; (setq-default mode-line-format
+;;           (list
+;;            ;; The mnemonics of keyboard, terminal, and buffer coding systems.
+;;            "%Z "
+;;            ;; shows * when file edited but not saved
+;;            "%+ "
+;;            ;; current buffer name
+;;            "%* "
+;;            ;; ;; current buffer name
+;;            ;; "%b "
+;;            ;; current buffer name and parent dir
+;; (defun mode-line-buffer-file-parent-directory ()
+;;   (when buffer-file-name
+;;     (concat "["(file-name-nondirectory (directory-file-name (file-name-directory buffer-file-name)))"]")))
+;; (setq-default mode-line-buffer-identification
+;;       (cons (car mode-line-buffer-identification) '((:eval (mode-line-buffer-file-parent-directory)))))
+;; ;;            ;; value of current line number
+;;            "   %l:"
+;; ;;            ;; value of current line number
+;;            "%c "
+;; ;;            ;; percent of buffer 
+;;            "%p "
+;; ;;            ;; major mode-name
+;;            "%m "
+;; ;;            ;; show current GIT branch
+;;            '(vc-mode vc-mode)
+;; ;;            ;; full path to file
+;;            ;; "  %f "
+;; )) 
+;; ;; show git branch in modeline 
+;; (add-hook 'after-init-hook 'git-status-in-modeline t)
+
+
 
 ;;rainbow delimiters
 (use-package rainbow-delimiters
@@ -935,7 +954,7 @@ not appropriate in some cases like terminals."
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(ispell-program-name "aspell")
  '(package-selected-packages
-   '(web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
