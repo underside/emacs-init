@@ -891,9 +891,26 @@ not appropriate in some cases like terminals."
   :ensure t
   :after evil-mode
   :config
-  (setq evil-collection-init)
-  )
 
+
+(defvar my-intercept-mode-map (make-sparse-keymap)
+  "High precedence keymap.")
+
+(define-minor-mode my-intercept-mode
+  "Global minor mode for higher precedence evil keybindings."
+  :global t)
+
+;; make Alt-l work in org-mode
+(my-intercept-mode)
+(dolist (state '(normal visual insert))
+  (evil-make-intercept-map
+   ;; NOTE: This requires an evil version from 2018-03-20 or later
+   (evil-get-auxiliary-keymap my-intercept-mode-map state t t)
+   state))
+(evil-define-key 'normal my-intercept-mode-map
+  (kbd "M-l") 'switch-to-buffer)
+    (setq evil-collection-init t)
+)
 ;; SPELL CHECKING
 ;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
 (setq ispell-program-name "aspell")
