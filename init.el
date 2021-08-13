@@ -7,7 +7,7 @@
 ;; without use-package
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-;; Bootstrap use-package
+;; ;; Bootstrap use-package
 (unless (package-installed-p 'use-package)  
   (package-refresh-contents) 
   (package-install 'use-package)) 
@@ -206,8 +206,6 @@ tab-stop-list (quote (4 8))
 
 ;; ----------
 ;; Config with native-compile and vterm
-;; vterm hotkeys
-;; (global-set-key (kbd "C-S-t") 'vterm) ;; run vterm with Ctrl+Shift+T 
 
 ;; use vterm instead of shell when run M-x shell-command (turn off by default)
 ;; set vterm as default shell
@@ -268,8 +266,8 @@ shell exits, the buffer is killed."
    ;; Corrects (and improves) org-mode's native fontification.
    (doom-themes-org-config)
    ;; (load-theme 'doom-wilmersdorf t)
-   ;; (load-theme 'doom-zenburn t)
-   (load-theme 'doom-one t)
+   (load-theme 'doom-zenburn t)
+   ;; (load-theme 'doom-one t)
    ;; (load-theme 'doom-oceanic-next t)
    ;; (load-theme 'doom-solarized-dark t)
    ;; (load-theme 'doom-material t)
@@ -421,8 +419,12 @@ shell exits, the buffer is killed."
   :config
   (setq evil-move-cursor-back nil)
   ;;Evil has the same problem as Vim when browsing with j/k long wrapped lines it jumps the entire “real” line ;;instead of the visual line. The solution is also easy:
-  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+
+
+  ;;jj
+  ;; (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+  ;; (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+
   ;;Don't move back cursor one postition when exiting INS mode
   (setq evil-move-cursor-back nil)
   ;;copy sentence - Y (standart Vim behavior)
@@ -435,9 +437,9 @@ shell exits, the buffer is killed."
 												    (interactive)
 												    (evil-scroll-down nil)))
 ;; bind ':ls' command to 'ibuffer instead of 'list-buffers
+
  (define-key evil-ex-map "ls" 'ibuffer)
- (define-key evil-normal-state-map (kbd "M-l") 'switch-to-buffer)
- (define-key evil-normal-state-map (kbd "M-k") 'kill-buffer)
+ ;; (define-key evil-normal-state-map (kbd "M-k") 'kill-buffer)
 ;;
  
 ;; define :b to open bufferlist search. Press : + b + space to start fuzzy search between opened buffers 
@@ -498,8 +500,11 @@ not appropriate in some cases like terminals."
   :config
   ;; turn off confirmation before evaluate code block
   (setq org-confirm-babel-evaluate nil)
+  ;;turn off indent
+  (setq org-indent-mode nil)
   ;;encrypt in org-mode, cache save pass in session
   (setq epa-file-cache-passphrase-for-symmetric-encryption t)
+
 
 )
 
@@ -770,9 +775,12 @@ not appropriate in some cases like terminals."
 ;;Magit
 (use-package magit
   :ensure t
-  :config
-  (global-set-key (kbd "<f4>") 'magit-status)
-  (global-set-key (kbd "<f3>") 'magit-branch-checkout)
+
+  ;; jj
+  ;; :config
+  ;; (global-set-key (kbd "<f4>") 'magit-status)
+  ;; (global-set-key (kbd "<f3>") 'magit-branch-checkout)
+
 )
 
 
@@ -837,6 +845,7 @@ not appropriate in some cases like terminals."
   :config
     (evil-collection-init)
 )
+
 ;; escape quits
 ;; escape from any opened stuff like minibuffers etc
 (defun minibuffer-keyboard-quit ()
@@ -855,19 +864,51 @@ not appropriate in some cases like terminals."
 (global-set-key [escape] 'evil-exit-emacs-state)
 )
 
-  ;; ;; Hooks
-  ;; (add-hook 'magit-mode-hook
-  ;;           (lambda ()
-  ;;               (local-set-key (kbd "<escape>") 'magit-kill-this-buffer)
-  ;;               ))
+
+;;jj
+;; (use-package general
+;;   :ensure t
+;;   :config
+;;     (general-define-key
+;;         ;; :states 'normal
+;;         :keymaps 'override
+;;         "M-l" 'switch-to-buffer
+;;         "M-k" 'kill-buffer
+;;         "<f11>" 'snipp 
+;;         "<f12>" 'async-shell-command
+;;         "<f6>" 'dired
+;;         "<f7>" 'grep-find
+;;         "<C-up>" 'shrink-window
+;;         "<C-down>" 'enlarge-window
+;;         "<C-left>" 'shrink-window-horizontally
+;;         "<C-right>" 'enlarge-window-horizontally
+;;         "C-S-t" 'vterm
+;;         "C-c p" 'projectile-find-file
+;;         "<f4>" 'magit-status
+;;         "<f3>" 'magit-branch-checkout
+;;     )
+;;     ;; override org-mode keys to be M-l
+;;     ;; (general-define-key
+;;     ;;     :states 'normal
+;;     ;;     :keymaps 'org-mode-map
+;;     ;;     "M-l" 'switch-to-buffer
+;;     ;; )
+
+;;     ;; evil-mode keys 
+;;     (general-define-key
+;;         :states 'normal
+;;         "j" 'evil-next-visual-line
+;;         "k" 'evil-previous-visual-line
+;;     )
+;; )
+
 
 ;;Minor-mode to override all keybindings in all modes
 ;;mykbd
 (defvar mykbd-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-l") 'switch-to-buffer)
-    (define-key map (kbd "M-l") 'kill-buffer)
-    (define-key map (kbd "<f11>") 'snipp) ;; custom snippet func
+    (define-key map (kbd "M-k") 'kill-buffer)
+    ;; (define-key map (kbd "<f11>") 'snipp) ;; custom snippet func
     (define-key map (kbd "<f12>") 'async-shell-command)
     (define-key map (kbd "<f6>") 'dired)
     (define-key map (kbd "<f7>") 'grep-find)
@@ -877,15 +918,33 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
     (define-key map (kbd "C-S-t") 'vterm)
     (define-key map (kbd "C-c p") 'projectile-find-file)
-    ;; (define-key map (kbd "<escape>") 'keyboard-escape-quit)
+    ;; (define-key map (kbd "M-n") 'switch-to-buffer)
+    (define-key map (kbd "M-l") 'switch-to-buffer)
     map)
   "mykbd-minor-mode keymap.")
+
+
+;; rebind M-l in org-mode because I need M-l for switch-buffer functionality
+(define-key org-mode-map (kbd "<normal-state> M-l") nil)
+
 
 (define-minor-mode mykbd-minor-mode
   "A minor mode so that my key settings override annoying major modes."
   :init-value t
-  :lighter " my-keys")
+  :lighter " my-kbd-keys")
 (mykbd-minor-mode 1)
+
+
+(defun my-kbd-priority (_file)
+  "Try to ensure that my keybindings retain priority over other minor modes.
+Called via the `after-load-functions' special hook."
+  (unless (eq (caar minor-mode-map-alist) 'mykbd-minor-mode)
+    (let ((mykeys (assq 'mykbd-minor-mode minor-mode-map-alist)))
+      (assq-delete-all 'mykbd-minor-mode minor-mode-map-alist)
+      (add-to-list 'minor-mode-map-alist mykeys))))
+(add-hook 'after-load-functions 'my-kbd-priority)
+
+
 
 
 ;; revert buffer using F5 key 
@@ -926,7 +985,7 @@ not appropriate in some cases like terminals."
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(ispell-program-name "aspell")
  '(package-selected-packages
-   '(evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
