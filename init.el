@@ -1,4 +1,4 @@
-;; Package managing (MELPA etc)
+; Package managing (MELPA etc)
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
@@ -9,8 +9,7 @@
 
 ;; ;; Bootstrap use-package
 (unless (package-installed-p 'use-package)  
-  (package-refresh-contents) 
-  (package-install 'use-package)) 
+  (package-refresh-contents) (package-install 'use-package)) 
 (require 'use-package)
 
 ;; General settings
@@ -357,54 +356,39 @@ shell exits, the buffer is killed."
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 )
 
-;;Ivy
-(use-package ivy
+;; icomplete
+(use-package icomplete-vertical
   :ensure t
-  :config 
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq enable-recursive-minibuffers t)
-    ;; (setq search-default-mode #'char-fold-to-regexp)
-    (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
+  :config
+  (icomplete-vertical-mode 1)
+)
 
-    ;; the way how Ivy handling matching in minibuffer
-    (setq ivy-re-builders-alist
-          '(
-            (swiper . ivy--regex-plus)
-            (t      . ivy--regex-plus)
-            )
-          )
-  :bind 
-    ("M-y" . counsel-yank-pop)
-    ("M-x" . counsel-M-x)
-    ("C-x C-f" . counsel-find-file)
-    ("<f1> f" . counsel-describe-function)
-    ("<f1> v" . counsel-describe-variable)
-    ("<f1> o" . counsel-describe-symbol)
-    ("<f1> l" . counsel-find-library)
-    ("<f2> i" . counsel-info-lookup-symbol)
-    ("<f2> u" . counsel-unicode-char)
-    ("C-x l" . counsel-locate)
-    ("M-r" . counsel-minibuffer-history)
-    (:map  ivy-minibuffer-map
-      ("<left>" . delete-backward-char)
-      ("<right>" . ivy-alt-done)
+
+;; nice sort approach for completion
+(use-package orderless
+  :ensure t
+  :custom (completion-styles '(orderless))
     )
-)
 
-(use-package counsel
+;; consult - counsel and swiper replacement
+(use-package consult
   :ensure t
-  :after ivy
-  :bind
-    ("M-y" . counsel-yank-pop)
-)
+  :demand t
+    )
 
-(use-package swiper
-  :ensure t
-  :after ivy
-  :bind
-    ("C-s" . swiper)
-)
+
+
+;;icomplete
+(progn
+  ;; minibuffer enhanced completion
+  (require 'icomplete)
+  (icomplete-mode 1)
+  ;; show choices vertically
+  ;; (setq icomplete-separator "\n")
+  (setq icomplete-hide-common-prefix nil)
+  (setq icomplete-in-buffer t)
+  (define-key icomplete-minibuffer-map (kbd "<up>") 'icomplete-forward-completions)
+  (define-key icomplete-minibuffer-map (kbd "<down>") 'icomplete-backward-completions))
 
 ;;yaml-mode
 (use-package yaml-mode
@@ -443,7 +427,7 @@ shell exits, the buffer is killed."
 ;;
  
 ;; define :b to open bufferlist search. Press : + b + space to start fuzzy search between opened buffers 
- (define-key evil-ex-map "b " 'ivy-switch-buffer)
+ (define-key evil-ex-map "b " 'switch-buffer)
 
 ;;evil-mode as default for ibuffer
  (setq evil-emacs-state-modes (delq 'ibuffer-mode evil-emacs-state-modes))
@@ -908,20 +892,24 @@ not appropriate in some cases like terminals."
 (defvar mykbd-minor-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "M-k") 'kill-buffer)
-    ;; (define-key map (kbd "<f11>") 'snipp) ;; custom snippet func
-    (define-key map (kbd "<f12>") 'async-shell-command)
+    (define-key map (kbd "<f3>") 'magit-checkout)
+    (define-key map (kbd "<f4>") 'magit-status)
     (define-key map (kbd "<f6>") 'dired)
     (define-key map (kbd "<f7>") 'grep-find)
+    (define-key map (kbd "<f11>") 'snipp) ;; custom snippet func
+    (define-key map (kbd "<f12>") 'async-shell-command)
     (define-key map (kbd "<C-up>") 'shrink-window)
     (define-key map (kbd "<C-down>") 'enlarge-window)
     (define-key map (kbd "<C-left>") 'shrink-window-horizontally)
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
     (define-key map (kbd "C-S-t") 'vterm)
     (define-key map (kbd "C-c p") 'projectile-find-file)
-    ;; (define-key map (kbd "M-n") 'switch-to-buffer)
     (define-key map (kbd "M-l") 'switch-to-buffer)
+    (define-key map (kbd "C-s") 'consult-line)
+    (define-key map (kbd "M-y") 'consult-yank-pop)
     map)
   "mykbd-minor-mode keymap.")
+
 
 
 ;; rebind M-l in org-mode because I need M-l for switch-buffer functionality
@@ -934,7 +922,7 @@ not appropriate in some cases like terminals."
   :lighter " my-kbd-keys")
 (mykbd-minor-mode 1)
 
-
+;; make custom monor mode high priority
 (defun my-kbd-priority (_file)
   "Try to ensure that my keybindings retain priority over other minor modes.
 Called via the `after-load-functions' special hook."
@@ -975,6 +963,7 @@ Called via the `after-load-functions' special hook."
    '("e72f5955ec6d8585b8ddb2accc2a4cb78d28629483ef3dcfee00ef3745e2292f" "3df5335c36b40e417fec0392532c1b82b79114a05d5ade62cfe3de63a59bc5c6" "4f01c1df1d203787560a67c1b295423174fd49934deb5e6789abd1e61dba9552" "3c2f28c6ba2ad7373ea4c43f28fcf2eed14818ec9f0659b1c97d4e89c99e091e" "71e5acf6053215f553036482f3340a5445aee364fb2e292c70d9175fb0cc8af7" "9efb2d10bfb38fe7cd4586afb3e644d082cbcdb7435f3d1e8dd9413cbe5e61fc" "5036346b7b232c57f76e8fb72a9c0558174f87760113546d3a9838130f1cdb74" "8d7684de9abb5a770fbfd72a14506d6b4add9a7d30942c6285f020d41d76e0fa" "76bfa9318742342233d8b0b42e824130b3a50dcc732866ff8e47366aed69de11" "990e24b406787568c592db2b853aa65ecc2dcd08146c0d22293259d400174e37" "6b80b5b0762a814c62ce858e9d72745a05dd5fc66f821a1c5023b4f2a76bc910" "be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "6c3b5f4391572c4176908bb30eddc1718344b8eaff50e162e36f271f6de015ca" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" "2f1518e906a8b60fac943d02ad415f1d8b3933a5a7f75e307e6e9a26ef5bf570" "e6ff132edb1bfa0645e2ba032c44ce94a3bd3c15e3929cdf6c049802cf059a2a" "5d09b4ad5649fea40249dd937eaaa8f8a229db1cec9a1a0ef0de3ccf63523014" "37144b437478e4c235824f0e94afa740ee2c7d16952e69ac3c5ed4352209eefb" "711efe8b1233f2cf52f338fd7f15ce11c836d0b6240a18fffffc2cbd5bfe61b0" default))
  '(ediff-split-window-function 'split-window-horizontally t)
  '(ediff-window-setup-function 'ediff-setup-windows-plain t)
+ '(icomplete-mode t)
  '(ispell-dictionary-alist
    '(("russian" "\\cy" "\\Cy" "[-]" nil
       ("-C" "-d" "ru-yeyo.multi" nil utf-8))
@@ -985,7 +974,7 @@ Called via the `after-load-functions' special hook."
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(ispell-program-name "aspell")
  '(package-selected-packages
-   '(general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(icomplete-vertical orderless selectrum consult vertico general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
