@@ -360,11 +360,11 @@ shell exits, the buffer is killed."
 ;;Ivy
 (use-package ivy
   :ensure t
+  :demand t
   :config 
     (ivy-mode 1)
     (setq ivy-use-virtual-buffers t)
     (setq enable-recursive-minibuffers t)
-    ;; (setq search-default-mode #'char-fold-to-regexp)
     (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
 
     ;; the way how Ivy handling matching in minibuffer
@@ -778,8 +778,6 @@ not appropriate in some cases like terminals."
 
   ;; jj
   ;; :config
-  ;; (global-set-key (kbd "<f4>") 'magit-status)
-  ;; (global-set-key (kbd "<f3>") 'magit-branch-checkout)
 
 )
 
@@ -865,61 +863,24 @@ not appropriate in some cases like terminals."
 )
 
 
-;;jj
-;; (use-package general
-;;   :ensure t
-;;   :config
-;;     (general-define-key
-;;         ;; :states 'normal
-;;         :keymaps 'override
-;;         "M-l" 'switch-to-buffer
-;;         "M-k" 'kill-buffer
-;;         "<f11>" 'snipp 
-;;         "<f12>" 'async-shell-command
-;;         "<f6>" 'dired
-;;         "<f7>" 'grep-find
-;;         "<C-up>" 'shrink-window
-;;         "<C-down>" 'enlarge-window
-;;         "<C-left>" 'shrink-window-horizontally
-;;         "<C-right>" 'enlarge-window-horizontally
-;;         "C-S-t" 'vterm
-;;         "C-c p" 'projectile-find-file
-;;         "<f4>" 'magit-status
-;;         "<f3>" 'magit-branch-checkout
-;;     )
-;;     ;; override org-mode keys to be M-l
-;;     ;; (general-define-key
-;;     ;;     :states 'normal
-;;     ;;     :keymaps 'org-mode-map
-;;     ;;     "M-l" 'switch-to-buffer
-;;     ;; )
-
-;;     ;; evil-mode keys 
-;;     (general-define-key
-;;         :states 'normal
-;;         "j" 'evil-next-visual-line
-;;         "k" 'evil-previous-visual-line
-;;     )
-;; )
-
-
 ;;Minor-mode to override all keybindings in all modes
 ;;mykbd
 (defvar mykbd-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-k") 'kill-buffer)
-    ;; (define-key map (kbd "<f11>") 'snipp) ;; custom snippet func
-    (define-key map (kbd "<f12>") 'async-shell-command)
+    (define-key map (kbd "<f3>") 'magit-branch-checkout)
+    (define-key map (kbd "<f4>") 'magit-status)
     (define-key map (kbd "<f6>") 'dired)
     (define-key map (kbd "<f7>") 'grep-find)
+    (define-key map (kbd "<f11>") 'snipp) ;; custom snippet func
+    (define-key map (kbd "<f12>") 'async-shell-command)
     (define-key map (kbd "<C-up>") 'shrink-window)
     (define-key map (kbd "<C-down>") 'enlarge-window)
     (define-key map (kbd "<C-left>") 'shrink-window-horizontally)
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
     (define-key map (kbd "C-S-t") 'vterm)
     (define-key map (kbd "C-c p") 'projectile-find-file)
-    ;; (define-key map (kbd "M-n") 'switch-to-buffer)
     (define-key map (kbd "M-l") 'switch-to-buffer)
+    (define-key map (kbd "M-k") 'kill-buffer)
     map)
   "mykbd-minor-mode keymap.")
 
