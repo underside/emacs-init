@@ -1,0 +1,7 @@
+curl --request POST \
+  --data '{"title": "Help! From BIMP1"}' \
+  --header "Authorization: Bearer c3f4f30f66d565ac79260dbe8ab327bd" \
+  --header "Content-Type: application/json" \
+   https://ya.ru/api/
+
+

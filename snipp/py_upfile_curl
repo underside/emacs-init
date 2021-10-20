@@ -1,0 +1,12 @@
+def upload_file (url,file_path):        
+    c = pycurl.Curl()
+    header = ['file', file_path]
+    c.setopt(pycurl.USERPWD, '%s:%s' %("admin", "123"))           
+    c.setopt(c.URL, url)
+    c.setopt(c.UPLOAD, 1)
+    file_tmp = open(file_path)
+    c.setopt(c.READDATA, file_tmp)
+    c.perform()
+    c.close()
+    file_tmp.close()
+    print("File" + service_name_env + ".tar.gz"+ " version: "+"was uploaded")
