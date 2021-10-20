@@ -428,10 +428,7 @@ shell exits, the buffer is killed."
 
  (define-key evil-ex-map "ls" 'ibuffer)
  ;; (define-key evil-normal-state-map (kbd "M-k") 'kill-buffer)
-;;
  
-;; define :b to open bufferlist search. Press : + b + space to start fuzzy search between opened buffers 
- (define-key evil-ex-map "b " 'ivy-switch-buffer)
 
 ;;evil-mode as default for ibuffer
  (setq evil-emacs-state-modes (delq 'ibuffer-mode evil-emacs-state-modes))
