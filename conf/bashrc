@@ -1,0 +1,27 @@
+
+### export  vars and alias
+export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+
+
+alias ksc='kubectl config set-context $(kubectl config current-context) --namespace '
+alias k=kubectl
+source <(kubectl completion bash) 
+
+
+alias pu='pulumi'
+#aws eks alias
+alias awsls='aws eks list-clusters'
+alias awskonf='aws eks update-kubeconfig --name'
+
+if [[ $(type -t compopt) = "builtin" ]]; then
+    complete -o default -F __start_kubectl k
+else
+    complete -o default -o nospace -F __start_kubectl k
+fi
+
+
+# add Pulumi to the PATH
+export PATH=$PATH:$HOME/.pulumi/bin
