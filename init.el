@@ -174,12 +174,18 @@ tab-stop-list (quote (4 8))
 ;; Self-made snippets
 ;; Download snippet using filename
 ;;snipp  
+;; (defun snipp (fn) 
+;;   "Load snippet from the file using filename."
+;; (interactive "sSnippet:")
+;; (insert-file-contents (concat "~/workspace/git/emacs-init/snipp/" fn)) 
+;; ;; (insert-file-contents (concat "~/workspace/git/emacs-init/snipp/" fn))
+;;   (if nil (message "argument is nil")))
+
 (defun snipp (fn) 
   "Load snippet from the file using filename."
-(interactive "sExtension: ")
-   (insert-file-contents (concat "~/workspace/git/emacs-init/snipp/" fn))
+(interactive "sSnippet:")
+(insert-file-contents (concat "~/workspace/git/emacs-init/snipp/" fn)) 
   (if nil (message "argument is nil")))
-
 
 ;; Abbrev table example
 ;; (define-abbrev-table 'global-abbrev-table '(
@@ -273,14 +279,16 @@ shell exits, the buffer is killed."
   :config
    ;; Corrects (and improves) org-mode's native fontification.
    (doom-themes-org-config)
-   ;; (load-theme 'doom-wilmersdorf t)
-  (load-theme 'doom-zenburn t)
-   ;; (load-theme 'doom-one t)
-   ;; (load-theme 'doom-plain t)
-   ;; (load-theme 'doom-solarized-dark t)
-   ;; (load-theme 'doom-material t)
-   ;; (load-theme 'doom-spacegrey t)
-   ;; (load-theme 'doom-nord t)
+   ;; (load-theme 'doom-wilmersdorf 1)
+   ;; (load-theme 'doom-zenburn 1)
+   ;; (load-theme 'doom-one 1)
+   ;; (load-theme 'doom-plain 1)
+   ;; (load-theme 'doom-solarized-dark 1)
+   ;; (load-theme 'doom-solarized-light 1)
+   (load-theme 'doom-material 1)
+   ;; (load-theme 'doom-dracula 1)
+   ;; (load-theme 'doom-spacegrey 1)
+   ;; (load-theme 'doom-nord 1)
 )
 
 
@@ -292,13 +300,18 @@ shell exits, the buffer is killed."
 
 ;;Exec-path-from-shell
 ;; needed to use external tools from PATH
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-  (exec-path-from-shell-copy-env "GOPATH")
-  (exec-path-from-shell-copy-env "GOROOT")
-  (exec-path-from-shell-copy-env "PATH")
-)
+;; add ENVs from PATH
+(setenv "PATH" "/usr/local/bin:$PATH" t)
+(add-to-list 'exec-path "/usr/local/bin")
+(add-to-list 'exec-path "/usr/share")
+
+;; (use-package exec-path-from-shell
+;;   :ensure t
+;;   :config
+;;   (exec-path-from-shell-copy-env "GOPATH")
+;;   (exec-path-from-shell-copy-env "GOROOT")
+;;   (exec-path-from-shell-copy-env "PATH")
+;; )
 
 
 ;; Modeline settings
@@ -596,7 +609,7 @@ not appropriate in some cases like terminals."
   (setq company-begin-commands '(self-insert-command))
 )
 ;;lsp-mode
-;;install needed plugin first
+;;install needed plugins first (see dt.org/Golang)
 ;;GO111MODULE=on go get golang.org/x/tools/gopls@latest
 ;; optional if you want which-key integration
 ;; for python  pip install 'python-language-server[all]'
@@ -638,7 +651,7 @@ not appropriate in some cases like terminals."
 (use-package lsp-ui
     :ensure t
     :config
-    (setq lsp-ui-sideline-show-diagnostics t)
+    ;; (setq lsp-ui-sideline-show-diagnostics t)
     (setq lsp-ui-sideline-show-hover t)
     (setq lsp-ui-sideline-show-code-actions t)
     (setq lsp-ui-sideline-delay 0)
@@ -652,9 +665,11 @@ not appropriate in some cases like terminals."
 ;; dap-mode mode for debuging
 (use-package dap-mode
   :ensure t
-  :mode (("\\.go\\'" . go-mode))
+  ;; :mode (("\\.go\\'" . go-mode))
   :config
-  (dap-auto-configure-mode t)     
+  (dap-mode 1)
+  (dap-auto-configure-mode 1)     
+  (setq dap-auto-configure-features '(sessions locals controls tooltip))     
   ;; The modes below are optional
   (dap-ui-mode 1)
   ;; enables mouse hover support
@@ -665,9 +680,6 @@ not appropriate in some cases like terminals."
   ;; displays floating panel with debug buttons
   ;; requies emacs 26+
   (dap-ui-controls-mode 1)
-
-  ;; Enabling only some features
-  ;; (setq dap-auto-configure-features '(sessions locals controls tooltip))
 
   ;;Hydra hook to auto start 
   (add-hook 'dap-stopped-hook
