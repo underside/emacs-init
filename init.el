@@ -98,7 +98,7 @@
 
 ;;Electric-modes settings
 ;; closed open brackets automatically {},[],()
-(electric-pair-mode    1) 
+(electric-pair-mode 1) 
 
 ;;not indent previous line when press RET
 ;; (setq-default electric-indent-inhibit t) 
@@ -177,7 +177,7 @@ tab-stop-list (quote (4 8))
 (defun snipp (fn) 
   "Load snippet from the file using filename."
 (interactive "sExtension: ")
-   (insert-file-contents (concat "~/workspace/org/snipp/" fn))
+   (insert-file-contents (concat "~/workspace/git/emacs-init/snipp/" fn))
   (if nil (message "argument is nil")))
 
 
@@ -428,7 +428,10 @@ shell exits, the buffer is killed."
 
  (define-key evil-ex-map "ls" 'ibuffer)
  ;; (define-key evil-normal-state-map (kbd "M-k") 'kill-buffer)
+;;
  
+;; define :b to open bufferlist search. Press : + b + space to start fuzzy search between opened buffers 
+ (define-key evil-ex-map "b " 'ivy-switch-buffer)
 
 ;;evil-mode as default for ibuffer
  (setq evil-emacs-state-modes (delq 'ibuffer-mode evil-emacs-state-modes))
@@ -597,6 +600,7 @@ not appropriate in some cases like terminals."
 ;;GO111MODULE=on go get golang.org/x/tools/gopls@latest
 ;; optional if you want which-key integration
 ;; for python  pip install 'python-language-server[all]'
+
 (use-package which-key
     :ensure t
     :config
@@ -610,28 +614,120 @@ not appropriate in some cases like terminals."
         (go-mode . lsp)
     :commands lsp
     :config
-        (setq lsp-enable-symbol-highlighting nil)
+        ;; (setq lsp-enable-symbol-highlighting nil)
         ;; (setq lsp-keymap-prefix "C-c l")
-        (add-hook 'go-mode-hook #'lsp-deferred)
         ;; Set up before-save hooks to format buffer and add/delete imports.
         ;; Make sure you don't have other gofmt/goimports hooks enabled.
         (defun lsp-go-install-save-hooks ()
-        (add-hook 'before-save-hook #'lsp-format-buffer t t)
-        (add-hook 'before-save-hook #'lsp-organize-imports t t))
+            (add-hook 'before-save-hook #'lsp-format-buffer t t)
+            (add-hook 'before-save-hook #'lsp-organize-imports t t)
+        )
         (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+        (add-hook 'go-mode-hook #'lsp-deferred)
+        ;;gopls integration with lsp-mode
+        (lsp-register-custom-settings
+        '(("gopls.completeUnimported" t t)
+        ("gopls.staticcheck" t t)))
+        
+        ;; turn off auto picking of project root folder
+        (setq lsp-auto-guess-root  nil )
+
 )
+
 
 (use-package lsp-ui
     :ensure t
     :config
+    (setq lsp-ui-sideline-show-diagnostics t)
+    (setq lsp-ui-sideline-show-hover t)
+    (setq lsp-ui-sideline-show-code-actions t)
+    (setq lsp-ui-sideline-delay 0)
+    (setq lsp-ui-sideline-update-mode t)
 )
 
 
+;; lsp-ui-sideline-delay seconds to wait before showing sideline
 
+
+;; dap-mode mode for debuging
+(use-package dap-mode
+  :ensure t
+  :mode (("\\.go\\'" . go-mode))
+  :config
+  (dap-auto-configure-mode t)     
+  ;; The modes below are optional
+  (dap-ui-mode 1)
+  ;; enables mouse hover support
+  (dap-tooltip-mode 1)
+  ;; use tooltips for mouse hover
+  ;; if it is not enabled `dap-mode' will use the minibuffer.
+  (tooltip-mode 1)
+  ;; displays floating panel with debug buttons
+  ;; requies emacs 26+
+  (dap-ui-controls-mode 1)
+
+  ;; Enabling only some features
+  ;; (setq dap-auto-configure-features '(sessions locals controls tooltip))
+
+  ;;Hydra hook to auto start 
+  (add-hook 'dap-stopped-hook
+         (lambda (arg) (call-interactively #'dap-hydra)))
+
+  ;; for debug
+  (setq dap-print-io t)
+
+  ;;For golang
+  (require 'dap-go)
+  (dap-go-setup)
+
+  ;;workaround 
+(setq dap-launch-configuration-providers  '(dap-debug-template-configurations-provider))
+)
+
+
+;; function that will add launch.json file in every root directory if it's not exist
+;; run this function manually if debugger throw an error "....launch.json"
+(defun dap-debug-create-or-edit-json-template ()
+    "Edit the debugging configuration or create + edit if none exists yet."
+    (interactive)
+    (let ((filename (concat (lsp-workspace-root) "/launch.json"))
+	  (default "~/workspace/git/emacs-init/conf/default-launch.json"))
+      (unless (file-exists-p filename)
+	(copy-file default filename))
+      (find-file-existing filename))))
+
+
+
+
+
+
+
+;;golang setup
 (use-package go-mode
   :ensure t
   :mode (("\\.go\\'" . go-mode))
+  :config
+  ;; must if you use dap-mode
+
 )
+
+;; goimports hook to get packages before save
+;; goimports must be installed
+(defun my-go-mode-hook ()
+      ;; prefer goimports, if present
+      (if (executable-find "goimports")
+        (setq gofmt-command "goimports"))
+
+      ;; Format code when we save
+      (add-hook 'before-save-hook 'gofmt-before-save)
+ 
+      ;; esc-space to jump to definition
+      (local-set-key (kbd "M-SPC") 'godef-jump)
+      ;; esc-b to jump (b)ack
+      (local-set-key (kbd "M-b") 'pop-tag-mark)
+    )
+    (add-hook 'go-mode-hook 'my-go-mode-hook)
+
 
 
 ;;yaml-mode
@@ -777,12 +873,6 @@ not appropriate in some cases like terminals."
 ;;Turn on flyspell for org-mode only
 (add-hook 'org-mode-hook 'flyspell-mode)
 
-;; Golang
-;; add to below strings ~/.bashrc
-;; export GOROOT=/usr/local/go
-;; export GOPATH=$HOME/go
-;; export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-
 
 ;; vterm terminal
 ;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
@@ -848,7 +938,7 @@ not appropriate in some cases like terminals."
 (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
-)
+
 
 
 ;;Minor-mode to override all keybindings in all modes
@@ -865,6 +955,7 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<C-down>") 'enlarge-window)
     (define-key map (kbd "<C-left>") 'shrink-window-horizontally)
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
+    (define-key map (kbd "M-o") 'maximize-window)
     (define-key map (kbd "C-S-t") 'vterm)
     (define-key map (kbd "C-c p") 'projectile-find-file)
     (define-key map (kbd "M-l") 'switch-to-buffer)
@@ -934,11 +1025,11 @@ Called via the `after-load-functions' special hook."
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(ispell-program-name "aspell")
  '(package-selected-packages
-   '(general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
- '(warning-suppress-types '((comp) (comp) (comp) (comp))))
+ '(warning-suppress-types '((emacs) (comp) (comp) (comp) (comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
