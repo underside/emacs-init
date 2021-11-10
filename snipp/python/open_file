@@ -1,2 +1,0 @@
-with open("notes.json", 'w', encoding="utf-8") as outfile:
-    json.dump(self.notes, outfile)

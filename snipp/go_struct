@@ -1,0 +1,5 @@
+type testStruct struct {
+	OperatorNamespace string
+	TargetNamespace []int
+	ImagPullSecrets []string
+}
