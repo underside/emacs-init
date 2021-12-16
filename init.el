@@ -1027,7 +1027,6 @@ not appropriate in some cases like terminals."
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
 
     ;; do not indent when press RET in org-mode
-    (define-key org-mode-map (kbd "/") 'consult-line)
     (define-key org-mode-map (kbd "C-m") 'newline-and-indent)
     map)
   "mykbd-minor-mode keymap.")
