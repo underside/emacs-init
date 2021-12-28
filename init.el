@@ -16,6 +16,11 @@
 ;; General settings
 (windmove-default-keybindings)
 
+;; lsp related settings from here https://emacs-lsp.github.io/lsp-mode/page/performance/
+(setq gc-cons-threshold 100000000)
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
+
+
 ;; Bookmarks
 ;;
 ;; (define-key global-map [f9] 'list-bookmarks)
@@ -174,7 +179,7 @@ tab-stop-list (quote (4 8))
 (defun snipp (fn) 
   "Load snippet from the file using filename."
 (interactive "sSnippet:")
-(insert-file-contents (concat "~/workspace/git/emacs-init/snipp/" fn)) 
+(insert-file-contents (concat "~/ws/git/emacs-init/snipp/" fn)) 
   (if nil (message "argument is nil")))
 
 ;; Abbrev table example
@@ -240,13 +245,15 @@ shell exits, the buffer is killed."
     ))
 
 
-
 (defun new-vterm ()
   (interactive)
-  (if (string= "*vterm*" (buffer-name))
+  (if (string = "*vterm*" (buffer-name))
       (rename-uniquely))
-  )
 
+  )
+;;jj test this before push 
+(defun vterm--rename-buffer-as-title (title)
+  (rename-buffer (format "vterm @ %s" title) t))
 
 ;; Themes,fonts,UI
 ;; enable pixelwise resizing frames
@@ -560,7 +567,7 @@ not appropriate in some cases like terminals."
 ;;Agenda
 ;; ~/org is a symlink to /mnt/e/ydisk/org/notes
 ;; include all .org files from notes dir in agenda
-(setq org-agenda-files '("~/workspace/org/notes/todo.org"))
+(setq org-agenda-files '("~/ws/org/notes/todo.org"))
 ;;Show next 10 days, not only this week
 (setq org-agenda-span 10)
 ;;show agenda since today 
@@ -578,9 +585,9 @@ not appropriate in some cases like terminals."
 ;; Org-capture
 ;;Template for TODO
 (setq org-capture-templates
-      '(("t" "Todo" entry (file+headline "~/workspace/org/notes/todo.org" "org-capture")
+      '(("t" "Todo" entry (file+headline "~/ws/org/notes/todo.org" "org-capture")
          "* TODO %?\n  %i\n  %a")
-        ("j" "Journal" entry (file+datetree "~/workspace/org/notes/todo.org")
+        ("j" "Journal" entry (file+datetree "~/ws/org/notes/todo.org")
          "* %?\nEntered on %U\n  %i\n  %a")))
 
 ;; gpg encryption
@@ -655,8 +662,14 @@ not appropriate in some cases like terminals."
         (go-mode . lsp)
     :commands lsp
     :config
-        ;; (setq lsp-enable-symbol-highlighting nil)
+        ;; performance improvments
+        (setq lsp-log-io nil) ; if set to true can cause a performance hit
+
+        (setq lsp-enable-symbol-highlighting nil)
+
+
         ;; (setq lsp-keymap-prefix "C-c l")
+
         ;; Set up before-save hooks to format buffer and add/delete imports.
         ;; Make sure you don't have other gofmt/goimports hooks enabled.
         (defun lsp-go-install-save-hooks ()
@@ -682,7 +695,7 @@ not appropriate in some cases like terminals."
     ;; (setq lsp-ui-sideline-show-diagnostics t)
     (setq lsp-ui-sideline-show-hover t)
     (setq lsp-ui-sideline-show-code-actions t)
-    (setq lsp-ui-sideline-delay 1)
+    (setq lsp-ui-sideline-delay 0)
     (setq lsp-ui-sideline-update-mode t)
 )
 
@@ -751,16 +764,10 @@ not appropriate in some cases like terminals."
     "Edit the debugging configuration or create + edit if none exists yet."
     (interactive)
     (let ((filename (concat (lsp-workspace-root) "/launch.json"))
-	  (default "~/workspace/git/emacs-init/conf/default-launch.json"))
+	  (default "~/ws/git/emacs-init/conf/default-launch.json"))
       (unless (file-exists-p filename)
 	(copy-file default filename))
       (find-file-existing filename))))
-
-
-
-
-
-
 
 ;;golang setup
 (use-package go-mode
@@ -927,13 +934,15 @@ not appropriate in some cases like terminals."
 )
 
 
+;; ASPELL
 ;; SPELL CHECKING
 ;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
 (setq ispell-program-name "aspell")
+;; Set default dictionary
+(setq ispell-dictionary "british") 
 
 ;;Turn on flyspell for org-mode only
 (add-hook 'org-mode-hook 'flyspell-mode)
-
 
 ;; vterm terminal
 ;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
@@ -1025,32 +1034,25 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "C-s") 'consult-line)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
-
     ;; do not indent when press RET in org-mode
     (define-key org-mode-map (kbd "C-m") 'newline-and-indent)
+    ;;----
     map)
   "mykbd-minor-mode keymap.")
 
 
+;; override some minor mode with 
 ;; rebind to nil M-l in org-mode because I need M-l for switch-buffer functionality
 (define-key org-mode-map (kbd "<normal-state> M-l") nil)
-
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (define-key eshell-mode-map (kbd "<normal-state> M-l") nil)))
 
 (define-minor-mode mykbd-minor-mode
   "A minor mode so that my key settings override annoying major modes."
   :init-value t
   :lighter " my-kbd-keys")
 (mykbd-minor-mode 1)
-
-
-(defun my-kbd-priority (_file)
-  "Try to ensure that my keybindings retain priority over other minor modes.
-Called via the `after-load-functions' special hook."
-  (unless (eq (caar minor-mode-map-alist) 'mykbd-minor-mode)
-    (let ((mykeys (assq 'mykbd-minor-mode minor-mode-map-alist)))
-      (assq-delete-all 'mykbd-minor-mode minor-mode-map-alist)
-      (add-to-list 'minor-mode-map-alist mykeys))))
-(add-hook 'after-load-functions 'my-kbd-priority)
 
 
 ;; revert buffer using F5 key 
