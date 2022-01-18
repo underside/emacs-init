@@ -147,7 +147,7 @@ tab-stop-list (quote (4 8))
 (customize-set-variable 'ediff-window-setup-function 'ediff-setup-windows-plain)
 
 ;;Side by side comparison is easier than vertical split
-;;(tob-bottom-stacked) window
+;(tob-bottom-stacked) window
 (customize-set-variable 'ediff-split-window-function 'split-window-horizontally)
 
 ;; Backups settings
@@ -933,16 +933,10 @@ not appropriate in some cases like terminals."
 
 )
 
+(setq ispell-program-name "/usr/bin/hunspell"          ; Use hunspell to correct mistakes
+      ispell-dictionary   "en_US") ; Default dictionary to use
 
-;; ASPELL
-;; SPELL CHECKING
-;; Spell checking requires an external command to be available. Install =aspell= on your Mac, then make it the default checker for Emacs' =ispell=. Note that personal dictionary is located at =~/.aspell.LANG.pws= by default.
-(setq ispell-program-name "aspell")
-;; Set default dictionary
-(setq ispell-dictionary "british") 
 
-;;Turn on flyspell for org-mode only
-(add-hook 'org-mode-hook 'flyspell-mode)
 
 ;; vterm terminal
 ;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
@@ -1009,10 +1003,30 @@ not appropriate in some cases like terminals."
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
 
+;; org-roam
+;; zettelkasten notes system
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/ws/org/notes"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
 
 
-;;Minor-mode to override all keybindings in all modes
-;;mykbd
+
+;;========Install package installation up this line 
+;; Keyboard config
+;; Minor-mode to override all keybindings in all modes
+;; mykbd
 (defvar mykbd-minor-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "<f3>") 'magit-branch-checkout)
@@ -1091,9 +1105,8 @@ not appropriate in some cases like terminals."
      (nil "[A-Za-z]" "[^A-Za-z]" "[']" nil
           ("-C" nil iso-8859-1))) t)
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
- '(ispell-program-name "aspell")
  '(package-selected-packages
-   '(dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(org-roam dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
