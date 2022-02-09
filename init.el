@@ -543,6 +543,8 @@ not appropriate in some cases like terminals."
 
   ;; turn off 'org-indent-mode' by default
   (setq org-indent-mode nil)
+  ;; fix error (underscore-to-subscript) when exporting
+  (setq org-export-with-sub-superscripts nil)
 )
 
 
@@ -746,6 +748,7 @@ not appropriate in some cases like terminals."
   ;; gdb
   (require 'dap-gdb-lldb)
 
+
   ;;workaround 
   (setq dap-launch-configuration-providers  '(dap-debug-template-configurations-provider))
   ;; register template 
@@ -755,8 +758,8 @@ not appropriate in some cases like terminals."
                                    :args ""
                                    :name "Run Configuration")))
   
-
-
+  ;; For Python
+  (require 'dap-python)
 
 ;; function that will add launch.json file in every root directory if it's not exist
 ;; run this function manually if debugger throw an error "....launch.json"
@@ -832,8 +835,7 @@ not appropriate in some cases like terminals."
 (use-package projectile
   :ensure t
   :config
-  ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  (projectile-mode +1)
+    (projectile-mode +1)
   :bind
   (:map global-map
         ("C-c p"       . projectile-find-file))
