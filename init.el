@@ -1,43 +1,94 @@
-;; Package managing (MELPA etc)
+;;===Package managing (MELPA etc)
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-
 
 ;;Manualy installed packages
 ;; without use-package
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-;; ;; Bootstrap use-package
+;;Bootstrap use-package
 (unless (package-installed-p 'use-package)  
   (package-refresh-contents) 
   (package-install 'use-package)) 
 (require 'use-package)
 
-;; General settings
+;; package enable at startup?
+(setq package-enable-at-startup nil)
+
+;; Fix some error with packages
+(setq package-check-signature nil)
+
+
+;;===General mixed settings
 (windmove-default-keybindings)
 
-;; lsp related settings from here https://emacs-lsp.github.io/lsp-mode/page/performance/
+;;lsp related settings from here https://emacs-lsp.github.io/lsp-mode/page/performance/
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
-
-;; Bookmarks
-;;
+;;Bookmarks
 ;; (define-key global-map [f9] 'list-bookmarks)
 ;; (define-key global-map [f10] 'bookmark-set)
-
 ;; define file to use
 (setq bookmark-default-file "~/.emacs.d/bookmarks")  
 ;; save bookmarks to .emacs.bmk after each entry
 (setq bookmark-save-flag 1)  
 
+;; reduce the frequency of garbage collection by making it happen on
+;; each 30MB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold 30000000)
+
+;; warn when opening files bigger than 100MB
+(setq large-file-warning-threshold 100000000)
+
+;;Electric-modes settings
+;; closed open brackets automatically {},[],()
+(electric-pair-mode 1) 
+
+;;Line wrapping
+;;Cursor moving by visual lines
+(setq word-wrap t)
+(global-visual-line-mode t)
+
+;; Highlight search results
+(setq search-highlight        t)
+(setq query-replace-highlight t)
+
+;; Highlight matching brackets
+;;Match parenthesis through highlighting rather than retarded jumps. Good!
+(show-paren-mode t)
+(setq show-paren-style 'parenthesis)
+
+;; Delete selection and clipboard to linux and other copy/paste features
+(delete-selection-mode t)
+(setq select-enable-clipboard t) 
+
+;; No region when it is not highlighted
+(transient-mark-mode 1)
+
+;; Backups settings
+(setq make-backup-files nil;;do not make backup
+      auto-save-files nil; do not create #autosave files
+      create-lockfiles nil; do not create .# files
+)
+
+;; eww browser (Emacs)
+;; use eww as default for URL
+(setq browse-url-browser-function 'eww-browse-url)
+
+;; ===Buffers settings
+;; only warn about deleting modified buffers.
+  (setq ibuffer-expert t)
+
+;;===Interface and UI settings
 (tooltip-mode      -1)
 (menu-bar-mode     -1)
 (tool-bar-mode     -1)
 (scroll-bar-mode   -1)
+(setq use-dialog-box nil)
+
 ;;Do not blink
 (blink-cursor-mode -1)
-(setq use-dialog-box nil)
 
 ;;dont use ring
 (setq ring-bell-function 'ignore)
@@ -45,13 +96,11 @@
 ;;confirmation before exit emacs
 (setq confirm-kill-emacs 'y-or-n-p)
 
-
-
-
-;; inhibit startup/splash screen, and initial-scratch message
+;;inhibit startup/splash screen, and initial-scratch message
 (setq inhibit-splash-screen   t)
 (setq inhibit-startup-message t)
-;; Message in scratch buffer
+
+;;Message in scratch buffer
 (setq initial-scratch-message ";;Hi, bro. What's up?")
 
 ;; Display the name of the current buffer in the title bar
@@ -61,15 +110,6 @@
          (revert-buffer-function "%b" ; Buffer Menu
           ("%b - Dir: " default-directory))))) ; Plain buffer
 
-;; package enable at startup?
-(setq package-enable-at-startup nil)
-
-;; Fix some error with packages
-(setq package-check-signature nil)
-
-;; this option needed for evil and evil-collection
-(setq evil-want-keybinding nil)
-
 ;;User name and email
 (setq user-full-name "Iurii Ponomarev"
       user-mail-address "underside@ya.ru")
@@ -78,57 +118,22 @@
 (desktop-save-mode 1)
 (savehist-mode 1)
 
-;; enable y/n answers
+;;enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
-
-;;.emacs file always load to register. Available with hotkeys: C-x r j e
-(set-register ?e (cons 'file "~/.emacs.d/init.el"))
-
-;; reduce the frequency of garbage collection by making it happen on
-;; each 30MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 30000000)
-
-;; warn when opening files bigger than 100MB
-(setq large-file-warning-threshold 100000000)
-
-;; smooth scrolling
-(setq scroll-margin 0
-      scroll-conservatively 100000
-      scroll-preserve-screen-position 1)
 
 ;; Fringe settings
 (fringe-mode '(2 . 0))
 (setq-default indicate-empty-lines t)
 (setq-default indicate-buffer-boundaries 'right)
 
-;;Electric-modes settings
-;; closed open brackets automatically {},[],()
-(electric-pair-mode 1) 
+;;.emacs file always load to register. Available with hotkeys: C-x r j e
+(set-register ?e (cons 'file "~/.emacs.d/init.el"))
 
-;;not indent previous line when press RET
-;; (setq-default electric-indent-inhibit t) 
+;; smooth scrolling
+(setq scroll-margin 0
+      scroll-conservatively 100000
+      scroll-preserve-screen-position 1)
 
-;; Line wrapping
-;; Cursor moving by visual lines
-(setq word-wrap t)
-(global-visual-line-mode t)
-
-;; Highlight search results
-(setq search-highlight        t)
-(setq query-replace-highlight t)
-
-;; Highlight matching brackets
-;;Parantes-matchning--------------------------
-;;Match parenthesis through highlighting rather than retarded jumps. Good!
-(show-paren-mode t)
-(setq show-paren-style 'parenthesis)
-
-;; No region when it is not highlighted
-(transient-mark-mode 1)
-
-;; Delete selection and clipboard to linux and other copy/paste features
-(delete-selection-mode t)
-(setq select-enable-clipboard t) 
 
 ;; Newline when press Enter
 ;; Indentation settings
@@ -141,7 +146,7 @@ lisp-body-indent   4
 tab-stop-list (quote (4 8))
 )
 
-;; ediff
+;;===Ediff settings
 (setq-default ediff-forward-word-function 'forward-char)
 ;;Don't use strange separate control-window.
 (customize-set-variable 'ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -150,50 +155,39 @@ tab-stop-list (quote (4 8))
 ;(tob-bottom-stacked) window
 (customize-set-variable 'ediff-split-window-function 'split-window-horizontally)
 
-;; Backups settings
-(setq make-backup-files nil;;do not make backup
-      auto-save-files nil; do not create #autosave files
-      create-lockfiles nil; do not create .# files
-)
-
-;;Locale settings
+;;===Locale settings
 (setq locale-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (setq-default coding-system-for-read    'utf-8)
 (setq default-input-method 'russian-computer)
 
-;; Dired settings
-;; allow remove non-empty dirs
+;;===Dired settings
+;;allow remove non-empty dirs
 (setq dired-recursive-deletes 'top)
 (setq dired-dwim-target t)
-
-;; Hide detailes in dired-mode (permissions etc) 
+;;Hide detailes in dired-mode (permissions etc) 
 ;;If you want see detailes press "("
 (defun hide-details ()
   "To be run as hook for `dired-mode'."
   (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'hide-details)
 
-
+;;===Snippets
 (defun snipp (fn) 
   "Load snippet from the file using filename."
 (interactive "sSnippet:")
 (insert-file-contents (concat "~/ws/git/emacs-init/snipp/" fn)) 
   (if nil (message "argument is nil")))
-
 ;; Abbrev table example
 ;; (define-abbrev-table 'global-abbrev-table '(
 ;;     ("afaict" "as far as I can tell" nil 1)
 ;; ))
 
 
-;; eww browser (Emacs)
-;; use eww as default for URL
-(setq browse-url-browser-function 'eww-browse-url)
 
-
-;; ===Config for Emacs without native-compile from source 
+;;===Terminal settings: ansi-term,vterm
+;; ===Config for Emacs without native-compile from source with ansi-term as main terminal
 ;; Term settings (if vterm is installed, this config is not needed)
 ;; open multiple terminals with index
 ;; (defun new-ansi-term ()
@@ -205,9 +199,7 @@ tab-stop-list (quote (4 8))
 ;;   )
 ;; (global-set-key (kbd "C-S-t") 'new-ansi-term) ;; mappe sur C-T
 
-;; ----------
-;; Config with native-compile and vterm
-
+;; vterm: Config with native-compile and vterm installed
 ;; use vterm instead of shell when run M-x shell-command (turn off by default)
 ;; set vterm as default shell
 (setq-default shell-default-shell 'vterm)
@@ -244,18 +236,20 @@ shell exits, the buffer is killed."
     (vterm-send-return)
     ))
 
-
+;;possibility to create multiple vterm buffers with uniq names
 (defun new-vterm ()
   (interactive)
-  (if (string = "*vterm*" (buffer-name))
+  (if (string= "*vterm*" (buffer-name))
       (rename-uniquely))
-
+  (vterm)
   )
-;;jj test this before push 
-(defun vterm--rename-buffer-as-title (title)
-  (rename-buffer (format "vterm @ %s" title) t))
 
-;; Themes,fonts,UI
+;; vterm terminal (work only with native-compiled Emacs)
+;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
+(use-package vterm
+    :ensure t)
+
+;;===Themes,fonts,UI
 ;; enable pixelwise resizing frames
 (setq frame-resize-pixelwise t)
 
@@ -270,7 +264,7 @@ shell exits, the buffer is killed."
                     :weight 'normal
                     :width 'normal)
 
-;; nice pack of doom-themes
+;;nice pack of doom-themes
 (use-package doom-themes
   :ensure t
   :config
@@ -290,11 +284,10 @@ shell exits, the buffer is killed."
 )
 
 
-;;Bind-keys for using kbd
+;;===bind-key for using kbd
 (use-package bind-key
   :ensure t
     )
-
 
 ;;Exec-path-from-shell
 ;; needed to use external tools from PATH
@@ -303,18 +296,7 @@ shell exits, the buffer is killed."
 (add-to-list 'exec-path "/usr/local/bin")
 (add-to-list 'exec-path "/usr/share")
 
-
-;; (use-package exec-path-from-shell
-;;   :ensure t
-;;   :config
-;;   (exec-path-from-shell-copy-env "GOPATH")
-;;   (exec-path-from-shell-copy-env "GOROOT")
-;;   (exec-path-from-shell-copy-env "PATH")
-;; )
-
-
-;;===========================
-;; Modeline settings
+;;===Modeline settings
 ;;Doom-modeline
 ;;Run M-x all-the-icons-install-fonts for this package
 ;; (use-package doom-modeline
@@ -337,7 +319,6 @@ shell exits, the buffer is killed."
 ;;M font size and family
 (set-face-attribute 'mode-line nil :family "Hack" :height 110)
 (set-face-attribute 'mode-line-inactive nil :family "Hack" :height 110)
-
 (line-number-mode t)
 (column-number-mode 0)
 (size-indication-mode t)
@@ -368,45 +349,6 @@ shell exits, the buffer is killed."
 
 (add-hook 'after-change-major-mode-hook 'purge-minor-modes)
 
-;;M fonts size
-;; (set-face-attribute 'mode-line nil :family "Hack" :height 110)
-;; (set-face-attribute 'mode-line-inactive nil :family "Hack" :height 110)
-
-;; (setq-default mode-line-format
-;;           (list
-;;            ;; The mnemonics of keyboard, terminal, and buffer coding systems.
-;;            "%Z "
-;;            ;; shows * when file edited but not saved
-;;            "%+ "
-;;            ;; current buffer name and parent dir
-;;             (defun mode-line-buffer-file-parent-directory ()
-;;             (when buffer-file-name
-;;                 (concat "["(file-name-nondirectory (directory-file-name (file-name-directory buffer-file-name)))"]")))
-;;             (setq-default mode-line-buffer-identification
-;;                 (cons (car mode-line-buffer-identification) '((:eval (mode-line-buffer-file-parent-directory)))))
-;;            ;; current buffer name
-;;            "%* "
-;;            ;; ;; current buffer name
-;;            "%b "
-;; ;;            ;; value of current line number
-;;            "   %l:"
-;; ;;            ;; value of current line number
-;;            "%c "
-;; ;;            ;; percent of buffer 
-;;            "%p "
-;; ;;            ;; major mode-name
-;;            "%m "
-;; ;;show current git branch
-;;            '(vc-mode vc-mode)
-;; ;;            ;; full path to file
-;;            ;; "  %f "
-
-;; )) 
-
-;; show git branch in modeline 
-;; (add-hook 'after-init-hook 'git-status-in-modeline t)
-
-
 ;;rainbow delimiters
 (use-package rainbow-delimiters
   :ensure t
@@ -414,8 +356,8 @@ shell exits, the buffer is killed."
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 )
 
-
-;;selectrum
+;;===Incremental narrowing
+;;selectrum (ivy and helm replacement)
 (use-package selectrum
   :ensure t
   :demand
@@ -423,7 +365,6 @@ shell exits, the buffer is killed."
     (selectrum-mode +1)
 
 )
-
 ;; nice sort approach for completion
 (use-package orderless
   :ensure t
@@ -432,27 +373,21 @@ shell exits, the buffer is killed."
     (setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
     (setq completion-styles '(orderless))
 )
-
 ;; consult - counsel and swiper replacement
 (use-package consult
   :ensure t
   :demand t
     )
-
-
-;;yaml-mode
-(use-package yaml-mode
-  :ensure t
-  )
-
-
-;;Evil-mode
+;;===Evil-mode
 (use-package evil
   :ensure t
   :init
   (evil-mode 1)
   :config
   (setq evil-move-cursor-back nil)
+  ;; this option needed for evil and evil-collection
+  (setq evil-want-keybinding nil)
+
   ;;Evil has the same problem as Vim when browsing with j/k long wrapped lines it jumps the entire “real” line ;;instead of the visual line. The solution is also easy:
 
 
@@ -499,11 +434,6 @@ shell exits, the buffer is killed."
  (setq evil-operator-state-cursor '("red" hollow))
 
 
-;; ===Buffers settings
-;; only warn about deleting modified buffers.
-  (setq ibuffer-expert t)
-
-
 ;;Evil-mode plugin evil-matchit
 (use-package evil-matchit
   :ensure t
@@ -527,6 +457,12 @@ not appropriate in some cases like terminals."
 (setq-local evil-move-cursor-back nil))
 
 (add-hook 'vterm-mode-hook #'evil-collection-vterm-escape-stay)
+
+
+;;yaml-mode
+(use-package yaml-mode
+  :ensure t
+  )
 
 
 ;;Org-mode settings
@@ -939,13 +875,6 @@ not appropriate in some cases like terminals."
       ispell-dictionary   "en_US") ; Default dictionary to use
 
 
-
-;; vterm terminal
-;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
-(use-package vterm
-    :ensure t)
-
-
 ;; package used for export org files to Jira/Confluence markup 
 ; for export use M-x ox-jira-export-as-jira 
 (use-package ox-jira
@@ -1005,29 +934,11 @@ not appropriate in some cases like terminals."
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
 
-;; org-roam
-;; zettelkasten notes system
-(use-package org-roam
-  :ensure t
-  :custom
-  (org-roam-directory (file-truename "~/ws/org/notes"))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
-  :config
-  (org-roam-db-autosync-mode)
-  ;; If using org-roam-protocol
-  (require 'org-roam-protocol))
+;;------------------------------------------------------------------------------------------------------------
+;;Add new package above this line, Keyboard config must be last to download to override previous stuff
+;;------------------------------------------------------------------------------------------------------------
 
-
-
-;;========Install package installation up this line 
-;; Keyboard config
-;; Minor-mode to override all keybindings in all modes
+;; Custom Minor-mode to override all keybindings in all modes
 ;; mykbd
 (defvar mykbd-minor-mode-map
   (let ((map (make-sparse-keymap)))
@@ -1043,8 +954,9 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<C-left>") 'shrink-window-horizontally)
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
     (define-key map (kbd "M-o") 'maximize-window)
-    (define-key map (kbd "C-S-t") 'vterm)
+    (define-key map (kbd "C-S-t") 'new-vterm)
     (define-key map (kbd "C-c p") 'projectile-find-file)
+    (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-k") 'kill-buffer)
     (define-key map (kbd "C-s") 'consult-line)
@@ -1056,20 +968,12 @@ not appropriate in some cases like terminals."
     map)
   "mykbd-minor-mode keymap.")
 
-
-;; override some minor mode with 
-;; rebind to nil M-l in org-mode because I need M-l for switch-buffer functionality
-(define-key org-mode-map (kbd "<normal-state> M-l") nil)
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (define-key eshell-mode-map (kbd "<normal-state> M-l") nil)))
-
+;; initiate above custom minor mode
 (define-minor-mode mykbd-minor-mode
   "A minor mode so that my key settings override annoying major modes."
   :init-value t
   :lighter " my-kbd-keys")
 (mykbd-minor-mode 1)
-
 
 ;; revert buffer using F5 key 
 (global-set-key
@@ -1084,7 +988,6 @@ not appropriate in some cases like terminals."
     (if (or force-reverting (not (buffer-modified-p)))
         (revert-buffer :ignore-auto :noconfirm)
       (error "The buffer has been modified"))))
-
 
 
 
