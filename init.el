@@ -389,9 +389,6 @@ shell exits, the buffer is killed."
   (setq evil-want-keybinding nil)
 
   ;;Evil has the same problem as Vim when browsing with j/k long wrapped lines it jumps the entire “real” line ;;instead of the visual line. The solution is also easy:
-
-
-  ;;jj
   (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
   (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
 
@@ -644,10 +641,11 @@ not appropriate in some cases like terminals."
 ;; dap-mode mode for debuging
 ;; For golang: Install lldb library first "apt install lldb" 
 ;; add new Unoptimized  "dap-debug-edit-template->edit template with new name-> eval buffer"
+;; WARNING! Do not create launch.json manually
 ;; example for template
     ;; Eval Buffer with `M-x eval-buffer' to register the newly created template.
     ;; (dap-register-debug-template
-    ;;   "Launch Unoptimized Debug Package"
+    ;;   "Just Debug"
     ;;   (list :type "go"
     ;;         :request "launch"
     ;;         :name "Launch Unoptimized Debug Package"
@@ -1011,7 +1009,7 @@ not appropriate in some cases like terminals."
           ("-C" nil iso-8859-1))) t)
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(package-selected-packages
-   '(org-roam dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile treemacs-evil treemacs go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
