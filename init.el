@@ -18,12 +18,10 @@
 ;; Fix some error with packages
 (setq package-check-signature nil)
 
-
 ;;===General mixed settings
 (windmove-default-keybindings)
 
 ;;lsp related settings from here https://emacs-lsp.github.io/lsp-mode/page/performance/
-(setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
 ;;Bookmarks
@@ -34,8 +32,8 @@
 ;; save bookmarks to .emacs.bmk after each entry
 (setq bookmark-save-flag 1)  
 
-;; reduce the frequency of garbage collection by making it happen on
-;; each 30MB of allocated data (the default is on every 0.76MB)
+;;reduce the frequency of garbage collection by making it happen on
+;;each 30MB of allocated data (the default is on every 0.76MB)
 (setq gc-cons-threshold 30000000)
 
 ;; warn when opening files bigger than 100MB
@@ -50,23 +48,23 @@
 (setq word-wrap t)
 (global-visual-line-mode t)
 
-;; Highlight search results
+;;Highlight search results
 (setq search-highlight        t)
 (setq query-replace-highlight t)
 
-;; Highlight matching brackets
+;;Highlight matching brackets
 ;;Match parenthesis through highlighting rather than retarded jumps. Good!
 (show-paren-mode t)
 (setq show-paren-style 'parenthesis)
 
-;; Delete selection and clipboard to linux and other copy/paste features
+;;Delete selection and clipboard to linux and other copy/paste features
 (delete-selection-mode t)
 (setq select-enable-clipboard t) 
 
 ;; No region when it is not highlighted
 (transient-mark-mode 1)
 
-;; Backups settings
+;;Backups settings
 (setq make-backup-files nil;;do not make backup
       auto-save-files nil; do not create #autosave files
       create-lockfiles nil; do not create .# files
@@ -76,7 +74,11 @@
 ;; use eww as default for URL
 (setq browse-url-browser-function 'eww-browse-url)
 
-;; ===Buffers settings
+;;===Buffers settings
+;;Messages buffer: set max log size
+(setq message-log-max 16384)
+
+
 ;; only warn about deleting modified buffers.
   (setq ibuffer-expert t)
 
@@ -114,9 +116,25 @@
 (setq user-full-name "Iurii Ponomarev"
       user-mail-address "underside@ya.ru")
 
-;;Desktop autosave
+;;Autosave-related 
 (desktop-save-mode 1)
-(savehist-mode 1)
+;; savehist
+(setq savehist-additional-variables
+      ;; also save my search entries
+      '(search-ring regexp-search-ring)
+      savehist-file "~/.emacs.d/savehist")
+(savehist-mode t)
+(setq-default save-place t)
+
+;; delete-auto-save-files
+(setq delete-auto-save-files t)
+(setq backup-directory-alist
+      '(("." . "~/.emacs_backups")))
+
+;; delete old backups silently
+(setq delete-old-versions t)
+
+
 
 ;;enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -156,11 +174,16 @@ tab-stop-list (quote (4 8))
 (customize-set-variable 'ediff-split-window-function 'split-window-horizontally)
 
 ;;===Locale settings
+(prefer-coding-system 'utf-8)
 (setq locale-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (setq-default coding-system-for-read    'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
 (setq default-input-method 'russian-computer)
+
+
 
 ;;===Dired settings
 ;;allow remove non-empty dirs
@@ -187,7 +210,7 @@ tab-stop-list (quote (4 8))
 
 
 ;;===Terminal settings: ansi-term,vterm
-;; ===Config for Emacs without native-compile from source with ansi-term as main terminal
+;;===Config for Emacs without native-compile from source with ansi-term as main terminal
 ;; Term settings (if vterm is installed, this config is not needed)
 ;; open multiple terminals with index
 ;; (defun new-ansi-term ()
@@ -445,8 +468,7 @@ shell exits, the buffer is killed."
   :config
   (setq global-evil-surround-mode 1))
 
-
-;; Evil and vterm
+;;Evil and vterm
 (defun evil-collection-vterm-escape-stay ()
 "Go back to normal state but don't move
 cursor backwards. Moving cursor backwards is the default vim behavior but it is
@@ -455,14 +477,7 @@ not appropriate in some cases like terminals."
 
 (add-hook 'vterm-mode-hook #'evil-collection-vterm-escape-stay)
 
-
-;;yaml-mode
-(use-package yaml-mode
-  :ensure t
-  )
-
-
-;;Org-mode settings
+;;===Org-mode settings
 (use-package org
   :mode  ("\\.org\\'" . org-mode)
          ("\\org.gpg\\'" . org-mode)
@@ -508,7 +523,7 @@ not appropriate in some cases like terminals."
 ;;show agenda since today 
 (setq org-agenda-start-on-weekday nil)
 
-;; Any keywords can be used here
+;;Any keywords can be used here
   (setq org-todo-keywords
         '((sequence "TODO" "HOLD" "REVIEW" "|"  "REASSIGN" "CANCELED" "DONE" )))
 ;;save clocks history between sessions
@@ -517,7 +532,7 @@ not appropriate in some cases like terminals."
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
 
-;; Org-capture
+;;Org-capture
 ;;Template for TODO
 (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/ws/org/notes/todo.org" "org-capture")
@@ -538,20 +553,20 @@ not appropriate in some cases like terminals."
 
 )
 
-;;Tramp
+;;===Tramp
 ;;add in /etc/ssh/ssh_config StrictHostKeyChecking no
 ;;connect to not default port C-x C-f /ssh:test@host#2222:/tmp
-(use-package tramp
-  :ensure t
-  :config
-  (setq tramp-chunksize "500")
-  (setq tramp-debug-buffer t)
-  ;(setq tramp-verbose 10)
-  (setq password-cache-expiry nil)
-  (setq tramp-default-method "ssh")
-)
+;; (use-package tramp
+;;   :ensure t
+;;   :config
+;;   (setq tramp-chunksize "500")
+;;   (setq tramp-debug-buffer t)
+;;   ;(setq tramp-verbose 10)
+;;   (setq password-cache-expiry nil)
+;;   (setq tramp-default-method "ssh")
+;; )
 
-;;Company-mode
+;;===Company-mode
 ;; install shell-backend
 (use-package company-shell
   :ensure t
@@ -576,11 +591,11 @@ not appropriate in some cases like terminals."
   (setq company-minimum-prefix-length 1)
   (setq company-begin-commands '(self-insert-command))
 )
-;;lsp-mode
-;;install needed plugins first (see dt.org/Golang)
-;; optional if you want which-key integration
-;; for python  pip install 'python-language-server[all]'
+;;===lsp-mode
+;;Golang -->  (see dt.org/Golang)
+;;Python -->  pip install 'python-language-server[all]'
 
+;;optional if you want which-key integration
 (use-package which-key
     :ensure t
     :config
@@ -597,7 +612,7 @@ not appropriate in some cases like terminals."
         (go-mode . lsp)
     :commands lsp
     :config
-        ;; performance improvments
+   ;; performance improvments
         (setq lsp-log-io nil) ; if set to true can cause a performance hit
 
         (setq lsp-enable-symbol-highlighting nil)
@@ -638,7 +653,7 @@ not appropriate in some cases like terminals."
 ;; lsp-ui-sideline-delay seconds to wait before showing sideline
 
 
-;; dap-mode mode for debuging
+;;===Dap-mode
 ;; For golang: Install lldb library first "apt install lldb" 
 ;; add new Unoptimized  "dap-debug-edit-template->edit template with new name-> eval buffer"
 ;; WARNING! Do not create launch.json manually
@@ -706,7 +721,7 @@ not appropriate in some cases like terminals."
 	(copy-file default filename))
       (find-file-existing filename))))
 
-;;golang setup
+;;===go-mode
 (use-package go-mode
   :ensure t
   :mode (("\\.go\\'" . go-mode))
@@ -734,14 +749,14 @@ not appropriate in some cases like terminals."
 
 
 
-;;yaml-mode
+;;===yaml-mode
 (use-package yaml-mode
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 )
 
-;;Flycheck
+;;===Flycheck
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode)
@@ -765,7 +780,7 @@ not appropriate in some cases like terminals."
     
 )
 
-;;Projectile
+;;===Projectile
 (use-package projectile
   :ensure t
   :config
@@ -775,7 +790,7 @@ not appropriate in some cases like terminals."
         ("C-c p"       . projectile-find-file))
 )
 
-;;Treemacs
+;;===Treemacs
 (use-package treemacs
   :ensure t
   :defer t
@@ -837,20 +852,15 @@ not appropriate in some cases like terminals."
        (treemacs-git-mode 'simple))))
   :bind
   (:map global-map
-        ("M-0"       . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
         ("<f8>"   . treemacs)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
+        ))
 
 (use-package treemacs-evil
   :after treemacs evil
   :ensure t)
 
 
-;;Markdown mode
+;;===Markdown mode
 (use-package markdown-mode
   :ensure t
   :defer t
@@ -860,32 +870,45 @@ not appropriate in some cases like terminals."
   :init (setq markdown-command '("pandoc" "--no-highlight")))
 
 
-;;Magit
+;;===Magit
 (use-package magit
   :ensure t
-
-  ;; jj
-  ;; :config
-
 )
 
-(setq ispell-program-name "/usr/bin/hunspell"          ; Use hunspell to correct mistakes
-      ispell-dictionary   "en_US") ; Default dictionary to use
 
+;;===Spell check
+;;Use hunspell to correct mistakes
+;; (setq ispell-program-name "/usr/bin/hunspell"          
+;;       ispell-dictionary   "en_US") ; Default dictionary to use
+(when (executable-find "aspell")
+  (setq ispell-program-name (executable-find "aspell"))
+  (setq ispell-extra-args
+        (list "--sug-mode=fast" ;; ultra|fast|normal|bad-spellers
+              "--lang=en_US"
+              "--ignore=4")))
+;;hunspell
+(when (executable-find "hunspell")
+  (setq ispell-program-name (executable-find "hunspell"))
+  (setq ispell-extra-args '("-d en_US")))
+
+(add-to-list 'ispell-skip-region-alist '("[^\000-\377]+"))
+(add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
+(add-to-list 'ispell-skip-region-alist '("#\\+begin_src" . "#\\+end_src"))
+(add-to-list 'ispell-skip-region-alist '("#\\+begin_example" . "#\\+end_example"))
 
 ;; package used for export org files to Jira/Confluence markup 
 ; for export use M-x ox-jira-export-as-jira 
 (use-package ox-jira
     :ensure t)
 
-
+;;===Restclient API testing
 (use-package restclient
     :ensure t)
 
 (use-package ob-restclient
     :ensure t)
 
-;; mode for templates and web files
+;;===Web-mode 
 (use-package web-mode
     :config
     :mode
@@ -907,6 +930,8 @@ not appropriate in some cases like terminals."
 )
 
 ;;===Keybindings
+;;Echo commands I haven’t finished quicker than the default of 1 second:
+(setq echo-keystrokes 0.4)
 ;;big pack of evil-related libraries
 (use-package evil-collection
   :ensure t
@@ -943,7 +968,6 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<f3>") 'magit-branch-checkout)
     (define-key map (kbd "<f4>") 'magit-status)
     (define-key map (kbd "<f6>") 'dired)
-    ;; (define-key map (kbd "<f7>") 'grep-find)
     (define-key map (kbd "<f7>") 'consult-grep)
     (define-key map (kbd "<f11>") 'snipp) ;; custom snippet func
     (define-key map (kbd "<f12>") 'async-shell-command)
