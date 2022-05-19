@@ -113,7 +113,7 @@
           ("%b - Dir: " default-directory))))) ; Plain buffer
 
 ;;User name and email
-(setq user-full-name "Iurii Ponomarev"
+(setq user-full-name "Iurii Pon"
       user-mail-address "underside@ya.ru")
 
 ;;Autosave-related 
