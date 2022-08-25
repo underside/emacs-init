@@ -1,0 +1,17 @@
+{{ if eq .Values.ENV "prod" }}
+          resources:
+            limits:
+              memory: 1000
+            requests:
+              cpu: 100m
+              memory: 1000
+{{ else if eq .Values.ENV "dev" }}
+          resources:
+            limits:
+              memory: 700
+            requests:
+              cpu: 100m
+              memory: 700
+{{ else }}
+      {{- raise "value for .Values.ENV can be 'prod or dev' " }}
+{{ end }}

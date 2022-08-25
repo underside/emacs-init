@@ -1,17 +1,23 @@
 
 ### export  vars and alias
+#for WSL installation
 export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
-
+# alias for kubectl
 alias ksc='kubectl config set-context $(kubectl config current-context) --namespace '
 alias k=kubectl
-source <(kubectl completion bash) 
+alias kconget='kubectl config get-contexts'
+alias kconuse='kubectl config use-context '
 
+# bash-completion must be install first: apt-get install bash-completion
+source <(kubectl completion bash)
 
+# alias for pulumi
 alias pu='pulumi'
+
 #aws eks alias
 alias awsls='aws eks list-clusters'
 alias awskonf='aws eks update-kubeconfig --name'
