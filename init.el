@@ -928,15 +928,14 @@ not appropriate in some cases like terminals."
         )
 )
 
-;;===kubernetes
-;; Magit-like client for K8s
+;;===kubernetes Magit-like client for K8s
 
-(use-package kubernetes
-    :ensure t)
+;; (use-package kubernetes
+;;     :ensure t)
 
-(use-package kubernetes-evil
-  :ensure t
-  :after kubernetes)
+;; (use-package kubernetes-evil
+;;   :ensure t
+;;   :after kubernetes)
 
 
 
