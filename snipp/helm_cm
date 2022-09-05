@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-config
+  labels:
+    app: "somelabel" 
+data:
+  application.conf: |-
+{{ .Files.Get "config/application.config" | nindent 4 }}
