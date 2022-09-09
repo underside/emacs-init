@@ -31,3 +31,8 @@ fi
 
 # add Pulumi to the PATH
 export PATH=$PATH:$HOME/.pulumi/bin
+
+#Golang stuff
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH="$(go env GOPATH)"
+export PATH="${PATH}:${GOPATH}/bin"
