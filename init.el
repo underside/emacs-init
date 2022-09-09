@@ -311,14 +311,16 @@ shell exits, the buffer is killed."
   :ensure t
     )
 
-;;Exec-path-from-shell
-;; needed to use external tools from PATH
-;; add ENVs from PATH
-(setenv "PATH" "/usr/local/bin:$PATH" t)
-(add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path "/usr/share")
+;;Add new ENV variables to Emacs PATH
+(setenv "PATH"
+        (concat
+         "/usr/local/bin" path-separator
+         "/usr/local/share" path-separator
+         "/usr/local/go/bin" path-separator
+         "/home/i/go/bin" path-separator
+         (getenv "PATH")))
 
-;;===Modeline settings
+;;=== Doom Modeline settings
 ;;Doom-modeline
 ;;Run M-x all-the-icons-install-fonts for this package
 ;; (use-package doom-modeline
@@ -836,7 +838,6 @@ not appropriate in some cases like terminals."
           treemacs-user-header-line-format       nil
           treemacs-width                         38
           treemacs-workspace-switch-cleanup      nil
-          treemacs-project-follow-mode t
           )
 
     (treemacs-follow-mode t)
@@ -928,14 +929,15 @@ not appropriate in some cases like terminals."
         )
 )
 
-;;===kubernetes Magit-like client for K8s
+;;===kubernetes
+;; Magit-like client for K8s
 
-;; (use-package kubernetes
-;;     :ensure t)
+(use-package kubernetes
+    :ensure t)
 
-;; (use-package kubernetes-evil
-;;   :ensure t
-;;   :after kubernetes)
+(use-package kubernetes-evil
+  :ensure t
+  :after kubernetes)
 
 
 
