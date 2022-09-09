@@ -311,14 +311,15 @@ shell exits, the buffer is killed."
   :ensure t
     )
 
-;;Add new ENV variables to Emacs PATH
-(setenv "PATH"
-        (concat
-         "/usr/local/bin" path-separator
-         "/usr/local/share" path-separator
-         "/usr/local/go/bin" path-separator
-         "/home/i/go/bin" path-separator
-         (getenv "PATH")))
+;;Add Linux PATH ENV variables to Emacs
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+    )
+
+
 
 ;;=== Doom Modeline settings
 ;;Doom-modeline
@@ -604,6 +605,7 @@ not appropriate in some cases like terminals."
     )
 
 (use-package lsp-mode
+    :defer t
     :ensure t
     :hook
         (sh-mode . lsp)
@@ -628,14 +630,15 @@ not appropriate in some cases like terminals."
         (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
         (add-hook 'go-mode-hook #'lsp-deferred)
         ;;gopls integration with lsp-mode
-        (lsp-register-custom-settings
-        '(("gopls.completeUnimported" t t)
-        ("gopls.staticcheck" t t)))
+        ;; (lsp-register-custom-settings
+        ;; '(("gopls.completeUnimported" t t)
+        ;; ("gopls.staticcheck" t t)))
 
         ;; turn off auto picking of project root folder
         (setq lsp-auto-guess-root  nil )
 
 )
+
 
 
 (use-package lsp-ui
@@ -647,9 +650,6 @@ not appropriate in some cases like terminals."
     (setq lsp-ui-sideline-delay 0)
     (setq lsp-ui-sideline-update-mode t)
 )
-
-
-;; lsp-ui-sideline-delay seconds to wait before showing sideline
 
 
 ;;===Dap-mode
@@ -839,8 +839,7 @@ not appropriate in some cases like terminals."
           treemacs-width                         38
           treemacs-workspace-switch-cleanup      nil
           )
-
-    (treemacs-follow-mode t)
+    ;; (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
     (setq treemacs-text-scale -2)
     (treemacs-fringe-indicator-mode t)
@@ -1050,7 +1049,7 @@ not appropriate in some cases like terminals."
           ("-C" nil iso-8859-1))) t)
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(package-selected-packages
-   '(kubernetes-evil treemacs-evil kubernetes dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(eglot kubernetes-evil treemacs-evil kubernetes dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
