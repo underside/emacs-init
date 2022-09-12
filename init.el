@@ -221,10 +221,17 @@ tab-stop-list (quote (4 8))
 ;;   )
 ;; (global-set-key (kbd "C-S-t") 'new-ansi-term) ;; mappe sur C-T
 
+
+;; Setup interactive shell to add aliases from .bashrc
+(setq shell-file-name "bash")
+(setq shell-command-switch "-ic")
+
 ;; vterm: Config with native-compile and vterm installed
 ;; use vterm instead of shell when run M-x shell-command (turn off by default)
 ;; set vterm as default shell
+
 (setq-default shell-default-shell 'vterm)
+
 
 (defun run-in-vterm-kill (process event)
   "A process sentinel. Kills PROCESS's buffer if it is live."
