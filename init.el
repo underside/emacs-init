@@ -927,15 +927,15 @@ not appropriate in some cases like terminals."
 ;; Magit-like client for K8s
 
 (use-package kubernetes
-    :ensure t)
+    )
 
 (use-package kubernetes-evil
-  :ensure t
   :after kubernetes)
 
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
+  :ensure t
   ;; Either bind `marginalia-cycle' globally or only in the minibuffer
   :bind (("M-A" . marginalia-cycle)
          :map minibuffer-local-map
@@ -947,6 +947,46 @@ not appropriate in some cases like terminals."
   :init
   (marginalia-mode)
   )
+
+(use-package corfu
+  :ensure t
+  ;; Optional customizations
+  ;; :custom
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto t)                 ;; Enable auto completion
+  (corfu-separator ?\s)          ;; Orderless field separator
+  (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  (corfu-preview-current nil)    ;; Disable current candidate preview
+  (corfu-preselect-first nil)    ;; Disable candidate preselection
+  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  (corfu-echo-documentation nil) ;; Disable documentation in the echo area
+  (corfu-scroll-margin 5)        ;; Use scroll margin
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+  ;; Recommended: Enable Corfu globally.
+  ;; This is recommended since Dabbrev can be used globally (M-/).
+  ;; See also `corfu-excluded-modes'.
+  :init
+    (global-corfu-mode)
+)
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (setq tab-always-indent 'complete))
 
 
 ;;========
@@ -1000,7 +1040,7 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<C-down>") 'enlarge-window)
     (define-key map (kbd "<C-left>") 'shrink-window-horizontally)
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
-    (define-key map (kbd "C-c p") 'consult-find)
+    (define-key map (kbd "C-c f") 'consult-find)
     (define-key map (kbd "M-o") 'maximize-window)
     (define-key map (kbd "C-S-t") 'new-vterm)
     (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
@@ -1057,8 +1097,8 @@ not appropriate in some cases like terminals."
           ("-C" nil iso-8859-1))) t)
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(package-selected-packages
-   '(marginalia eglot kubernetes-evil treemacs-evil kubernetes dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
- '(projectile-mode t nil (projectile))
+   '(corfu marginalia eglot kubernetes-evil treemacs-evil kubernetes dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+ '(projectile-mode t)
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
  '(warning-suppress-types '((emacs) (comp) (comp) (comp) (comp))))
