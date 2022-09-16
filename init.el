@@ -71,7 +71,7 @@
 
 ;; eww browser (Emacs)
 ;; use eww as default for URL
-(setq browse-url-browser-function 'eww-browse-url)
+;; (setq browse-url-browser-function 'eww-browse-url)
 
 ;;===Buffers settings
 ;;Messages buffer: set max log size
@@ -224,7 +224,7 @@ tab-stop-list (quote (4 8))
 
 ;; Setup interactive shell to add aliases from .bashrc
 (setq shell-file-name "bash")
-(setq shell-command-switch "-ic")
+(setq shell-command-switch "-c")
 
 ;; vterm: Config with native-compile and vterm installed
 ;; use vterm instead of shell when run M-x shell-command (turn off by default)
@@ -364,7 +364,6 @@ shell exits, the buffer is killed."
     smooth-scroll-mode
     mykbd-minor-mode
     evil-collection-unimpaired-mode
-    projectile-mode
     which-key-mode
     auto-revert-mode
     eldoc-mode
@@ -392,7 +391,7 @@ shell exits, the buffer is killed."
 ;;selectrum (ivy and helm replacement)
 (use-package selectrum
   :ensure t
-  :demand
+  :demand 
   :config
     (selectrum-mode +1)
 
@@ -786,16 +785,6 @@ not appropriate in some cases like terminals."
     
 )
 
-;;===Projectile
-(use-package projectile
-  :ensure t
-  :config
-    (projectile-mode +1)
-  :bind
-  (:map global-map
-        ("C-c p"       . projectile-find-file))
-)
-
 ;;===Treemacs
 (use-package treemacs
   :ensure t
@@ -846,7 +835,6 @@ not appropriate in some cases like terminals."
           treemacs-width                         38
           treemacs-workspace-switch-cleanup      nil
           )
-    ;; (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
     (setq treemacs-text-scale -2)
     (treemacs-fringe-indicator-mode t)
@@ -946,19 +934,39 @@ not appropriate in some cases like terminals."
   :after kubernetes)
 
 
+;; Enable rich annotations using the Marginalia package
+(use-package marginalia
+  ;; Either bind `marginalia-cycle' globally or only in the minibuffer
+  :bind (("M-A" . marginalia-cycle)
+         :map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+
+  ;; The :init configuration is always executed (Not lazy!)
+  ;; Must be in the :init section of use-package such that the mode gets
+  ;; enabled right away. Note that this forces loading the package.
+  :init
+  (marginalia-mode)
+  )
 
 
-;;===Keybindings
+;;========
+;;Add new package above this line, Keyboard config must be last to download to override previous stuff
+;;========
+
+
+;;========Keybindings
 ;;Echo commands I haven’t finished quicker than the default of 1 second:
 (setq echo-keystrokes 0.4)
+
+;; this option needed for evil and evil-collection
+(setq evil-want-keybinding nil)
+
 ;;big pack of evil-related libraries
 (use-package evil-collection
   :ensure t
   :after evil
   :config
     (evil-collection-init)
-    ;; this option needed for evil and evil-collection
-    (setq evil-want-keybinding nil)
 )
 
 ;; escape quits
@@ -978,12 +986,6 @@ not appropriate in some cases like terminals."
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
 
-
-
-;;------------------------------------------------------------------------------------------------------------
-;;Add new package above this line, Keyboard config must be last to download to override previous stuff
-;;------------------------------------------------------------------------------------------------------------
-
 ;; Custom Minor-mode to override all keybindings in all modes
 ;; mykbd
 (defvar mykbd-minor-mode-map
@@ -991,20 +993,19 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<f3>") 'magit-branch-checkout)
     (define-key map (kbd "<f4>") 'magit-status)
     (define-key map (kbd "<f6>") 'dired)
-    (define-key map (kbd "<f7>") 'consult-grep)
+    (define-key map (kbd "<f7>") 'consult-ripgrep)
     (define-key map (kbd "<f11>") 'snipp) ;; custom snippet func
     (define-key map (kbd "<f12>") 'async-shell-command)
     (define-key map (kbd "<C-up>") 'shrink-window)
     (define-key map (kbd "<C-down>") 'enlarge-window)
     (define-key map (kbd "<C-left>") 'shrink-window-horizontally)
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
+    (define-key map (kbd "C-c p") 'consult-find)
     (define-key map (kbd "M-o") 'maximize-window)
     (define-key map (kbd "C-S-t") 'new-vterm)
-    (define-key map (kbd "C-c p") 'projectile-find-file)
     (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-k") 'kill-buffer)
-    (define-key map (kbd "C-s") 'consult-line)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
     ;; do not indent when press RET in org-mode
@@ -1056,7 +1057,7 @@ not appropriate in some cases like terminals."
           ("-C" nil iso-8859-1))) t)
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(package-selected-packages
-   '(eglot kubernetes-evil treemacs-evil kubernetes dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(marginalia eglot kubernetes-evil treemacs-evil kubernetes dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t nil (projectile))
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
