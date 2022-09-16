@@ -411,10 +411,17 @@ shell exits, the buffer is killed."
     )
 ;;===Evil-mode
 (use-package evil
-  :ensure t
   :init
-  (evil-mode 1)
+    (progn
+      (setq evil-undo-system 'undo-tree)
+      ;; `evil-collection' assumes `evil-want-keybinding' is set to
+      ;; `nil' before loading `evil' and `evil-collection'
+      ;; @see https://github.com/emacs-evil/evil-collection#installation
+      (setq evil-want-keybinding nil)
+      )
   :config
+    (progn
+      (evil-mode 1))
   (setq evil-move-cursor-back nil)
 
   ;;Evil has the same problem as Vim when browsing with j/k long wrapped lines it jumps the entire “real” line ;;instead of the visual line. The solution is also easy:
@@ -458,7 +465,7 @@ shell exits, the buffer is killed."
  (setq evil-insert-state-cursor '("green" bar))
  (setq evil-replace-state-cursor '("green" bar))
  (setq evil-operator-state-cursor '("red" hollow))
-
+)
 
 ;;Evil-mode plugin evil-matchit
 (use-package evil-matchit
@@ -724,7 +731,7 @@ not appropriate in some cases like terminals."
 	  (default "~/ws/git/emacs-init/conf/default-launch.json"))
       (unless (file-exists-p filename)
 	(copy-file default filename))
-      (find-file-existing filename))))
+      (find-file-existing filename)))
 
 ;;===go-mode
 (use-package go-mode
@@ -949,9 +956,8 @@ not appropriate in some cases like terminals."
   )
 
 (use-package corfu
-  :ensure t
   ;; Optional customizations
-  ;; :custom
+  :custom
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
   (corfu-separator ?\s)          ;; Orderless field separator
@@ -962,16 +968,17 @@ not appropriate in some cases like terminals."
   (corfu-on-exact-match nil)     ;; Configure handling of exact matches
   (corfu-echo-documentation nil) ;; Disable documentation in the echo area
   (corfu-scroll-margin 5)        ;; Use scroll margin
+
   ;; Enable Corfu only for certain modes.
   ;; :hook ((prog-mode . corfu-mode)
   ;;        (shell-mode . corfu-mode)
   ;;        (eshell-mode . corfu-mode))
+
   ;; Recommended: Enable Corfu globally.
   ;; This is recommended since Dabbrev can be used globally (M-/).
   ;; See also `corfu-excluded-modes'.
   :init
-    (global-corfu-mode)
-)
+  (global-corfu-mode))
 
 ;; A few more useful configurations...
 (use-package emacs
@@ -987,7 +994,6 @@ not appropriate in some cases like terminals."
   ;; Enable indentation+completion using the TAB key.
   ;; `completion-at-point' is often bound to M-TAB.
   (setq tab-always-indent 'complete))
-
 
 ;;========
 ;;Add new package above this line, Keyboard config must be last to download to override previous stuff
