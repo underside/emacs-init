@@ -1,15 +1,25 @@
 ;;===Package managing (MELPA etc)
+;;{{{ Set up package and use-package
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-;;Manualy installed packages
-;; without use-package
-(add-to-list 'load-path "~/.emacs.d/lisp/")
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
 
-;;Bootstrap use-package
-(unless (package-installed-p 'use-package)  
-  (package-refresh-contents) 
-  (package-install 'use-package)) 
-(require 'use-package)
+;; Bootstrap 'use-package'
+(eval-after-load 'gnutls
+  '(add-to-list 'gnutls-trustfiles "/etc/ssl/cert.pem"))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-when-compile
+  (require 'use-package))
+(require 'bind-key)
+(setq use-package-always-ensure t)
+
+;;}}}
+
+
+
 
 ;; package enable at startup?
 (setq package-enable-at-startup nil)
@@ -132,6 +142,11 @@
 
 ;; delete old backups silently
 (setq delete-old-versions t)
+
+
+(setq global-undo-tree-mode t)
+
+
 
 
 
@@ -409,11 +424,18 @@ shell exits, the buffer is killed."
   :ensure t
   :demand t
     )
+
+
+(use-package undo-fu
+  :ensure t
+    )
+
+
 ;;===Evil-mode
 (use-package evil
   :init
     (progn
-      (setq evil-undo-system 'undo-tree)
+      (setq evil-undo-system 'undo-fu)
       ;; `evil-collection' assumes `evil-want-keybinding' is set to
       ;; `nil' before loading `evil' and `evil-collection'
       ;; @see https://github.com/emacs-evil/evil-collection#installation
@@ -1103,7 +1125,7 @@ not appropriate in some cases like terminals."
           ("-C" nil iso-8859-1))) t)
  '(ispell-extra-args '("--sug-mode=ultra" "--prefix=c:/mingw_mine"))
  '(package-selected-packages
-   '(corfu marginalia eglot kubernetes-evil treemacs-evil kubernetes dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
+   '(undo-fu corfu marginalia eglot kubernetes-evil treemacs-evil kubernetes dap-mode general evil-collection doom-modeline-now-playing doom-modeline web-mode auctex lsp-ui jq-mode ob-restclient confluence vterm ox-jira password-generator gitlab ag helm-flycheck rainbow-delimiters diminish deminish which-key lsp-mode json-mode ob-go exec-path-from-shell multi-compile flymake-go flycheck-gometalinter treemacs-projectile go-mode ob-http request restclient htmlize beacon pomodoro org-pomodoro yasnippet-snippets dockerfile-mode jinja2-mode all-the-icons-ibuffer adoc-mode uniquify ansible ansible-vault jenkinsfile-mode eterm-256color evil-magit jdee popup-el emacs-async org-bullets yasnippet magit markdown-mode xterm-color flycheck-yamllint yaml-mode use-package flycheck evil-surround evil-matchit doom-themes company))
  '(projectile-mode t)
  '(recentf-mode t)
  '(temp-buffer-resize-mode t)
