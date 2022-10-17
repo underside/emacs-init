@@ -1,0 +1,1 @@
+{{ if .Values.tg.NOT_PROD }}350{{ else }}800{{ end }}

@@ -1,0 +1,11 @@
+{{- define "datastore.volumes" -}}
+{{- range $v := .Values.datastore.deployment.volumes -}}
+- name: {{ $v.name }}
+  projected:
+    sources:
+{{- range $s := $v.sources }}
+      - configMap:
+          name: {{ $s }} 
+{{- end -}}
+{{- end -}}
+{{- end -}}

@@ -1,0 +1,1 @@
+{{- tpl (toYaml .Values.datastore.deployment.affinity) . | nindent 8}}
