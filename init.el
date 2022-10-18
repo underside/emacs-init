@@ -15,11 +15,7 @@
   (require 'use-package))
 (require 'bind-key)
 (setq use-package-always-ensure t)
-
 ;;}}}
-
-
-
 
 ;; package enable at startup?
 (setq package-enable-at-startup nil)
@@ -30,7 +26,7 @@
 ;;===General mixed settings
 (windmove-default-keybindings)
 
-;;lsp related settings from here https://emacs-lsp.github.io/lsp-mode/page/performance/
+ ;;lsp related settings from here https://emacs-lsp.github.io/lsp-mode/page/performance/
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
 
@@ -145,9 +141,6 @@
 
 
 (setq global-undo-tree-mode t)
-
-
-
 
 
 ;;enable y/n answers
@@ -430,6 +423,10 @@ shell exits, the buffer is killed."
   :ensure t
     )
 
+;; Stuff that should be loaded before evil
+;; Full Emacs keys in Evil Insert mode
+(setq evil-disable-insert-state-bindings t)
+
 
 ;;===Evil-mode
 (use-package evil
@@ -454,21 +451,9 @@ shell exits, the buffer is killed."
   (setq evil-move-cursor-back nil)
   ;;copy sentence - Y (standart Vim behavior)
   (setq evil-want-Y-yank-to-eol t)
-  ;;C-k and C-j for page down/up
-  (define-key evil-normal-state-map (kbd "C-k") (lambda ()
-												    (interactive)
-												    (evil-scroll-up nil)))
-  (define-key evil-normal-state-map (kbd "C-j") (lambda ()
-												    (interactive)
-												    (evil-scroll-down nil)))
-;; bind ':ls' command to 'ibuffer instead of 'list-buffers
 
- (define-key evil-ex-map "ls" 'ibuffer)
- ;; (define-key evil-normal-state-map (kbd "M-k") 'kill-buffer)
-;;
- 
-;; define :b to open bufferlist search. Press : + b + space to start fuzzy search between opened buffers 
- (define-key evil-ex-map "b " 'ivy-switch-buffer)
+;; bind ':ls' command to 'ibuffer instead of 'list-buffers
+(define-key evil-ex-map "ls" 'ibuffer)
 
 ;;evil-mode as default for ibuffer
  (setq evil-emacs-state-modes (delq 'ibuffer-mode evil-emacs-state-modes))
@@ -560,20 +545,12 @@ not appropriate in some cases like terminals."
 
 ;;Any keywords can be used here
   (setq org-todo-keywords
-        '((sequence "TODO" "HOLD" "REVIEW" "|"  "REASSIGN" "CANCELED" "DONE" "REJECTED" )))
+        '((sequence "TODO" "INPROGRESS" "|"  "REASSIGN" "CANCELED" "DONE" "REJECTED" )))
 ;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
-
-;;Org-capture
-;;Template for TODO
-(setq org-capture-templates
-      '(("t" "Todo" entry (file+headline "~/ws/org/notes/todo.org" "org-capture")
-         "* TODO %?\n  %i\n  %a")
-        ("j" "Journal" entry (file+datetree "~/ws/org/notes/todo.org")
-         "* %?\nEntered on %U\n  %i\n  %a")))
 
 ;; gpg encryption
 ;;enter pass for gpg files inside Emacs
@@ -643,7 +620,6 @@ not appropriate in some cases like terminals."
     :defer t
     :ensure t
     :hook
-        (sh-mode . lsp)
         (python-mode . lsp)
         (go-mode . lsp)
     :commands lsp
@@ -726,8 +702,7 @@ not appropriate in some cases like terminals."
   (setq dap-print-io t)
 
   ;;For golang
-  (require 'dap-go)
-  (dap-go-setup)
+  (require 'dap-dlv-go)
   ;; gdb
   (require 'dap-gdb-lldb)
 
@@ -1069,7 +1044,6 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<C-left>") 'shrink-window-horizontally)
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
     (define-key map (kbd "C-c f") 'consult-find)
-    (define-key map (kbd "M-o") 'maximize-window)
     (define-key map (kbd "C-S-t") 'new-vterm)
     (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
     (define-key map (kbd "M-l") 'switch-to-buffer)
@@ -1102,5 +1076,4 @@ not appropriate in some cases like terminals."
     (if (or force-reverting (not (buffer-modified-p)))
         (revert-buffer :ignore-auto :noconfirm)
       (error "The buffer has been modified"))))
-
 
