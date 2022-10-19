@@ -1056,6 +1056,7 @@ not appropriate in some cases like terminals."
     (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
+    (define-key map (kbd "M-o") 'next-window-any-frame)
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
     (define-key evil-insert-state-map (kbd"jj") 'evil-normal-state)
     ;; (define-key evil-motion-state-map (kbd ":") 'evil-repeat-find-char)
@@ -1085,3 +1086,4 @@ not appropriate in some cases like terminals."
     (if (or force-reverting (not (buffer-modified-p)))
         (revert-buffer :ignore-auto :noconfirm)
       (error "The buffer has been modified"))))
+
