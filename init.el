@@ -1058,10 +1058,9 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
     (define-key evil-insert-state-map (kbd"jj") 'evil-normal-state)
-    (define-key evil-motion-state-map (kbd ":") 'evil-repeat-find-char)
-    (define-key evil-motion-state-map (kbd ";") 'evil-ex)
+    ;; (define-key evil-motion-state-map (kbd ":") 'evil-repeat-find-char)
+    ;; (define-key evil-motion-state-map (kbd ";") 'evil-ex)
     ;; do not indent when press RET in org-mode
-    (define-key org-mode-map (kbd "C-m") 'newline-and-indent)
     ;;----
     map)
   "mykbd-minor-mode keymap.")
@@ -1086,4 +1085,3 @@ not appropriate in some cases like terminals."
     (if (or force-reverting (not (buffer-modified-p)))
         (revert-buffer :ignore-auto :noconfirm)
       (error "The buffer has been modified"))))
-
