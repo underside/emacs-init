@@ -552,6 +552,14 @@ not appropriate in some cases like terminals."
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
 
+;;Org-capture
+;;Template for TODO
+;; (setq org-capture-templates
+;;       '(("t" "Todo" entry (file+headline "~/ws/org/notes/todo.org" "org-capture")
+;;          "* TODO %?\n  %i\n  %a")
+;;         ("j" "Journal" entry (file+datetree "~/ws/org/notes/todo.org")
+;;          "* %?\nEntered on %U\n  %i\n  %a")))
+
 ;; gpg encryption
 ;;enter pass for gpg files inside Emacs
 (setq epa-pinentry-mode 'loopback)
@@ -1047,9 +1055,11 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "C-S-t") 'new-vterm)
     (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
     (define-key map (kbd "M-l") 'switch-to-buffer)
-    (define-key map (kbd "M-k") 'kill-buffer)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
+    (define-key evil-insert-state-map (kbd"jj") 'evil-normal-state)
+    (define-key evil-motion-state-map (kbd ":") 'evil-repeat-find-char)
+    (define-key evil-motion-state-map (kbd ";") 'evil-ex)
     ;; do not indent when press RET in org-mode
     (define-key org-mode-map (kbd "C-m") 'newline-and-indent)
     ;;----
