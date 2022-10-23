@@ -135,7 +135,7 @@
 ;; Backup
 ;; Set autosave files 
 (setq backup-directory-alist
-      '(("." . "~/.emacs_backups")))
+      '(("." . "~/tmp")))
 (setq delete-old-versions t
   kept-new-versions 6
   kept-old-versions 2
@@ -144,7 +144,7 @@
 ;; delete old backups silently
 (setq delete-old-versions t)
 
-;; kk Do not create copy of sensitive data files
+;; Do not create copy of sensitive data files
 (setq auto-mode-alist
       (append
        (list
@@ -155,7 +155,6 @@
 ;; Global undo tree
 (setq global-undo-tree-mode t)
 
-;; kk
 ;;enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -209,6 +208,7 @@ tab-stop-list (quote (4 8))
 ;;allow remove non-empty dirs
 (setq dired-recursive-deletes 'top)
 (setq dired-dwim-target t)
+
 ;;Hide detailes in dired-mode (permissions etc) 
 ;;If you want see detailes press "("
 (defun hide-details ()
@@ -222,6 +222,7 @@ tab-stop-list (quote (4 8))
 (interactive "sSnippet:")
 (insert-file-contents (concat "~/git/emacs-init/snipp/" fn)) 
   (if nil (message "argument is nil")))
+
 ;; Abbrev table example
 ;; (define-abbrev-table 'global-abbrev-table '(
 ;;     ("afaict" "as far as I can tell" nil 1)
@@ -242,6 +243,10 @@ tab-stop-list (quote (4 8))
 ;;   )
 ;; (global-set-key (kbd "C-S-t") 'new-ansi-term) ;; mappe sur C-T
 
+;; vterm terminal (work only with native-compiled Emacs)
+;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
+(use-package vterm
+    :ensure t)
 
 ;; Setup interactive shell to add aliases from .bashrc
 (setq shell-file-name "bash")
@@ -294,10 +299,6 @@ shell exits, the buffer is killed."
   (vterm)
   )
 
-;; vterm terminal (work only with native-compiled Emacs)
-;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
-(use-package vterm
-    :ensure t)
 
 ;;===Themes,fonts,UI
 ;; enable pixelwise resizing frames
@@ -347,27 +348,6 @@ shell exits, the buffer is killed."
   (exec-path-from-shell-initialize))
     )
 
-
-
-;;=== Doom Modeline settings
-;;Doom-modeline
-;;Run M-x all-the-icons-install-fonts for this package
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :init (doom-modeline-mode 1))
-;;   :config
-;;     (setq doom-modeline-height 8)
-;;     ;;fonts
-;;     (set-face-attribute 'mode-line nil :family "Hack" :height 110)
-;;     (set-face-attribute 'mode-line-inactive nil :family "Hack" :height 110)
-;;     ;; git info length
-;;     (setq doom-modeline-vcs-max-length 12)
-;;     ;;rm indent info
-;;     (setq doom-modeline-indent-info nil)
-;;     ;;remove encoding info
-;;     (setq doom-modeline-buffer-encoding nil)
-
-
 ;;=== Custom Modeline
 ;;M font size and family
 (set-face-attribute 'mode-line nil :family "Hack" :height 110)
@@ -379,8 +359,8 @@ shell exits, the buffer is killed."
 (size-indication-mode          t) ;; file size in persents
 
 ;;list of minor modes needed to hide
-(defvar hidden-minor-modes ; example, write your own list of hidden
-  '(abbrev-mode            ; minor modes
+(defvar hidden-minor-modes 
+  '(abbrev-mode            
     auto-fill-function
     smooth-scroll-mode
     mykbd-minor-mode
@@ -409,7 +389,7 @@ shell exits, the buffer is killed."
 )
 
 ;;===Incremental narrowing
-;;selectrum (ivy and helm replacement)
+;;selectrum 
 (use-package selectrum
   :ensure t
   :demand 
@@ -425,13 +405,13 @@ shell exits, the buffer is killed."
     (setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
     (setq completion-styles '(orderless))
 )
-;; consult - counsel and swiper replacement
+;; consult: search, grep, project navigation 
 (use-package consult
   :ensure t
   :demand t
     )
 
-
+;; Undo replacement
 (use-package undo-fu
   :ensure t
     )
@@ -487,19 +467,20 @@ shell exits, the buffer is killed."
  (setq evil-operator-state-cursor '("red" hollow))
 )
 
+;;jj comment, because most likely this packages part of evil-collection
 ;;Evil-mode plugin evil-matchit
-(use-package evil-matchit
-  :ensure t
-  :config
-  (global-evil-matchit-mode 1)
-)
+;; (use-package evil-matchit
+;;   :ensure t
+;;   :config
+;;   (global-evil-matchit-mode 1)
+;; )
 
 ;;plugin evil-surround
-(use-package evil-surround
-  :ensure t
-  :after evil-mode
-  :config
-  (setq global-evil-surround-mode 1))
+;; (use-package evil-surround
+;;   :ensure t
+;;   :after evil-mode
+;;   :config
+;;   (setq global-evil-surround-mode 1))
 
 ;;Evil and vterm
 (defun evil-collection-vterm-escape-stay ()
@@ -548,17 +529,17 @@ not appropriate in some cases like terminals."
        ))
 
 ;;Agenda
-;; ~/org is a symlink to /mnt/e/ydisk/org/notes
 ;; include all .org files from notes dir in agenda
 (setq org-agenda-files '("~.emacs.d/todo.org"))
-;;Show next 10 days, not only this week
-(setq org-agenda-span 10)
+;;Show next 20 days, not only this week
+(setq org-agenda-span 20)
 ;;show agenda since today 
 (setq org-agenda-start-on-weekday nil)
 
 ;;Any keywords can be used here
   (setq org-todo-keywords
-        '((sequence "TODO" "INPROGRESS" "|"  "REASSIGN" "CANCELED" "DONE" "REJECTED" )))
+        '((sequence "TODO" "|"  "CANCELED" "DONE" )))
+
 ;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
@@ -600,32 +581,36 @@ not appropriate in some cases like terminals."
 ;; )
 
 ;;===Company-mode
+;; !!! turnoff Company since I use LSP
+
 ;; install shell-backend
-(use-package company-shell
-  :ensure t
-)
-(use-package company
-  :ensure t
-  :config
-  ;; add company backends
-  (add-to-list 'company-backends 'company-shell)
-  (add-to-list 'company-backends 'company-python)
+;; (use-package company-shell
+;;   :ensure t
+;; )
 
-  ;; company-hooks for different modes
-  (add-hook 'after-init-hook 'global-company-mode)
-  (add-hook 'shell-mode-hook
-            (lambda ()
-                (set (make-local-variable 'company-backends) '(company-shell))))
+;; (use-package company
+;;   :ensure t
+;;   :config
+;;   ;; add company backends
+;;   (add-to-list 'company-backends 'company-shell)
+;;   (add-to-list 'company-backends 'company-python)
 
-  ;; base settings
-  (setq company-tooltip-limit 20)
-  (setq company-idle-delay 0.3) 
-  (setq company-echo-delay 0.3)                          
-  (setq company-minimum-prefix-length 1)
-  (setq company-begin-commands '(self-insert-command))
-)
+;;   ;; company-hooks for different modes
+;;   (add-hook 'after-init-hook 'global-company-mode)
+;;   (add-hook 'shell-mode-hook
+;;             (lambda ()
+;;                 (set (make-local-variable 'company-backends) '(company-shell))))
+
+;;   ;; base settings
+;;   (setq company-tooltip-limit 20)
+;;   (setq company-idle-delay 0.3) 
+;;   (setq company-echo-delay 0.3)                          
+;;   (setq company-minimum-prefix-length 1)
+;;   (setq company-begin-commands '(self-insert-command))
+;; )
+
 ;;===lsp-mode
-;;Golang -->  (see dt.org/Golang)
+;;Golang --> install gopls 
 ;;Python -->  pip install 'python-language-server[all]'
 
 ;;optional if you want which-key integration
@@ -634,8 +619,8 @@ not appropriate in some cases like terminals."
     :config
     (which-key-mode)
     (setq which-key-idle-delay 0.5)
-
     )
+
 
 (use-package lsp-mode
     :defer t
@@ -671,16 +656,18 @@ not appropriate in some cases like terminals."
 
 )
 
-
-
+;; lsp related package to show hover info
 (use-package lsp-ui
     :ensure t
     :config
+    (setq lsp-ui-sideline-enable nil) ;; disable sideline
     ;; (setq lsp-ui-sideline-show-diagnostics t)
-    (setq lsp-ui-sideline-show-hover t)
-    (setq lsp-ui-sideline-show-code-actions t)
-    (setq lsp-ui-sideline-delay 0)
-    (setq lsp-ui-sideline-update-mode t)
+    ;; (setq lsp-ui-sideline-show-hover t)
+    ;; (setq lsp-ui-sideline-show-code-actions t)
+    ;; (setq lsp-ui-sideline-delay 0)
+    ;; (setq lsp-ui-sideline-update-mode t)
+
+
 )
 
 
@@ -727,7 +714,6 @@ not appropriate in some cases like terminals."
   ;; gdb
   (require 'dap-gdb-lldb)
 
-
   ;;workaround 
   (setq dap-launch-configuration-providers  '(dap-debug-template-configurations-provider))
   ;; register template 
@@ -742,14 +728,14 @@ not appropriate in some cases like terminals."
 
 ;; function that will add launch.json file in every root directory if it's not exist
 ;; run this function manually if debugger throw an error "....launch.json"
-(defun dap-debug-create-or-edit-json-template ()
-    "Edit the debugging configuration or create + edit if none exists yet."
-    (interactive)
-    (let ((filename (concat (lsp-workspace-root) "/launch.json"))
-	  (default "~/ws/git/emacs-init/conf/default-launch.json"))
-      (unless (file-exists-p filename)
-	(copy-file default filename))
-      (find-file-existing filename)))
+;; (defun dap-debug-create-or-edit-json-template ()
+;;     "Edit the debugging configuration or create + edit if none exists yet."
+;;     (interactive)
+;;     (let ((filename (concat (lsp-workspace-root) "/launch.json"))
+;; 	  (default "~/ws/git/emacs-init/conf/default-launch.json"))
+;;       (unless (file-exists-p filename)
+;; 	(copy-file default filename))
+;;       (find-file-existing filename)))
 
 ;;===go-mode
 (use-package go-mode
@@ -813,8 +799,6 @@ not appropriate in some cases like terminals."
   :ensure t
   :defer t
   :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
   :config
   (progn
     (setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
@@ -918,13 +902,6 @@ not appropriate in some cases like terminals."
 (use-package ox-jira
     :ensure t)
 
-;;===Restclient API testing
-(use-package restclient
-    :ensure t)
-
-(use-package ob-restclient
-    :ensure t)
-
 ;;===Web-mode 
 (use-package web-mode
     :config
@@ -948,21 +925,19 @@ not appropriate in some cases like terminals."
 
 ;;===kubernetes
 ;; Magit-like client for K8s
-
-(use-package kubernetes
-    )
-
-(use-package kubernetes-evil
-  :after kubernetes)
+;; (use-package kubernetes
+;;     )
+;; (use-package kubernetes-evil
+;;   :after kubernetes)
 
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   :ensure t
   ;; Either bind `marginalia-cycle' globally or only in the minibuffer
-  :bind (("M-A" . marginalia-cycle)
-         :map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
+  ;; :bind (("M-A" . marginalia-cycle)
+  ;;        :map minibuffer-local-map
+  ;;        ("M-A" . marginalia-cycle))
 
   ;; The :init configuration is always executed (Not lazy!)
   ;; Must be in the :init section of use-package such that the mode gets
@@ -1098,19 +1073,3 @@ not appropriate in some cases like terminals."
       (error "The buffer has been modified"))))
 
 ;;;==================================DO NOT TOUCH CONFIG BELOW
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ediff-split-window-function 'split-window-horizontally)
- '(ediff-window-setup-function 'ediff-setup-windows-plain)
- '(package-selected-packages
-   '(evil-collection corfu marginalia kubernetes-evil kubernetes web-mode ob-restclient restclient ox-jira magit treemacs-evil flycheck-yamllint flycheck yaml-mode go-mode dap-mode lsp-ui lsp-mode which-key company-shell org-bullets ob-go ob-http evil-surround evil-matchit evil undo-fu consult orderless selectrum rainbow-delimiters exec-path-from-shell doom-themes vterm use-package)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
