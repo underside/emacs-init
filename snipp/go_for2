@@ -1,0 +1,3 @@
+for k, v := range m {
+        fmt.Println("k:", k, "v:", v)
+    }

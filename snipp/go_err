@@ -1,0 +1,4 @@
+if err != nil {
+	fmt.Printf("Can't template file: %s\n", err)
+	os.Exit(1)
+}

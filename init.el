@@ -39,7 +39,7 @@
 
 ;;reduce the frequency of garbage collection by making it happen on
 ;;each 30MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 30000000)
+(setq gc-cons-threshold 100000000)
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
@@ -327,13 +327,13 @@ shell exits, the buffer is killed."
     )
 
 ;;Add Linux PATH ENV variables to Emacs
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-    )
-
+;; (use-package exec-path-from-shell
+;;   :ensure t
+;;   :config
+;; (when (memq window-system '(mac ns x))
+;;   (exec-path-from-shell-initialize))
+;;     )
+(setq shell-command-switch "-ic")
 
 
 ;;=== Doom Modeline settings
@@ -534,10 +534,9 @@ not appropriate in some cases like terminals."
 
        ))
 
-;;Agenda
-;; ~/org is a symlink to /mnt/e/ydisk/org/notes
+;; Agenda
 ;; include all .org files from notes dir in agenda
-(setq org-agenda-files '("~.emacs.d/todo.org"))
+(setq org-agenda-files '("~/ydisk/orgzly/agenda.org"))
 ;;Show next 10 days, not only this week
 (setq org-agenda-span 10)
 ;;show agenda since today 
@@ -545,7 +544,8 @@ not appropriate in some cases like terminals."
 
 ;;Any keywords can be used here
   (setq org-todo-keywords
-        '((sequence "TODO" "INPROGRESS" "|"  "REASSIGN" "CANCELED" "DONE" "REJECTED" )))
+        '((sequence "TODO" "|"  "CANCELED" "DONE" )))
+
 ;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
@@ -588,29 +588,29 @@ not appropriate in some cases like terminals."
 
 ;;===Company-mode
 ;; install shell-backend
-(use-package company-shell
-  :ensure t
-)
-(use-package company
-  :ensure t
-  :config
-  ;; add company backends
-  (add-to-list 'company-backends 'company-shell)
-  (add-to-list 'company-backends 'company-python)
+;; (use-package company-shell
+;;   :ensure t
+;; )
+;; (use-package company
+;;   :ensure t
+;;   :config
+;;   ;; add company backends
+;;   (add-to-list 'company-backends 'company-shell)
+;;   ;; (add-to-list 'company-backends 'company-python)
 
-  ;; company-hooks for different modes
-  (add-hook 'after-init-hook 'global-company-mode)
-  (add-hook 'shell-mode-hook
-            (lambda ()
-                (set (make-local-variable 'company-backends) '(company-shell))))
+;;   ;; company-hooks for different modes
+;;   (add-hook 'after-init-hook 'global-company-mode)
+;;   (add-hook 'shell-mode-hook
+;;             (lambda ()
+;;                 (set (make-local-variable 'company-backends) '(company-shell))))
 
-  ;; base settings
-  (setq company-tooltip-limit 20)
-  (setq company-idle-delay 0.3) 
-  (setq company-echo-delay 0.3)                          
-  (setq company-minimum-prefix-length 1)
-  (setq company-begin-commands '(self-insert-command))
-)
+;;   ;; base settings
+;;   (setq company-tooltip-limit 20)
+;;   (setq company-idle-delay 0.3) 
+;;   (setq company-echo-delay 0.3)                          
+;;   (setq company-minimum-prefix-length 1)
+;;   (setq company-begin-commands '(self-insert-command))
+;; )
 ;;===lsp-mode
 ;;Golang -->  (see dt.org/Golang)
 ;;Python -->  pip install 'python-language-server[all]'
@@ -633,11 +633,11 @@ not appropriate in some cases like terminals."
     :commands lsp
     :config
    ;; performance improvments
+        (setq lsp-idle-delay 0.500)
         (setq lsp-log-io nil) ; if set to true can cause a performance hit
-
+        ;; turn off auto picking of project root folder
+        (setq lsp-auto-guess-root  nil )
         (setq lsp-enable-symbol-highlighting nil)
-
-
         ;; (setq lsp-keymap-prefix "C-c l")
 
         ;; Set up before-save hooks to format buffer and add/delete imports.
@@ -653,20 +653,22 @@ not appropriate in some cases like terminals."
         ;; '(("gopls.completeUnimported" t t)
         ;; ("gopls.staticcheck" t t)))
 
-        ;; turn off auto picking of project root folder
-        (setq lsp-auto-guess-root  nil )
 
 )
 
 
-
+;;https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
 (use-package lsp-ui
     :ensure t
     :config
-    ;; (setq lsp-ui-sideline-show-diagnostics t)
+    
+    ;; disable sideline fully
+    ;; (setq lsp-ui-sideline-enable nil)
+    ;; (setq lsp-ui-doc-show-with-cursor nil)
+    ;; (setq lsp-ui-sideline-show-diagnostics nil)
     (setq lsp-ui-sideline-show-hover t)
     (setq lsp-ui-sideline-show-code-actions t)
-    (setq lsp-ui-sideline-delay 0)
+    (setq lsp-ui-sideline-delay 0.500)
     (setq lsp-ui-sideline-update-mode t)
 )
 
@@ -1054,11 +1056,11 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "C-c f") 'consult-find)
     (define-key map (kbd "C-S-t") 'new-vterm)
     (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
+    (define-key map (kbd "M-k") 'kill-buffer)
+    (define-key map (kbd "M-o") 'next-window-any-frame)
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
-    (define-key map (kbd "M-o") 'next-window-any-frame)
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
-    (define-key evil-insert-state-map (kbd"jj") 'evil-normal-state)
     ;; (define-key evil-motion-state-map (kbd ":") 'evil-repeat-find-char)
     ;; (define-key evil-motion-state-map (kbd ";") 'evil-ex)
     ;; do not indent when press RET in org-mode
@@ -1086,4 +1088,3 @@ not appropriate in some cases like terminals."
     (if (or force-reverting (not (buffer-modified-p)))
         (revert-buffer :ignore-auto :noconfirm)
       (error "The buffer has been modified"))))
-
