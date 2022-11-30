@@ -1137,10 +1137,6 @@ not appropriate in some cases like terminals."
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
 
-
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            ))
 ;; Custom Minor-mode to override all keybindings in all modes
 ;; mykbd
 (defvar mykbd-minor-mode-map
@@ -1157,14 +1153,12 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
     (define-key map (kbd "C-c f") 'consult-find)
     (define-key map (kbd "C-S-t") 'new-vterm)
-    (define-key map (kbd "C-M-5") 'query-replace-regexp)
     (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
     (define-key map (kbd "M-k") 'kill-buffer)
     (define-key map (kbd "M-o") 'next-window-any-frame)
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
-    (define-key eshell-mode-map (kbd "M-l") 'switch-to-buffer)
     ;; (define-key evil-motion-state-map (kbd ":") 'evil-repeat-find-char)
     ;; (define-key evil-motion-state-map (kbd ";") 'evil-ex)
     ;; do not indent when press RET in org-mode
