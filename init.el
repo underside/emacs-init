@@ -41,6 +41,10 @@
 ;;each 30MB of allocated data (the default is on every 0.76MB)
 (setq gc-cons-threshold 100000000)
 
+;; for open files with very long line
+(setq-default bidi-display-reordering nil)
+(setq global-so-long-mode 1)
+
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
 
@@ -78,6 +82,8 @@
 ;; eww browser (Emacs)
 ;; use eww as default for URL
 ;; (setq browse-url-browser-function 'eww-browse-url)
+
+
 
 ;;===Buffers settings
 ;;Messages buffer: set max log size
@@ -170,6 +176,18 @@ standart-indent    4
 lisp-body-indent   4
 tab-stop-list (quote (4 8))
 )
+
+;;---DB CONFIG---
+(setq sql-postgres-login-params
+      '((user :default "threads" )
+        (database :default "threads")
+        (server :default "db.someaddress")
+        (port :default 5432)))
+
+(add-hook 'sql-interactive-mode-hook
+          (lambda ()
+            (toggle-truncate-lines t)))
+
 
 ;;===Ediff settings
 (setq-default ediff-forward-word-function 'forward-char)
@@ -327,13 +345,13 @@ shell exits, the buffer is killed."
     )
 
 ;;Add Linux PATH ENV variables to Emacs
-;; (use-package exec-path-from-shell
-;;   :ensure t
-;;   :config
-;; (when (memq window-system '(mac ns x))
-;;   (exec-path-from-shell-initialize))
-;;     )
-(setq shell-command-switch "-ic")
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+    )
+;; (setq shell-command-switch "-ic")
 
 
 ;;=== Doom Modeline settings
@@ -481,7 +499,6 @@ shell exits, the buffer is killed."
 ;; Stuff that should be loaded before evil
 ;; Full Emacs keys in Evil Insert mode
 (setq evil-disable-insert-state-bindings t)
-
 
 ;;===Evil-mode
 (use-package evil
@@ -666,10 +683,10 @@ not appropriate in some cases like terminals."
 ;;   (setq company-minimum-prefix-length 1)
 ;;   (setq company-begin-commands '(self-insert-command))
 ;; )
+
 ;;===lsp-mode
 ;;Golang -->  (see dt.org/Golang)
 ;;Python -->  pip install 'python-language-server[all]'
-
 ;;optional if you want which-key integration
 (use-package which-key
     :ensure t
@@ -685,7 +702,23 @@ not appropriate in some cases like terminals."
     :hook
         (python-mode . lsp)
         (go-mode . lsp)
+        (rust-mode . lsp)
     :commands lsp
+    ;;(Rust specific 
+    :custom
+    ;; what to use when checking on-save. "check" is default, I prefer clippy
+    (lsp-rust-analyzer-cargo-watch-command "clippy")
+    (lsp-eldoc-render-all t)
+    (lsp-idle-delay 0.6)
+    ;; enable / disable the hints as you prefer:
+    (lsp-rust-analyzer-server-display-inlay-hints t)
+    (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+    (lsp-rust-analyzer-display-chaining-hints t)
+    (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+    (lsp-rust-analyzer-display-closure-return-type-hints t)
+    (lsp-rust-analyzer-display-parameter-hints nil)
+    (lsp-rust-analyzer-display-reborrow-hints nil)
+    ;;Rust specific)
     :config
    ;; performance improvments
         (setq lsp-idle-delay 0.500)
@@ -704,9 +737,9 @@ not appropriate in some cases like terminals."
         (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
         (add-hook 'go-mode-hook #'lsp-deferred)
         ;;gopls integration with lsp-mode
-        ;; (lsp-register-custom-settings
-        ;; '(("gopls.completeUnimported" t t)
-        ;; ("gopls.staticcheck" t t)))
+        (lsp-register-custom-settings
+        '(("gopls.completeUnimported" t t)
+        ("gopls.staticcheck" t t)))
 
 
 )
@@ -1057,14 +1090,6 @@ not appropriate in some cases like terminals."
   ;; `completion-at-point' is often bound to M-TAB.
   (setq tab-always-indent 'complete))
 
-;;========
-;;Add new package above this line, Keyboard config must be last to download to override previous stuff
-;;========
-
-
-;;========Keybindings
-;;Echo commands I haven’t finished quicker than the default of 1 second:
-(setq echo-keystrokes 0.4)
 
 ;; this option needed for evil and evil-collection
 (setq evil-want-keybinding nil)
@@ -1076,6 +1101,24 @@ not appropriate in some cases like terminals."
   :config
     (evil-collection-init)
 )
+
+;; search and replace in grep buffers
+;; press i in grep buffer->query-replace-regexp->ZZ(to save changes)
+(use-package wgrep 
+  :ensure t
+)
+
+;; Rust language mode
+(use-package rust-mode
+)
+;;========
+;;Add new package above this line, Keyboard config must be last to download to override previous stuff
+
+
+;;========Keybindings
+;;Echo commands I haven’t finished quicker than the default of 1 second:
+(setq echo-keystrokes 0.4)
+
 
 ;; escape quits
 ;; escape from any opened stuff like minibuffers etc
@@ -1094,6 +1137,10 @@ not appropriate in some cases like terminals."
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
 
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            ))
 ;; Custom Minor-mode to override all keybindings in all modes
 ;; mykbd
 (defvar mykbd-minor-mode-map
@@ -1110,12 +1157,14 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
     (define-key map (kbd "C-c f") 'consult-find)
     (define-key map (kbd "C-S-t") 'new-vterm)
+    (define-key map (kbd "C-M-5") 'query-replace-regexp)
     (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
     (define-key map (kbd "M-k") 'kill-buffer)
     (define-key map (kbd "M-o") 'next-window-any-frame)
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
+    (define-key eshell-mode-map (kbd "M-l") 'switch-to-buffer)
     ;; (define-key evil-motion-state-map (kbd ":") 'evil-repeat-find-char)
     ;; (define-key evil-motion-state-map (kbd ";") 'evil-ex)
     ;; do not indent when press RET in org-mode
