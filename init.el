@@ -23,7 +23,7 @@
 ;; Fix some error with packages
 (setq package-check-signature nil)
 
-;;===General mixed settings
+;; General mixed settings {
 (windmove-default-keybindings)
 
  ;;lsp related settings from here https://emacs-lsp.github.io/lsp-mode/page/performance/
@@ -82,7 +82,7 @@
 ;; eww browser (Emacs)
 ;; use eww as default for URL
 ;; (setq browse-url-browser-function 'eww-browse-url)
-
+;; }
 
 
 ;;===Buffers settings
@@ -176,18 +176,6 @@ standart-indent    4
 lisp-body-indent   4
 tab-stop-list (quote (4 8))
 )
-
-;;---DB CONFIG---
-(setq sql-postgres-login-params
-      '((user :default "threads" )
-        (database :default "threads")
-        (server :default "db.someaddress")
-        (port :default 5432)))
-
-(add-hook 'sql-interactive-mode-hook
-          (lambda ()
-            (toggle-truncate-lines t)))
-
 
 ;;===Ediff settings
 (setq-default ediff-forward-word-function 'forward-char)
@@ -404,6 +392,15 @@ shell exits, the buffer is killed."
       (when trg
         (setcar trg "")))))
 
+;; show project/filepath in modeline
+(with-eval-after-load 'subr-x
+  (setq-default mode-line-buffer-identification
+                '(:eval (format-mode-line (propertized-buffer-identification (or (when-let* ((buffer-file-truename buffer-file-truename)
+                                                                                             (prj (cdr-safe (project-current)))
+                                                                                             (prj-parent (file-name-directory (directory-file-name (expand-file-name prj)))))
+                                                                                   (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename)))
+                                                                                 "%b"))))))
+
 (add-hook 'after-change-major-mode-hook 'purge-minor-modes)
 
 ;;rainbow delimiters
@@ -603,8 +600,12 @@ not appropriate in some cases like terminals."
        (go . t)
        (shell . t)
        (http . t)
-
        ))
+
+;;async babel
+(use-package ob-async
+    :after ob
+)
 
 ;; Agenda
 ;; include all .org files from notes dir in agenda
@@ -648,43 +649,44 @@ not appropriate in some cases like terminals."
 ;;===Tramp
 ;;add in /etc/ssh/ssh_config StrictHostKeyChecking no
 ;;connect to not default port C-x C-f /ssh:test@host#2222:/tmp
-;; (use-package tramp
-;;   :ensure t
-;;   :config
-;;   (setq tramp-chunksize "500")
-;;   (setq tramp-debug-buffer t)
-;;   ;(setq tramp-verbose 10)
-;;   (setq password-cache-expiry nil)
-;;   (setq tramp-default-method "ssh")
-;; )
+(use-package tramp
+  :ensure t
+  :config
+  (setq tramp-chunksize "500")
+  (setq tramp-debug-buffer t)
+  ;(setq tramp-verbose 10)
+  (setq password-cache-expiry nil)
+  (setq tramp-default-method "ssh")
+)
 
-;;===Company-mode
-;; install shell-backend
-;; (use-package company-shell
-;;   :ensure t
-;; )
-;; (use-package company
-;;   :ensure t
-;;   :config
-;;   ;; add company backends
-;;   (add-to-list 'company-backends 'company-shell)
-;;   ;; (add-to-list 'company-backends 'company-python)
+;;Company-mode { 
+;;install shell-backend
+(use-package company-shell
+  :ensure t
+)
+(use-package company
+  :ensure t
+  :config
+  ;; add company backends
+  (add-to-list 'company-backends 'company-shell)
+  ;; (add-to-list 'company-backends 'company-python)
 
-;;   ;; company-hooks for different modes
-;;   (add-hook 'after-init-hook 'global-company-mode)
-;;   (add-hook 'shell-mode-hook
-;;             (lambda ()
-;;                 (set (make-local-variable 'company-backends) '(company-shell))))
+  ;; company-hooks for different modes
+  ;; (add-hook 'after-init-hook 'global-company-mode)
+  (add-hook 'shell-mode-hook
+            (lambda ()
+                (set (make-local-variable 'company-backends) '(company-shell))))
 
-;;   ;; base settings
-;;   (setq company-tooltip-limit 20)
-;;   (setq company-idle-delay 0.3) 
-;;   (setq company-echo-delay 0.3)                          
-;;   (setq company-minimum-prefix-length 1)
-;;   (setq company-begin-commands '(self-insert-command))
-;; )
+  ;; base settings
+  (setq company-tooltip-limit 20)
+  (setq company-idle-delay 0.3) 
+  (setq company-echo-delay 0.3)                          
+  (setq company-minimum-prefix-length 1)
+  (setq company-begin-commands '(self-insert-command))
+)
+;; }
 
-;;===lsp-mode
+;;lsp-mode {
 ;;Golang -->  (see dt.org/Golang)
 ;;Python -->  pip install 'python-language-server[all]'
 ;;optional if you want which-key integration
@@ -702,23 +704,12 @@ not appropriate in some cases like terminals."
     :hook
         (python-mode . lsp)
         (go-mode . lsp)
-        (rust-mode . lsp)
     :commands lsp
     ;;(Rust specific 
     :custom
     ;; what to use when checking on-save. "check" is default, I prefer clippy
-    (lsp-rust-analyzer-cargo-watch-command "clippy")
     (lsp-eldoc-render-all t)
     (lsp-idle-delay 0.6)
-    ;; enable / disable the hints as you prefer:
-    (lsp-rust-analyzer-server-display-inlay-hints t)
-    (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-    (lsp-rust-analyzer-display-chaining-hints t)
-    (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
-    (lsp-rust-analyzer-display-closure-return-type-hints t)
-    (lsp-rust-analyzer-display-parameter-hints nil)
-    (lsp-rust-analyzer-display-reborrow-hints nil)
-    ;;Rust specific)
     :config
    ;; performance improvments
         (setq lsp-idle-delay 0.500)
@@ -740,8 +731,6 @@ not appropriate in some cases like terminals."
         (lsp-register-custom-settings
         '(("gopls.completeUnimported" t t)
         ("gopls.staticcheck" t t)))
-
-
 )
 
 
@@ -759,9 +748,9 @@ not appropriate in some cases like terminals."
     (setq lsp-ui-sideline-delay 0.500)
     (setq lsp-ui-sideline-update-mode t)
 )
+;; } 
 
-
-;;===Dap-mode
+;;Dap-mode {
 ;; For golang: Install lldb library first "apt install lldb" 
 ;; add new Unoptimized  "dap-debug-edit-template->edit template with new name-> eval buffer"
 ;; WARNING! Do not create launch.json manually
@@ -827,8 +816,9 @@ not appropriate in some cases like terminals."
       (unless (file-exists-p filename)
 	(copy-file default filename))
       (find-file-existing filename)))
+;; }
 
-;;===go-mode
+;; Go-mode {
 (use-package go-mode
   :ensure t
   :mode (("\\.go\\'" . go-mode))
@@ -853,17 +843,18 @@ not appropriate in some cases like terminals."
       (local-set-key (kbd "M-b") 'pop-tag-mark)
     )
     (add-hook 'go-mode-hook 'my-go-mode-hook)
+;; }
 
 
-
-;;===yaml-mode
+;; yaml-mode {
 (use-package yaml-mode
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 )
+;; }
 
-;;===Flycheck
+;; Flycheck {
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode)
@@ -886,8 +877,9 @@ not appropriate in some cases like terminals."
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup)))
     
 )
+;; }
 
-;;===Treemacs
+;; Treemacs {
 (use-package treemacs
   :ensure t
   :defer t
@@ -955,8 +947,9 @@ not appropriate in some cases like terminals."
   :after treemacs evil
   :ensure t)
 
+;; }
 
-;;===Markdown mode
+;; Markdown mode {
 (use-package markdown-mode
   :ensure t
   :defer t
@@ -964,15 +957,16 @@ not appropriate in some cases like terminals."
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command '("pandoc" "--no-highlight")))
+;; }
 
 
-;;===Magit
+;; Magit {
 (use-package magit
   :ensure t
 )
+;; }
 
-
-;;===Spell check
+;; Spell check {
 ;;Use hunspell to correct mistakes
 ;; (setq ispell-program-name "/usr/bin/hunspell"          
 ;;       ispell-dictionary   "en_US") ; Default dictionary to use
@@ -996,15 +990,9 @@ not appropriate in some cases like terminals."
 ; for export use M-x ox-jira-export-as-jira 
 (use-package ox-jira
     :ensure t)
+;; }
 
-;;===Restclient API testing
-(use-package restclient
-    :ensure t)
-
-(use-package ob-restclient
-    :ensure t)
-
-;;===Web-mode 
+;; Web-mode { 
 (use-package web-mode
     :config
     :mode
@@ -1024,17 +1012,17 @@ not appropriate in some cases like terminals."
               )
         )
 )
+;; }
 
-;;===kubernetes
+;; Kubernetes-mode {
 ;; Magit-like client for K8s
-
-(use-package kubernetes
-    )
-
+(use-package kubernetes)
 (use-package kubernetes-evil
   :after kubernetes)
+;; }
 
 
+;; Marginalia {
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   :ensure t
@@ -1049,7 +1037,10 @@ not appropriate in some cases like terminals."
   :init
   (marginalia-mode)
   )
+;; }
 
+
+;; Corfu nice sorting of all stuff {
 (use-package corfu
   ;; Optional customizations
   :custom
@@ -1075,6 +1066,7 @@ not appropriate in some cases like terminals."
   :init
   (global-corfu-mode))
 
+
 ;; A few more useful configurations...
 (use-package emacs
   :init
@@ -1090,6 +1082,7 @@ not appropriate in some cases like terminals."
   ;; `completion-at-point' is often bound to M-TAB.
   (setq tab-always-indent 'complete))
 
+;; }
 
 ;; this option needed for evil and evil-collection
 (setq evil-want-keybinding nil)
@@ -1102,23 +1095,13 @@ not appropriate in some cases like terminals."
     (evil-collection-init)
 )
 
+;; wgrep {
 ;; search and replace in grep buffers
 ;; press i in grep buffer->query-replace-regexp->ZZ(to save changes)
 (use-package wgrep 
   :ensure t
 )
-
-;; Rust language mode
-(use-package rust-mode
-)
-;;========
-;;Add new package above this line, Keyboard config must be last to download to override previous stuff
-
-
-;;========Keybindings
-;;Echo commands I haven’t finished quicker than the default of 1 second:
-(setq echo-keystrokes 0.4)
-
+;; }
 
 ;; escape quits
 ;; escape from any opened stuff like minibuffers etc
@@ -1137,6 +1120,9 @@ not appropriate in some cases like terminals."
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
 
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            ))
 ;; Custom Minor-mode to override all keybindings in all modes
 ;; mykbd
 (defvar mykbd-minor-mode-map
@@ -1153,18 +1139,24 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
     (define-key map (kbd "C-c f") 'consult-find)
     (define-key map (kbd "C-S-t") 'new-vterm)
+    (define-key map (kbd "C-M-5") 'query-replace-regexp)
     (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
     (define-key map (kbd "M-k") 'kill-buffer)
     (define-key map (kbd "M-o") 'next-window-any-frame)
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
-    ;; (define-key evil-motion-state-map (kbd ":") 'evil-repeat-find-char)
-    ;; (define-key evil-motion-state-map (kbd ";") 'evil-ex)
-    ;; do not indent when press RET in org-mode
-    ;;----
+    ;; (define-key eshell-mode-map (kbd "M-l") 'switch-to-buffer)
     map)
   "mykbd-minor-mode keymap.")
+
+
+
+(with-eval-after-load "ob"
+  (require 'org-babel-eval-in-repl)
+  (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
+  )
+
 
 ;; initiate above custom minor mode
 (define-minor-mode mykbd-minor-mode
