@@ -616,8 +616,17 @@ not appropriate in some cases like terminals."
 (setq org-agenda-start-on-weekday nil)
 
 ;;Any keywords can be used here
-  (setq org-todo-keywords
-        '((sequence "TODO" "|"  "CANCELED" "DONE" )))
+(setq org-todo-keywords
+      '((sequence "TODO" "BACKLOG" "HOLD" "CANCELED" "|" "DONE" )))
+
+(setq org-todo-keyword-faces
+      '(
+        ("TODO" . (:foreground "SpringGreen3" :weight bold))
+        ("BACKLOG" . (:foreground "navy" :weight bold))
+        ("HOLD" . (:foreground "gold3" :weight bold))
+        ("CANCELED" . (:foreground "OrangeRed4" :weight bold))
+        ))
+
 
 ;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
