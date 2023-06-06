@@ -1112,6 +1112,17 @@ not appropriate in some cases like terminals."
 )
 ;; }
 
+
+;; ztree {
+;; diff for directories and files 
+(use-package ztree
+  :ensure t
+)
+;; }
+
+;;; --- Package above this line --------------
+
+
 ;; escape quits
 ;; escape from any opened stuff like minibuffers etc
 (defun minibuffer-keyboard-quit ()
