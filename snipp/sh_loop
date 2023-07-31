@@ -1,0 +1,4 @@
+for i in $disks; do
+  if [[ $i == loop* ]] ; then continue; fi
+  echo "disk name: "$i
+done 

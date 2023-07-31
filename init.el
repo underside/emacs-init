@@ -209,6 +209,7 @@ tab-stop-list (quote (4 8))
   (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'hide-details)
 
+
 ;;===Snippets
 (defun snipp (fn) 
   "Load snippet from the file using filename."
@@ -628,6 +629,7 @@ not appropriate in some cases like terminals."
         ))
 
 
+
 ;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
 ;; clock-out C-c C-x C-o
@@ -713,6 +715,7 @@ not appropriate in some cases like terminals."
     :hook
         (python-mode . lsp)
         (go-mode . lsp)
+        (groovy-mode . lsp)
     :commands lsp
     ;;(Rust specific 
     :custom
@@ -1112,7 +1115,6 @@ not appropriate in some cases like terminals."
 )
 ;; }
 
-
 ;; ztree {
 ;; diff for directories and files 
 (use-package ztree
@@ -1120,7 +1122,12 @@ not appropriate in some cases like terminals."
 )
 ;; }
 
-;;; --- Package above this line --------------
+;; groovy-mode {
+;; diff for directories and files 
+;; (use-package groovy-mode
+;;   :ensure t
+;; )
+;; }
 
 
 ;; escape quits
@@ -1169,13 +1176,6 @@ not appropriate in some cases like terminals."
     ;; (define-key eshell-mode-map (kbd "M-l") 'switch-to-buffer)
     map)
   "mykbd-minor-mode keymap.")
-
-
-
-(with-eval-after-load "ob"
-  (require 'org-babel-eval-in-repl)
-  (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
-  )
 
 
 ;; initiate above custom minor mode

@@ -1,0 +1,7 @@
+if [ $env_type == "prod" ]; then
+    echo "PROD"
+elif [ $env_type == "test" ]; then
+    echo "TEST"
+else
+    echo "UNKNOWN"
+fi
