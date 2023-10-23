@@ -1,0 +1,6 @@
+#+begin_src sh :results raw
+user=user
+host=host
+
+echo "/ssh:${user}@${host}:/home/${user}"
+#+end_src

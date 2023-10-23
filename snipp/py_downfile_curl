@@ -1,9 +1,0 @@
-# download file using curl
-def download_file (url,out_file,user,password):
-    with open(out_file, "wb") as f:
-        crl = pycurl.Curl()
-        crl.setopt(crl.URL, url)
-        # crl.setopt(pycurl.USERPWD, '%s:%s' %(user, password))           
-        crl.setopt(crl.WRITEDATA, f)
-        crl.perform()
-        crl.close()

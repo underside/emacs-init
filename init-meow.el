@@ -23,7 +23,7 @@
 ;; Fix some error with packages
 (setq package-check-signature nil)
 
-;; General mixed settings {
+;;===General mixed settings
 (windmove-default-keybindings)
 
  ;;lsp related settings from here https://emacs-lsp.github.io/lsp-mode/page/performance/
@@ -40,10 +40,6 @@
 ;;reduce the frequency of garbage collection by making it happen on
 ;;each 30MB of allocated data (the default is on every 0.76MB)
 (setq gc-cons-threshold 100000000)
-
-;; for open files with very long line
-(setq-default bidi-display-reordering nil)
-(setq global-so-long-mode 1)
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
@@ -82,8 +78,6 @@
 ;; eww browser (Emacs)
 ;; use eww as default for URL
 ;; (setq browse-url-browser-function 'eww-browse-url)
-;; }
-
 
 ;;===Buffers settings
 ;;Messages buffer: set max log size
@@ -91,7 +85,7 @@
 
 
 ;; only warn about deleting modified buffers.
-  (setq ibuffer-expert t)
+(setq ibuffer-expert t)
 
 ;;===Interface and UI settings
 (tooltip-mode      -1)
@@ -209,7 +203,6 @@ tab-stop-list (quote (4 8))
   (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'hide-details)
 
-
 ;;===Snippets
 (defun snipp (fn) 
   "Load snippet from the file using filename."
@@ -236,10 +229,22 @@ tab-stop-list (quote (4 8))
 ;;   )
 ;; (global-set-key (kbd "C-S-t") 'new-ansi-term) ;; mappe sur C-T
 
+;; Eat terminal (eshell improvement)
+(use-package
+:ensure t
+:config
+
+;; For `eat-eshell-mode'.
+(add-hook 'eshell-load-hook #'eat-eshell-mode)
+
+;; For `eat-eshell-visual-command-mode'.
+(add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
+
+    )
+
 
 ;; Setup interactive shell to add aliases from .bashrc
 (setq shell-file-name "bash")
-(setq shell-command-switch "-c")
 
 ;; vterm: Config with native-compile and vterm installed
 ;; use vterm instead of shell when run M-x shell-command (turn off by default)
@@ -255,15 +260,6 @@ tab-stop-list (quote (4 8))
          (kill-buffer b))))
 
 (defun vterm-command (command)
-  "Execute string COMMAND in a new vterm.
-Interactively, prompt for COMMAND with the current buffer's file
-name supplied. When called from Dired, supply the name of the
-file at point.
-Like `async-shell-command`, but run in a vterm for full terminal features.
-The new vterm buffer is named in the form `*foo bar.baz*`, the
-command and its arguments in earmuffs.
-When the command terminates, the shell remains open, but when the
-shell exits, the buffer is killed."
   (interactive
    (list
     (let* ((f (cond (buffer-file-name)
@@ -304,7 +300,7 @@ shell exits, the buffer is killed."
 (set-face-attribute 'default nil
                     ;; :family "DejaVu Sans Mono"
                     :family "Hack"
-                    :height 130
+                    :height 150
                     :weight 'normal
                     :width 'normal)
 
@@ -334,13 +330,13 @@ shell exits, the buffer is killed."
     )
 
 ;;Add Linux PATH ENV variables to Emacs
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-    )
-;; (setq shell-command-switch "-ic")
+;; (use-package exec-path-from-shell
+;;   :ensure t
+;;   :config
+;; (when (memq window-system '(mac ns x))
+;;   (exec-path-from-shell-initialize))
+;;     )
+;;(setq shell-command-switch "-ic")
 
 
 ;;=== Doom Modeline settings
@@ -378,7 +374,6 @@ shell exits, the buffer is killed."
     auto-fill-function
     smooth-scroll-mode
     mykbd-minor-mode
-    evil-collection-unimpaired-mode
     which-key-mode
     auto-revert-mode
     eldoc-mode
@@ -393,15 +388,6 @@ shell exits, the buffer is killed."
       (when trg
         (setcar trg "")))))
 
-;; show project/filepath in modeline
-(with-eval-after-load 'subr-x
-  (setq-default mode-line-buffer-identification
-                '(:eval (format-mode-line (propertized-buffer-identification (or (when-let* ((buffer-file-truename buffer-file-truename)
-                                                                                             (prj (cdr-safe (project-current)))
-                                                                                             (prj-parent (file-name-directory (directory-file-name (expand-file-name prj)))))
-                                                                                   (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename)))
-                                                                                 "%b"))))))
-
 (add-hook 'after-change-major-mode-hook 'purge-minor-modes)
 
 ;;rainbow delimiters
@@ -414,7 +400,6 @@ shell exits, the buffer is killed."
 ;;===Incremental narrowing
 ;; Enable vertico
 (use-package vertico
-  :ensure t
   :init
   (vertico-mode)
 
@@ -422,7 +407,7 @@ shell exits, the buffer is killed."
   (setq vertico-scroll-margin 0)
 
   ;; Show more candidates
-  (setq vertico-count 20)
+  (setq vertico-count 10)
 
   ;; Grow and shrink the Vertico minibuffer
   (setq vertico-resize t)
@@ -433,7 +418,6 @@ shell exits, the buffer is killed."
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
-  :ensure t
   :init
   (savehist-mode))
 
@@ -463,7 +447,6 @@ shell exits, the buffer is killed."
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
-  :ensure t
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
@@ -494,80 +477,7 @@ shell exits, the buffer is killed."
   :ensure t
     )
 
-;; Stuff that should be loaded before evil
-;; Full Emacs keys in Evil Insert mode
-(setq evil-disable-insert-state-bindings t)
-
-;;===Evil-mode
-(use-package evil
-  :init
-    (progn
-      (setq evil-undo-system 'undo-fu)
-      ;; `evil-collection' assumes `evil-want-keybinding' is set to
-      ;; `nil' before loading `evil' and `evil-collection'
-      ;; @see https://github.com/emacs-evil/evil-collection#installation
-      (setq evil-want-keybinding nil)
-      )
-  :config
-    (progn
-      (evil-mode 1))
-  (setq evil-move-cursor-back nil)
-
-  ;;Evil has the same problem as Vim when browsing with j/k long wrapped lines it jumps the entire “real” line ;;instead of the visual line. The solution is also easy:
-  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-
-  ;;Don't move back cursor one postition when exiting INS mode
-  (setq evil-move-cursor-back nil)
-  ;;copy sentence - Y (standart Vim behavior)
-  (setq evil-want-Y-yank-to-eol t)
-
-;; bind ':ls' command to 'ibuffer instead of 'list-buffers
-(define-key evil-ex-map "ls" 'ibuffer)
-
-;;evil-mode as default for ibuffer
- (setq evil-emacs-state-modes (delq 'ibuffer-mode evil-emacs-state-modes))
-
-;;rebind C-r to U (so U is Redo)
- (with-eval-after-load 'evil-maps
-   (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo))
-
-;;more convinient undo
- (setq evil-want-fine-undo t)
-
- ;;change cursor color by evil state
- (setq evil-mode-line-format nil)
- (setq evil-normal-state-cursor '("gray" box))
- (setq evil-visual-state-cursor '("gray" box))
- (setq evil-insert-state-cursor '("green" bar))
- (setq evil-replace-state-cursor '("green" bar))
- (setq evil-operator-state-cursor '("red" hollow))
-)
-
-;;Evil-mode plugin evil-matchit
-(use-package evil-matchit
-  :ensure t
-  :config
-  (global-evil-matchit-mode 1)
-)
-
-;;plugin evil-surround
-(use-package evil-surround
-  :ensure t
-  :after evil-mode
-  :config
-  (setq global-evil-surround-mode 1))
-
-;;Evil and vterm
-(defun evil-collection-vterm-escape-stay ()
-"Go back to normal state but don't move
-cursor backwards. Moving cursor backwards is the default vim behavior but it is
-not appropriate in some cases like terminals."
-(setq-local evil-move-cursor-back nil))
-
-(add-hook 'vterm-mode-hook #'evil-collection-vterm-escape-stay)
-
-;;===Org-mode settings
+;; ;;===Org-mode settings
 (use-package org
   :mode  ("\\.org\\'" . org-mode)
          ("\\org.gpg\\'" . org-mode)
@@ -585,15 +495,6 @@ not appropriate in some cases like terminals."
   (setq org-export-with-sub-superscripts nil)
 )
 
-
-(use-package ob-http
-  :ensure t
-)
-
-(use-package ob-go
-  :ensure t
-)
-
 ;;Babel settings
 (org-babel-do-load-languages
      'org-babel-load-languages
@@ -602,11 +503,6 @@ not appropriate in some cases like terminals."
        (shell . t)
        (http . t)
        ))
-
-;;async babel
-(use-package ob-async
-    :after ob
-)
 
 ;; Agenda
 ;; include all .org files from notes dir in agenda
@@ -617,18 +513,8 @@ not appropriate in some cases like terminals."
 (setq org-agenda-start-on-weekday nil)
 
 ;;Any keywords can be used here
-(setq org-todo-keywords
-      '((sequence "TODO" "BACKLOG" "HOLD" "CANCELED" "|" "DONE" )))
-
-(setq org-todo-keyword-faces
-      '(
-        ("TODO" . (:foreground "SpringGreen3" :weight bold))
-        ("BACKLOG" . (:foreground "navy" :weight bold))
-        ("HOLD" . (:foreground "gold3" :weight bold))
-        ("CANCELED" . (:foreground "OrangeRed4" :weight bold))
-        ))
-
-
+  (setq org-todo-keywords
+        '((sequence "TODO" "|"  "CANCELED" "DONE" )))
 
 ;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
@@ -670,11 +556,12 @@ not appropriate in some cases like terminals."
   (setq tramp-default-method "ssh")
 )
 
-;;Company-mode { 
+;;===Company-mode
 ;;install shell-backend
 (use-package company-shell
   :ensure t
-)
+  )
+
 (use-package company
   :ensure t
   :config
@@ -683,7 +570,7 @@ not appropriate in some cases like terminals."
   ;; (add-to-list 'company-backends 'company-python)
 
   ;; company-hooks for different modes
-  ;; (add-hook 'after-init-hook 'global-company-mode)
+  (add-hook 'after-init-hook 'global-company-mode)
   (add-hook 'shell-mode-hook
             (lambda ()
                 (set (make-local-variable 'company-backends) '(company-shell))))
@@ -695,11 +582,11 @@ not appropriate in some cases like terminals."
   (setq company-minimum-prefix-length 1)
   (setq company-begin-commands '(self-insert-command))
 )
-;; }
 
-;;lsp-mode {
+;;===lsp-mode
 ;;Golang -->  (see dt.org/Golang)
 ;;Python -->  pip install 'python-language-server[all]'
+
 ;;optional if you want which-key integration
 (use-package which-key
     :ensure t
@@ -715,13 +602,7 @@ not appropriate in some cases like terminals."
     :hook
         (python-mode . lsp)
         (go-mode . lsp)
-        (groovy-mode . lsp)
     :commands lsp
-    ;;(Rust specific 
-    :custom
-    ;; what to use when checking on-save. "check" is default, I prefer clippy
-    (lsp-eldoc-render-all t)
-    (lsp-idle-delay 0.6)
     :config
    ;; performance improvments
         (setq lsp-idle-delay 0.500)
@@ -740,9 +621,11 @@ not appropriate in some cases like terminals."
         (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
         (add-hook 'go-mode-hook #'lsp-deferred)
         ;;gopls integration with lsp-mode
-        (lsp-register-custom-settings
-        '(("gopls.completeUnimported" t t)
-        ("gopls.staticcheck" t t)))
+        ;; (lsp-register-custom-settings
+        ;; '(("gopls.completeUnimported" t t)
+        ;; ("gopls.staticcheck" t t)))
+
+
 )
 
 
@@ -750,8 +633,7 @@ not appropriate in some cases like terminals."
 (use-package lsp-ui
     :ensure t
     :config
-    
-    ;; disable sideline fully
+     ;; disable sideline fully
     ;; (setq lsp-ui-sideline-enable nil)
     ;; (setq lsp-ui-doc-show-with-cursor nil)
     ;; (setq lsp-ui-sideline-show-diagnostics nil)
@@ -760,9 +642,9 @@ not appropriate in some cases like terminals."
     (setq lsp-ui-sideline-delay 0.500)
     (setq lsp-ui-sideline-update-mode t)
 )
-;; } 
 
-;;Dap-mode {
+
+;;===Dap-mode
 ;; For golang: Install lldb library first "apt install lldb" 
 ;; add new Unoptimized  "dap-debug-edit-template->edit template with new name-> eval buffer"
 ;; WARNING! Do not create launch.json manually
@@ -828,13 +710,12 @@ not appropriate in some cases like terminals."
       (unless (file-exists-p filename)
 	(copy-file default filename))
       (find-file-existing filename)))
-;; }
 
-;; Go-mode {
+;;===go-mode
 (use-package go-mode
   :ensure t
   :mode (("\\.go\\'" . go-mode))
-  :config
+  ;; :config
   ;; must if you use dap-mode
 
 )
@@ -855,18 +736,17 @@ not appropriate in some cases like terminals."
       (local-set-key (kbd "M-b") 'pop-tag-mark)
     )
     (add-hook 'go-mode-hook 'my-go-mode-hook)
-;; }
 
 
-;; yaml-mode {
+
+;;===yaml-mode
 (use-package yaml-mode
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 )
-;; }
 
-;; Flycheck {
+;;===Flycheck
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode)
@@ -889,79 +769,9 @@ not appropriate in some cases like terminals."
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup)))
     
 )
-;; }
 
-;; Treemacs {
-(use-package treemacs
-  :ensure t
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (progn
-    (setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
-          treemacs-deferred-git-apply-delay      0.5
-          treemacs-directory-name-transformer    #'identity
-          treemacs-display-in-side-window        t
-          treemacs-eldoc-display                 t
-          treemacs-file-event-delay              5000
-          treemacs-file-extension-regex          treemacs-last-period-regex-value
-          treemacs-file-follow-delay             0.2
-          treemacs-file-name-transformer         #'identity
-          treemacs-follow-after-init             t
-          treemacs-git-command-pipe              ""
-          treemacs-goto-tag-strategy             'refetch-index
-          treemacs-indentation                   2
-          treemacs-indentation-string            " "
-          treemacs-is-never-other-window         nil
-          treemacs-max-git-entries               5000
-          treemacs-missing-project-action        'ask
-          treemacs-move-forward-on-expand        nil
-          treemacs-no-png-images                 nil
-          treemacs-no-delete-other-windows       t
-          treemacs-project-follow-cleanup        nil
-          treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-          treemacs-position                      'left
-          treemacs-recenter-distance             0.1
-          treemacs-recenter-after-file-follow    nil
-          treemacs-recenter-after-tag-follow     nil
-          treemacs-recenter-after-project-jump   'always
-          treemacs-recenter-after-project-expand 'on-distance
-          treemacs-show-cursor                   nil
-          treemacs-show-hidden-files             t
-          treemacs-silent-filewatch              nil
-          treemacs-silent-refresh                nil
-          treemacs-sorting                       'alphabetic-asc
-          treemacs-space-between-root-nodes      t
-          treemacs-tag-follow-cleanup            t
-          treemacs-tag-follow-delay              1.5
-          treemacs-user-mode-line-format         nil
-          treemacs-user-header-line-format       nil
-          treemacs-width                         38
-          treemacs-workspace-switch-cleanup      nil
-          )
-    (treemacs-filewatch-mode t)
-    (setq treemacs-text-scale -2)
-    (treemacs-fringe-indicator-mode t)
-    (pcase (cons (not (null (executable-find "git")))
-                 (not (null treemacs-python-executable)))
-      (`(t . t)
-       (treemacs-git-mode 'deferred))
-      (`(t . _)
-       (treemacs-git-mode 'simple))))
-  :bind
-  (:map global-map
-        ("<f8>"   . treemacs)
-        ))
 
-(use-package treemacs-evil
-  :after treemacs evil
-  :ensure t)
-
-;; }
-
-;; Markdown mode {
+;;===Markdown mode
 (use-package markdown-mode
   :ensure t
   :defer t
@@ -969,16 +779,15 @@ not appropriate in some cases like terminals."
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command '("pandoc" "--no-highlight")))
-;; }
 
 
-;; Magit {
+;;===Magit
 (use-package magit
   :ensure t
 )
-;; }
 
-;; Spell check {
+
+;;===Spell check
 ;;Use hunspell to correct mistakes
 ;; (setq ispell-program-name "/usr/bin/hunspell"          
 ;;       ispell-dictionary   "en_US") ; Default dictionary to use
@@ -1002,39 +811,33 @@ not appropriate in some cases like terminals."
 ; for export use M-x ox-jira-export-as-jira 
 (use-package ox-jira
     :ensure t)
-;; }
 
-;; Web-mode { 
-(use-package web-mode
-    :config
-    :mode
-        (("\\.phtml\\'" . web-mode))
-        (("\\.tpl\\.php\\'" . web-mode))
-        (("\\.[agj]sp\\'" . web-mode))
-        (("\\.as[cp]x\\'" . web-mode))
-        (("\\.erb\\'" . web-mode))
-        (("\\.mustache\\'" . web-mode))
-        (("\\.djhtml\\'" . web-mode))
-        (("\\.html?\\'" . web-mode))
-     :config
-        (setq web-mode-engines-alist
-            '(("php"    . "\\.phtml\\'")
-              ("blade"  . "\\.blade\\.")
-              ("go"  . "\\.tpl\\.")
-              )
-        )
-)
-;; }
+;;===Web-mode 
+;; (use-package web-mode
+;;     :config
+;;     :mode
+;;         (("\\.phtml\\'" . web-mode))
+;;         (("\\.tpl\\.php\\'" . web-mode))
+;;         (("\\.[agj]sp\\'" . web-mode))
+;;         (("\\.as[cp]x\\'" . web-mode))
+;;         (("\\.erb\\'" . web-mode))
+;;         (("\\.mustache\\'" . web-mode))
+;;         (("\\.djhtml\\'" . web-mode))
+;;         (("\\.html?\\'" . web-mode))
+;;      :config
+;;         (setq web-mode-engines-alist
+;;             '(("php"    . "\\.phtml\\'")
+;;               ("blade"  . "\\.blade\\.")
+;;               ("go"  . "\\.tpl\\.")
+;;               )
+;;         )
+;; )
 
-;; Kubernetes-mode {
-;; Magit-like client for K8s
-(use-package kubernetes)
-(use-package kubernetes-evil
-  :after kubernetes)
-;; }
+;; kubernetes.el
+;; magit-like k8s client
+;; (use-package kubernetes
+;;     )
 
-
-;; Marginalia {
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   :ensure t
@@ -1049,10 +852,7 @@ not appropriate in some cases like terminals."
   :init
   (marginalia-mode)
   )
-;; }
 
-
-;; Corfu nice sorting of all stuff {
 (use-package corfu
   ;; Optional customizations
   :custom
@@ -1067,17 +867,11 @@ not appropriate in some cases like terminals."
   (corfu-echo-documentation nil) ;; Disable documentation in the echo area
   (corfu-scroll-margin 5)        ;; Use scroll margin
 
-  ;; Enable Corfu only for certain modes.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
-
   ;; Recommended: Enable Corfu globally.
   ;; This is recommended since Dabbrev can be used globally (M-/).
   ;; See also `corfu-excluded-modes'.
   :init
   (global-corfu-mode))
-
 
 ;; A few more useful configurations...
 (use-package emacs
@@ -1087,72 +881,158 @@ not appropriate in some cases like terminals."
 
   ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
   ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
+  (setq read-extended-command-predicate
+        #'command-completion-default-include-p)
 
   ;; Enable indentation+completion using the TAB key.
   ;; `completion-at-point' is often bound to M-TAB.
   (setq tab-always-indent 'complete))
 
-;; }
+;; (use-package haskell-mode
+;;     :config
+;;     ;; (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+;;     ;; hslint on the command line only likes this indentation mode;
+;;     ;; alternatives commented out below.
+;;     (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+;;     ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+;;     ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
+;;     ;; Ignore compiled Haskell files in filename completions
+;;     (add-to-list 'completion-ignored-extensions ".hi")
+;;   )
 
-;; this option needed for evil and evil-collection
-(setq evil-want-keybinding nil)
 
-;;big pack of evil-related libraries
-(use-package evil-collection
-  :ensure t
-  :after evil
-  :config
-    (evil-collection-init)
-)
+;;========
+;;Add new package above this line, Keyboard config must be last to download to override previous stuff
+;;========
 
-;; wgrep {
-;; search and replace in grep buffers
-;; press i in grep buffer->query-replace-regexp->ZZ(to save changes)
-(use-package wgrep 
-  :ensure t
-)
-;; }
-
-;; ztree {
-;; diff for directories and files 
-(use-package ztree
-  :ensure t
-)
-;; }
-
-;; groovy-mode {
-;; diff for directories and files 
-;; (use-package groovy-mode
-;;   :ensure t
-;; )
-;; }
-
+;;========Keybindings
+;;Echo commands I haven’t finished quicker than the default of 1 second:
+(setq echo-keystrokes 0.4)
 
 ;; escape quits
 ;; escape from any opened stuff like minibuffers etc
-(defun minibuffer-keyboard-quit ()
-	(interactive)
-	(if (and delete-selection-mode transient-mark-mode mark-active)
-		(setq deactivate-mark  t)
-		(when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-		(abort-recursive-edit)))
-(define-key evil-normal-state-map [escape] 'keyboard-quit)
-(define-key evil-visual-state-map [escape] 'keyboard-quit)
-(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
-(global-set-key [escape] 'evil-exit-emacs-state)
+;; (defun minibuffer-keyboard-quit ()
+;; 	(interactive)
+;; 	(if (and delete-selection-mode transient-mark-mode mark-active)
+;; 		(setq deactivate-mark  t)
+;; 		(when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+;; 		(abort-recursive-edit)))
+;; (define-key evil-normal-state-map [escape] 'keyboard-quit)
+;; (define-key evil-visual-state-map [escape] 'keyboard-quit)
+;; (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+;; (global-set-key [escape] 'evil-exit-emacs-state)
 
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            ))
-;; Custom Minor-mode to override all keybindings in all modes
-;; mykbd
-(defvar mykbd-minor-mode-map
+;; Meow
+(use-package meow
+    :config
+    (setq meow-use-clipboard t)
+
+)
+
+(defun meow-setup ()
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  (meow-motion-overwrite-define-key
+   '("j" . meow-next)
+   '("k" . meow-prev)
+   '("<escape>" . ignore))
+  (meow-leader-define-key
+   ;; SPC j/k will run the original command in MOTION state.
+   '("j" . "H-j")
+   '("k" . "H-k")
+   ;; Use SPC (0-9) for digit arguments.
+   '("1" . meow-digit-argument)
+   '("2" . meow-digit-argument)
+   '("3" . meow-digit-argument)
+   '("4" . meow-digit-argument)
+   '("5" . meow-digit-argument)
+   '("6" . meow-digit-argument)
+   '("7" . meow-digit-argument)
+   '("8" . meow-digit-argument)
+   '("9" . meow-digit-argument)
+   '("0" . meow-digit-argument)
+   '("/" . meow-keypad-describe-key)
+   '("?" . meow-cheatsheet))
+  (meow-normal-define-key
+   '("0" . meow-expand-0)
+   '("9" . meow-expand-9)
+   '("8" . meow-expand-8)
+   '("7" . meow-expand-7)
+   '("6" . meow-expand-6)
+   '("5" . meow-expand-5)
+   '("4" . meow-expand-4)
+   '("3" . meow-expand-3)
+   '("2" . meow-expand-2)
+   '("1" . meow-expand-1)
+   '("-" . negative-argument)
+   '(";" . meow-reverse)
+   '("," . meow-inner-of-thing)
+   '("." . meow-bounds-of-thing)
+   '("[" . meow-beginning-of-thing)
+   '("]" . meow-end-of-thing)
+   '("a" . meow-append)
+   '("A" . meow-open-below)
+   '("b" . meow-back-word)
+   '("B" . meow-back-symbol)
+   '("c" . meow-change)
+   '("d" . meow-delete)
+   '("D" . meow-backward-delete)
+   '("e" . meow-next-word)
+   '("E" . meow-next-symbol)
+   '("f" . meow-find)
+   '("g" . meow-cancel-selection)
+   '("G" . meow-grab)
+   '("h" . meow-left)
+   '("H" . meow-left-expand)
+   '("i" . meow-insert)
+   '("I" . meow-open-above)
+   '("j" . meow-next)
+   '("J" . meow-next-expand)
+   '("k" . meow-prev)
+   '("K" . meow-prev-expand)
+   '("l" . meow-right)
+   '("v" . meow-right-expand)
+   '("m" . meow-join)
+   '("n" . meow-search)
+   '("o" . meow-block)
+   '("O" . meow-to-block)
+   '("p" . meow-yank)
+   '("q" . meow-quit)
+   '("Q" . meow-goto-line)
+   '("r" . meow-replace)
+   '("R" . meow-swap-grab)
+   '("s" . meow-kill)
+   '("t" . meow-till)
+   '("u" . meow-undo)
+   '("U" . meow-undo-in-selection)
+   '("w" . meow-mark-word)
+   '("W" . meow-mark-symbol)
+   '("x" . meow-line)
+   '("X" . meow-goto-line)
+   '("y" . meow-save)
+   '("Y" . meow-sync-grab)
+   '("z" . meow-pop-selection)
+   '("'" . repeat)
+   '("<M-2>" . split-window-horizontally)
+   '("/" . consult-line)
+   '("<escape>" . ignore)))
+    ;; (define-key map (kbd "/") 'consult-line)
+
+(meow-setup)
+(meow-global-mode 1)
+
+    
+
+;; Custom keyboard mode to my personal keybindings
+;; in above custom minor mode
+(define-minor-mode mykbd-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-kbd-keys")
+(mykbd-minor-mode 1)(defvar mykbd-minor-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "<f3>") 'magit-branch-checkout)
     (define-key map (kbd "<f4>") 'magit-status)
@@ -1172,11 +1052,10 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "M-o") 'next-window-any-frame)
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
-    (define-key evil-normal-state-map (kbd "/") 'consult-line)
-    ;; (define-key eshell-mode-map (kbd "M-l") 'switch-to-buffer)
+    ;; (define-key map (kbd "M-2") 'split-window-horizontally)
+    ;;
     map)
   "mykbd-minor-mode keymap.")
-
 
 ;; initiate above custom minor mode
 (define-minor-mode mykbd-minor-mode
@@ -1184,6 +1063,7 @@ not appropriate in some cases like terminals."
   :init-value t
   :lighter " my-kbd-keys")
 (mykbd-minor-mode 1)
+
 
 ;; revert buffer using F5 key 
 (global-set-key
@@ -1197,4 +1077,8 @@ not appropriate in some cases like terminals."
     ;;(message "force-reverting value is %s" force-reverting)
     (if (or force-reverting (not (buffer-modified-p)))
         (revert-buffer :ignore-auto :noconfirm)
-      (error "The buffer has been modified"))))
+        (error "The buffer has been modified"))))
+
+;;-------Autogenerated Emacs config goes below this line-----
+;; -----Do not touch config below
+

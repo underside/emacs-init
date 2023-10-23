@@ -1,3 +1,0 @@
-# open yaml file 
-with open(build_envs_path, 'w') as stream:
-    parsed_yaml = yaml.load(stream, Loader=yaml.CLoader)

@@ -1,3 +1,0 @@
-# dump yaml data in file
-with open(release_version_path, 'w') as f:
-    data = yaml.dump(release_version, f)

@@ -1,4 +1,4 @@
-;;===Package managing (MELPA etc)
+;===Package managing (MELPA etc)
 ;;{{{ Set up package and use-package
 (require 'package)
 (add-to-list 'package-archives
@@ -26,19 +26,24 @@
 ;;===General mixed settings
 (windmove-default-keybindings)
 
-;;lsp related settings from here https://emacs-lsp.github.io/lsp-mode/page/performance/
+ ;;lsp related settings from here https://emacs-lsp.github.io/lsp-mode/page/performance/
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
+
 
 ;;Bookmarks
 ;; (define-key global-map [f9] 'list-bookmarks)
 ;; (define-key global-map [f10] 'bookmark-set)
 ;; define file to use
 (setq bookmark-default-file "~/.emacs.d/bookmarks") ;; save bookmarks to .emacs.bmk after each entry
-(setq bookmark-save-flag 1)
+(setq bookmark-save-flag 1)  
 
 ;;reduce the frequency of garbage collection by making it happen on
 ;;each 30MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 30000000)
+(setq gc-cons-threshold 100000000)
+
+;; for open files with very long line
+(setq-default bidi-display-reordering nil)
+(setq global-so-long-mode 1)
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
@@ -68,10 +73,17 @@
 ;; No region when it is not highlighted
 (transient-mark-mode 1)
 
+;;Backups settings
+(setq make-backup-files nil;;do not make backup
+      auto-save-files nil; do not create #autosave files
+      create-lockfiles nil; do not create .# files
+)
 
 ;; eww browser (Emacs)
-;; use eww as default for URL (Windows specific setup)
+;; use eww as default for URL
 ;; (setq browse-url-browser-function 'eww-browse-url)
+
+
 
 ;;===Buffers settings
 ;;Messages buffer: set max log size
@@ -79,7 +91,7 @@
 
 
 ;; only warn about deleting modified buffers.
-(setq ibuffer-expert t)
+  (setq ibuffer-expert t)
 
 ;;===Interface and UI settings
 (tooltip-mode      -1)
@@ -102,7 +114,7 @@
 (setq inhibit-startup-message t)
 
 ;;Message in scratch buffer
-(setq initial-scratch-message ";; Hi, bro. What's up?")
+(setq initial-scratch-message ";;Hi, bro. What's up?")
 
 ;; Display the name of the current buffer in the title bar
 (setq frame-title-format
@@ -117,7 +129,6 @@
 
 ;;Autosave-related 
 (desktop-save-mode 1)
-
 ;; savehist
 (setq savehist-additional-variables
       ;; also save my search entries
@@ -126,34 +137,17 @@
 (savehist-mode t)
 (setq-default save-place t)
 
-;; delete-auto-save-files 
+;; delete-auto-save-files
 (setq delete-auto-save-files t)
-
-;; do not create .lock files
-(setq create-lockfiles nil)
-
-;; Backup
-;; Set autosave files 
 (setq backup-directory-alist
-      '(("." . "~/tmp")))
-(setq delete-old-versions t
-  kept-new-versions 6
-  kept-old-versions 2
-  version-control t)
+      '(("." . "~/.emacs_backups")))
 
 ;; delete old backups silently
 (setq delete-old-versions t)
 
-;; Do not create copy of sensitive data files
-(setq auto-mode-alist
-      (append
-       (list
-        '("\\.\\(vcf\\|gpg\\|\\.yml\\)$" . sensitive-minor-mode)
-        )
-       auto-mode-alist))
 
-;; Global undo tree
 (setq global-undo-tree-mode t)
+
 
 ;;enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -183,6 +177,21 @@ lisp-body-indent   4
 tab-stop-list (quote (4 8))
 )
 
+;;---DB CONFIG---
+;; (add-hook 'sql-interactive-mode-hook
+;;           (lambda ()
+;;             (toggle-truncate-lines t)))
+;; (setq sql-postgres-login-params
+;;       '((user :default "threads" )
+;;         (database :default "threads")
+;;         (server :default "db.ecc.dte")
+;;         (port :default 5432)))
+
+(add-hook 'sql-interactive-mode-hook
+          (lambda ()
+            (toggle-truncate-lines t)))
+
+
 ;;===Ediff settings
 (setq-default ediff-forward-word-function 'forward-char)
 ;;Don't use strange separate control-window.
@@ -208,7 +217,6 @@ tab-stop-list (quote (4 8))
 ;;allow remove non-empty dirs
 (setq dired-recursive-deletes 'top)
 (setq dired-dwim-target t)
-
 ;;Hide detailes in dired-mode (permissions etc) 
 ;;If you want see detailes press "("
 (defun hide-details ()
@@ -222,7 +230,6 @@ tab-stop-list (quote (4 8))
 (interactive "sSnippet:")
 (insert-file-contents (concat "~/git/emacs-init/snipp/" fn)) 
   (if nil (message "argument is nil")))
-
 ;; Abbrev table example
 ;; (define-abbrev-table 'global-abbrev-table '(
 ;;     ("afaict" "as far as I can tell" nil 1)
@@ -243,10 +250,6 @@ tab-stop-list (quote (4 8))
 ;;   )
 ;; (global-set-key (kbd "C-S-t") 'new-ansi-term) ;; mappe sur C-T
 
-;; vterm terminal (work only with native-compiled Emacs)
-;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
-(use-package vterm
-    :ensure t)
 
 ;; Setup interactive shell to add aliases from .bashrc
 (setq shell-file-name "bash")
@@ -299,6 +302,10 @@ shell exits, the buffer is killed."
   (vterm)
   )
 
+;; vterm terminal (work only with native-compiled Emacs)
+;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
+(use-package vterm
+    :ensure t)
 
 ;;===Themes,fonts,UI
 ;; enable pixelwise resizing frames
@@ -311,7 +318,7 @@ shell exits, the buffer is killed."
 (set-face-attribute 'default nil
                     ;; :family "DejaVu Sans Mono"
                     :family "Hack"
-                    :height 130
+                    :height 150
                     :weight 'normal
                     :width 'normal)
 
@@ -330,7 +337,7 @@ shell exits, the buffer is killed."
    ;; (load-theme 'doom-solarized-light 1)
    ;; (load-theme 'doom-material 1)
    ;; (load-theme 'doom-dracula 1)
-   ;; (load-theme 'doom-spacegrey 1)
+   ;; (load-theme 'doom-material-dark 1)
    ;; (load-theme 'doom-nord 1)
 )
 
@@ -347,6 +354,27 @@ shell exits, the buffer is killed."
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
     )
+;; (setq shell-command-switch "-ic")
+
+
+;;=== Doom Modeline settings
+;;Doom-modeline
+;;Run M-x all-the-icons-install-fonts for this package
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :init (doom-modeline-mode 1))
+;;   :config
+;;     (setq doom-modeline-height 8)
+;;     ;;fonts
+;;     (set-face-attribute 'mode-line nil :family "Hack" :height 110)
+;;     (set-face-attribute 'mode-line-inactive nil :family "Hack" :height 110)
+;;     ;; git info length
+;;     (setq doom-modeline-vcs-max-length 12)
+;;     ;;rm indent info
+;;     (setq doom-modeline-indent-info nil)
+;;     ;;remove encoding info
+;;     (setq doom-modeline-buffer-encoding nil)
+
 
 ;;=== Custom Modeline
 ;;M font size and family
@@ -359,8 +387,8 @@ shell exits, the buffer is killed."
 (size-indication-mode          t) ;; file size in persents
 
 ;;list of minor modes needed to hide
-(defvar hidden-minor-modes 
-  '(abbrev-mode            
+(defvar hidden-minor-modes ; example, write your own list of hidden
+  '(abbrev-mode            ; minor modes
     auto-fill-function
     smooth-scroll-mode
     mykbd-minor-mode
@@ -379,6 +407,15 @@ shell exits, the buffer is killed."
       (when trg
         (setcar trg "")))))
 
+;; show project/filepath in modeline
+;; (with-eval-after-load 'subr-x
+;;   (setq-default mode-line-buffer-identification
+;;                 '(:eval (format-mode-line (propertized-buffer-identification (or (when-let* ((buffer-file-truename buffer-file-truename)
+;;                                                                                              (prj (cdr-safe (project-current)))
+;;                                                                                              (prj-parent (file-name-directory (directory-file-name (expand-file-name prj)))))
+;;                                                                                    (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename)))
+;;                                                                                  "%b"))))))
+
 (add-hook 'after-change-major-mode-hook 'purge-minor-modes)
 
 ;;rainbow delimiters
@@ -389,22 +426,77 @@ shell exits, the buffer is killed."
 )
 
 ;;===Incremental narrowing
-;;selectrum 
-(use-package selectrum
+;; Enable vertico
+(use-package vertico
   :ensure t
-  :demand 
-  :config
-    (selectrum-mode +1)
+  :init
+  (vertico-mode)
 
-)
-;; nice sort approach for completion
+  ;; Different scroll margin
+  (setq vertico-scroll-margin 0)
+
+  ;; Show more candidates
+  (setq vertico-count 20)
+
+  ;; Grow and shrink the Vertico minibuffer
+  (setq vertico-resize t)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  (setq vertico-cycle t)
+  )
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package savehist
+  :ensure t
+  :init
+  (savehist-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t));; nice sort approach for completion
+
+
+;; Optionally use the `orderless' completion style.
 (use-package orderless
   :ensure t
-  :config
-    (setq orderless-skip-highlighting (lambda () selectrum-is-active))
-    (setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
-    (setq completion-styles '(orderless))
-)
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+;; Use `consult-completion-in-region' if Vertico is enabled.
+;; Otherwise use the default `completion--in-region' function.
+(setq completion-in-region-function
+      (lambda (&rest args)
+        (apply (if vertico-mode
+                   #'consult-completion-in-region
+                 #'completion--in-region)
+               args)))
+
+
+
 ;; consult: search, grep, project navigation 
 (use-package consult
   :ensure t
@@ -419,7 +511,6 @@ shell exits, the buffer is killed."
 ;; Stuff that should be loaded before evil
 ;; Full Emacs keys in Evil Insert mode
 (setq evil-disable-insert-state-bindings t)
-
 
 ;;===Evil-mode
 (use-package evil
@@ -467,20 +558,19 @@ shell exits, the buffer is killed."
  (setq evil-operator-state-cursor '("red" hollow))
 )
 
-;;jj comment, because most likely this packages part of evil-collection
 ;;Evil-mode plugin evil-matchit
-;; (use-package evil-matchit
-;;   :ensure t
-;;   :config
-;;   (global-evil-matchit-mode 1)
-;; )
+(use-package evil-matchit
+  :ensure t
+  :config
+  (global-evil-matchit-mode 1)
+)
 
 ;;plugin evil-surround
-;; (use-package evil-surround
-;;   :ensure t
-;;   :after evil-mode
-;;   :config
-;;   (setq global-evil-surround-mode 1))
+(use-package evil-surround
+  :ensure t
+  :after evil-mode
+  :config
+  (setq global-evil-surround-mode 1))
 
 ;;Evil and vterm
 (defun evil-collection-vterm-escape-stay ()
@@ -525,20 +615,33 @@ not appropriate in some cases like terminals."
        (go . t)
        (shell . t)
        (http . t)
-
        ))
 
-;;Agenda
+;;async babel
+(use-package ob-async 
+    :after ob
+)
+
+;; Agenda
 ;; include all .org files from notes dir in agenda
-(setq org-agenda-files '("~.emacs.d/todo.org"))
-;;Show next 20 days, not only this week
-(setq org-agenda-span 20)
+(setq org-agenda-files '("~/ydisk/orgzly/agenda.org"))
+;;Show next 10 days, not only this week
+(setq org-agenda-span 10)
 ;;show agenda since today 
 (setq org-agenda-start-on-weekday nil)
 
 ;;Any keywords can be used here
-  (setq org-todo-keywords
-        '((sequence "TODO" "|"  "CANCELED" "DONE" )))
+(setq org-todo-keywords
+      '((sequence "TODO" "BACKLOG" "HOLD" "CANCELED" "|" "DONE" )))
+
+(setq org-todo-keyword-faces
+      '(
+        ("TODO" . (:foreground "SpringGreen3" :weight bold))
+        ("BACKLOG" . (:foreground "royal blue" :weight bold))
+        ("HOLD" . (:foreground "gold3" :weight bold))
+        ("CANCELED" . (:foreground "OrangeRed4" :weight bold))
+        ))
+
 
 ;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
@@ -570,57 +673,53 @@ not appropriate in some cases like terminals."
 ;;===Tramp
 ;;add in /etc/ssh/ssh_config StrictHostKeyChecking no
 ;;connect to not default port C-x C-f /ssh:test@host#2222:/tmp
-;; (use-package tramp
-;;   :ensure t
-;;   :config
-;;   (setq tramp-chunksize "500")
-;;   (setq tramp-debug-buffer t)
-;;   ;(setq tramp-verbose 10)
-;;   (setq password-cache-expiry nil)
-;;   (setq tramp-default-method "ssh")
-;; )
+(use-package tramp
+  :ensure t
+  :config
+  (setq tramp-chunksize "500")
+  (setq tramp-debug-buffer t)
+  ;(setq tramp-verbose 10)
+  (setq password-cache-expiry nil)
+  (setq tramp-default-method "ssh")
+)
 
 ;;===Company-mode
-;; !!! turnoff Company since I use LSP
+;;install shell-backend
+(use-package company-shell
+  :ensure t
+)
+(use-package company
+  :ensure t
+  :config
+  ;; add company backends
+  (add-to-list 'company-backends 'company-shell)
+  ;; (add-to-list 'company-backends 'company-python)
 
-;; install shell-backend
-;; (use-package company-shell
-;;   :ensure t
-;; )
+  ;; company-hooks for different modes
+  ;; (add-hook 'after-init-hook 'global-company-mode)
+  (add-hook 'shell-mode-hook
+            (lambda ()
+                (set (make-local-variable 'company-backends) '(company-shell))))
 
-;; (use-package company
-;;   :ensure t
-;;   :config
-;;   ;; add company backends
-;;   (add-to-list 'company-backends 'company-shell)
-;;   (add-to-list 'company-backends 'company-python)
-
-;;   ;; company-hooks for different modes
-;;   (add-hook 'after-init-hook 'global-company-mode)
-;;   (add-hook 'shell-mode-hook
-;;             (lambda ()
-;;                 (set (make-local-variable 'company-backends) '(company-shell))))
-
-;;   ;; base settings
-;;   (setq company-tooltip-limit 20)
-;;   (setq company-idle-delay 0.3) 
-;;   (setq company-echo-delay 0.3)                          
-;;   (setq company-minimum-prefix-length 1)
-;;   (setq company-begin-commands '(self-insert-command))
-;; )
+  ;; base settings
+  (setq company-tooltip-limit 20)
+  (setq company-idle-delay 0.3) 
+  (setq company-echo-delay 0.3)                          
+  (setq company-minimum-prefix-length 1)
+  (setq company-begin-commands '(self-insert-command))
+)
 
 ;;===lsp-mode
-;;Golang --> install gopls 
+;;Golang -->  (see dt.org/Golang)
 ;;Python -->  pip install 'python-language-server[all]'
-
 ;;optional if you want which-key integration
 (use-package which-key
     :ensure t
     :config
     (which-key-mode)
     (setq which-key-idle-delay 0.5)
-    )
 
+    )
 
 (use-package lsp-mode
     :defer t
@@ -628,14 +727,26 @@ not appropriate in some cases like terminals."
     :hook
         (python-mode . lsp)
         (go-mode . lsp)
+        (groovy-mode . lsp)
+        (clojure-mode . lsp)
+        (rust-mode . lsp)
     :commands lsp
+    ;;(Rust specific 
+    :custom
+    ;; what to use when checking on-save. "check" is default, I prefer clippy
+    (lsp-rust-analyzer-cargo-watch-command "clippy")
+    (lsp-eldoc-render-all t)
+    (lsp-idle-delay 0.6)
     :config
+    ;; For Groovy custom installation
+    ;; Install groovy-language-server (see Github for more info) clone->build
+    ;; copy build files to /home/i/.emacs.d/.cache/lsp/groovy-language-server-all.jar
    ;; performance improvments
+        (setq lsp-idle-delay 0.500)
         (setq lsp-log-io nil) ; if set to true can cause a performance hit
-
+        ;; turn off auto picking of project root folder
+        (setq lsp-auto-guess-root  nil )
         (setq lsp-enable-symbol-highlighting nil)
-
-
         ;; (setq lsp-keymap-prefix "C-c l")
 
         ;; Set up before-save hooks to format buffer and add/delete imports.
@@ -647,27 +758,27 @@ not appropriate in some cases like terminals."
         (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
         (add-hook 'go-mode-hook #'lsp-deferred)
         ;;gopls integration with lsp-mode
-        ;; (lsp-register-custom-settings
-        ;; '(("gopls.completeUnimported" t t)
-        ;; ("gopls.staticcheck" t t)))
+        (lsp-register-custom-settings
+        '(("gopls.completeUnimported" t t)
+        ("gopls.staticcheck" t t)))
 
-        ;; turn off auto picking of project root folder
-        (setq lsp-auto-guess-root  nil )
 
 )
 
-;; lsp related package to show hover info
+
+;;https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
 (use-package lsp-ui
     :ensure t
     :config
-    (setq lsp-ui-sideline-enable nil) ;; disable sideline
-    ;; (setq lsp-ui-sideline-show-diagnostics t)
-    ;; (setq lsp-ui-sideline-show-hover t)
-    ;; (setq lsp-ui-sideline-show-code-actions t)
-    ;; (setq lsp-ui-sideline-delay 0)
-    ;; (setq lsp-ui-sideline-update-mode t)
-
-
+    
+    ;; disable sideline fully
+    ;; (setq lsp-ui-sideline-enable nil)
+    ;; (setq lsp-ui-doc-show-with-cursor nil)
+    ;; (setq lsp-ui-sideline-show-diagnostics nil)
+    (setq lsp-ui-sideline-show-hover t)
+    (setq lsp-ui-sideline-show-code-actions t)
+    (setq lsp-ui-sideline-delay 0.500)
+    (setq lsp-ui-sideline-update-mode t)
 )
 
 
@@ -714,6 +825,7 @@ not appropriate in some cases like terminals."
   ;; gdb
   (require 'dap-gdb-lldb)
 
+
   ;;workaround 
   (setq dap-launch-configuration-providers  '(dap-debug-template-configurations-provider))
   ;; register template 
@@ -728,14 +840,29 @@ not appropriate in some cases like terminals."
 
 ;; function that will add launch.json file in every root directory if it's not exist
 ;; run this function manually if debugger throw an error "....launch.json"
-;; (defun dap-debug-create-or-edit-json-template ()
-;;     "Edit the debugging configuration or create + edit if none exists yet."
-;;     (interactive)
-;;     (let ((filename (concat (lsp-workspace-root) "/launch.json"))
-;; 	  (default "~/ws/git/emacs-init/conf/default-launch.json"))
-;;       (unless (file-exists-p filename)
-;; 	(copy-file default filename))
-;;       (find-file-existing filename)))
+;; WARNING! Do not create launch.json manually
+;; example for template
+    ;; Eval Buffer with `M-x eval-buffer' to register the newly created template.
+    ;; (dap-register-debug-template
+    ;;   "Just Debug"
+    ;;   (list :type "go"
+    ;;         :request "launch"
+    ;;         :name "JUST DO IT"
+    ;;         :mode "debug"
+    ;;         :program "/home/i/ydisk/ws/scripts/golang/test-project"
+    ;;         :buildFlags "-gcflags '-N -l'"
+    ;;         :args nil
+    ;;         :env nil
+    ;;         :envFile nil))
+
+(defun dap-debug-create-or-edit-json-template ()
+    "Edit the debugging configuration or create + edit if none exists yet."
+    (interactive)
+    (let ((filename (concat (lsp-workspace-root) "/launch.json"))
+	  (default "~/git/emacs-init/conf/default-launch.json"))
+      (unless (file-exists-p filename)
+	(copy-file default filename))
+      (find-file-existing filename)))
 
 ;;===go-mode
 (use-package go-mode
@@ -768,6 +895,8 @@ not appropriate in some cases like terminals."
 ;;===yaml-mode
 (use-package yaml-mode
   :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 )
 
 ;;===Flycheck
@@ -795,70 +924,72 @@ not appropriate in some cases like terminals."
 )
 
 ;;===Treemacs
-(use-package treemacs
-  :ensure t
-  :defer t
-  :init
-  :config
-  (progn
-    (setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
-          treemacs-deferred-git-apply-delay      0.5
-          treemacs-directory-name-transformer    #'identity
-          treemacs-display-in-side-window        t
-          treemacs-eldoc-display                 t
-          treemacs-file-event-delay              5000
-          treemacs-file-extension-regex          treemacs-last-period-regex-value
-          treemacs-file-follow-delay             0.2
-          treemacs-file-name-transformer         #'identity
-          treemacs-follow-after-init             t
-          treemacs-git-command-pipe              ""
-          treemacs-goto-tag-strategy             'refetch-index
-          treemacs-indentation                   2
-          treemacs-indentation-string            " "
-          treemacs-is-never-other-window         nil
-          treemacs-max-git-entries               5000
-          treemacs-missing-project-action        'ask
-          treemacs-move-forward-on-expand        nil
-          treemacs-no-png-images                 nil
-          treemacs-no-delete-other-windows       t
-          treemacs-project-follow-cleanup        nil
-          treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-          treemacs-position                      'left
-          treemacs-recenter-distance             0.1
-          treemacs-recenter-after-file-follow    nil
-          treemacs-recenter-after-tag-follow     nil
-          treemacs-recenter-after-project-jump   'always
-          treemacs-recenter-after-project-expand 'on-distance
-          treemacs-show-cursor                   nil
-          treemacs-show-hidden-files             t
-          treemacs-silent-filewatch              nil
-          treemacs-silent-refresh                nil
-          treemacs-sorting                       'alphabetic-asc
-          treemacs-space-between-root-nodes      t
-          treemacs-tag-follow-cleanup            t
-          treemacs-tag-follow-delay              1.5
-          treemacs-user-mode-line-format         nil
-          treemacs-user-header-line-format       nil
-          treemacs-width                         38
-          treemacs-workspace-switch-cleanup      nil
-          )
-    (treemacs-filewatch-mode t)
-    (setq treemacs-text-scale -2)
-    (treemacs-fringe-indicator-mode t)
-    (pcase (cons (not (null (executable-find "git")))
-                 (not (null treemacs-python-executable)))
-      (`(t . t)
-       (treemacs-git-mode 'deferred))
-      (`(t . _)
-       (treemacs-git-mode 'simple))))
-  :bind
-  (:map global-map
-        ("<f8>"   . treemacs)
-        ))
+;; (use-package treemacs
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (with-eval-after-load 'winum
+;;     (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+;;   :config
+;;   (progn
+;;     (setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
+;;           treemacs-deferred-git-apply-delay      0.5
+;;           treemacs-directory-name-transformer    #'identity
+;;           treemacs-display-in-side-window        t
+;;           treemacs-eldoc-display                 t
+;;           treemacs-file-event-delay              5000
+;;           treemacs-file-extension-regex          treemacs-last-period-regex-value
+;;           treemacs-file-follow-delay             0.2
+;;           treemacs-file-name-transformer         #'identity
+;;           treemacs-follow-after-init             t
+;;           treemacs-git-command-pipe              ""
+;;           treemacs-goto-tag-strategy             'refetch-index
+;;           treemacs-indentation                   2
+;;           treemacs-indentation-string            " "
+;;           treemacs-is-never-other-window         nil
+;;           treemacs-max-git-entries               5000
+;;           treemacs-missing-project-action        'ask
+;;           treemacs-move-forward-on-expand        nil
+;;           treemacs-no-png-images                 nil
+;;           treemacs-no-delete-other-windows       t
+;;           treemacs-project-follow-cleanup        nil
+;;           treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+;;           treemacs-position                      'left
+;;           treemacs-recenter-distance             0.1
+;;           treemacs-recenter-after-file-follow    nil
+;;           treemacs-recenter-after-tag-follow     nil
+;;           treemacs-recenter-after-project-jump   'always
+;;           treemacs-recenter-after-project-expand 'on-distance
+;;           treemacs-show-cursor                   nil
+;;           treemacs-show-hidden-files             t
+;;           treemacs-silent-filewatch              nil
+;;           treemacs-silent-refresh                nil
+;;           treemacs-sorting                       'alphabetic-asc
+;;           treemacs-space-between-root-nodes      t
+;;           treemacs-tag-follow-cleanup            t
+;;           treemacs-tag-follow-delay              1.5
+;;           treemacs-user-mode-line-format         nil
+;;           treemacs-user-header-line-format       nil
+;;           treemacs-width                         38
+;;           treemacs-workspace-switch-cleanup      nil
+;;           )
+;;     (treemacs-filewatch-mode t)
+;;     (setq treemacs-text-scale -2)
+;;     (treemacs-fringe-indicator-mode t)
+;;     (pcase (cons (not (null (executable-find "git")))
+;;                  (not (null treemacs-python-executable)))
+;;       (`(t . t)
+;;        (treemacs-git-mode 'deferred))
+;;       (`(t . _)
+;;        (treemacs-git-mode 'simple))))
+;;   :bind
+;;   (:map global-map
+;;         ("<f8>"   . treemacs)
+;;         ))
 
-(use-package treemacs-evil
-  :after treemacs evil
-  :ensure t)
+;; (use-package treemacs-evil
+;;   :after treemacs evil
+;;   :ensure t)
 
 
 ;;===Markdown mode
@@ -902,6 +1033,13 @@ not appropriate in some cases like terminals."
 (use-package ox-jira
     :ensure t)
 
+;;===Restclient API testing
+(use-package restclient
+    :ensure t)
+
+(use-package ob-restclient
+    :ensure t)
+
 ;;===Web-mode 
 (use-package web-mode
     :config
@@ -925,19 +1063,21 @@ not appropriate in some cases like terminals."
 
 ;;===kubernetes
 ;; Magit-like client for K8s
-;; (use-package kubernetes
-;;     )
-;; (use-package kubernetes-evil
-;;   :after kubernetes)
+
+(use-package kubernetes
+    )
+
+(use-package kubernetes-evil
+  :after kubernetes)
 
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   :ensure t
   ;; Either bind `marginalia-cycle' globally or only in the minibuffer
-  ;; :bind (("M-A" . marginalia-cycle)
-  ;;        :map minibuffer-local-map
-  ;;        ("M-A" . marginalia-cycle))
+  :bind (("M-A" . marginalia-cycle)
+         :map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
 
   ;; The :init configuration is always executed (Not lazy!)
   ;; Must be in the :init section of use-package such that the mode gets
@@ -986,14 +1126,6 @@ not appropriate in some cases like terminals."
   ;; `completion-at-point' is often bound to M-TAB.
   (setq tab-always-indent 'complete))
 
-;;========
-;;Add new package above this line, Keyboard config must be last to download to override previous stuff
-;;========
-
-
-;;========Keybindings
-;;Echo commands I haven’t finished quicker than the default of 1 second:
-(setq echo-keystrokes 0.4)
 
 ;; this option needed for evil and evil-collection
 (setq evil-want-keybinding nil)
@@ -1005,6 +1137,23 @@ not appropriate in some cases like terminals."
   :config
     (evil-collection-init)
 )
+
+;; search and replace in grep buffers
+;; press i in grep buffer->query-replace-regexp->ZZ(to save changes)
+(use-package wgrep 
+  :ensure t
+)
+
+
+
+;;========
+;;Add new package above this line, Keyboard config must be last to download to override previous stuff
+
+
+;;========Keybindings
+;;Echo commands I haven’t finished quicker than the default of 1 second:
+(setq echo-keystrokes 0.4)
+
 
 ;; escape quits
 ;; escape from any opened stuff like minibuffers etc
@@ -1023,6 +1172,10 @@ not appropriate in some cases like terminals."
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
 
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            ))
 ;; Custom Minor-mode to override all keybindings in all modes
 ;; mykbd
 (defvar mykbd-minor-mode-map
@@ -1039,18 +1192,24 @@ not appropriate in some cases like terminals."
     (define-key map (kbd "<C-right>") 'enlarge-window-horizontally)
     (define-key map (kbd "C-c f") 'consult-find)
     (define-key map (kbd "C-S-t") 'new-vterm)
+    (define-key map (kbd "C-M-5") 'query-replace-regexp)
     (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
+    (define-key map (kbd "M-k") 'kill-buffer)
+    (define-key map (kbd "M-o") 'next-window-any-frame)
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
-    (define-key map (kbd "M-o") 'next-window-any-frame)
-    (define-key map (kbd "M-k") 'kill-buffer)
     (define-key evil-normal-state-map (kbd "/") 'consult-line)
-    ;; (define-key evil-motion-state-map (kbd ":") 'evil-repeat-find-char)
-    ;; (define-key evil-motion-state-map (kbd ";") 'evil-ex)
-    ;; do not indent when press RET in org-mode
-    ;;----
+    ;; (define-key eshell-mode-map (kbd "M-l") 'switch-to-buffer)
     map)
   "mykbd-minor-mode keymap.")
+
+
+
+(with-eval-after-load "ob"
+  (require 'org-babel-eval-in-repl)
+  (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
+  )
+
 
 ;; initiate above custom minor mode
 (define-minor-mode mykbd-minor-mode
@@ -1072,5 +1231,3 @@ not appropriate in some cases like terminals."
     (if (or force-reverting (not (buffer-modified-p)))
         (revert-buffer :ignore-auto :noconfirm)
       (error "The buffer has been modified"))))
-
-;;;==================================DO NOT TOUCH CONFIG BELOW
