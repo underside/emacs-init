@@ -513,8 +513,18 @@ tab-stop-list (quote (4 8))
 (setq org-agenda-start-on-weekday nil)
 
 ;;Any keywords can be used here
-  (setq org-todo-keywords
-        '((sequence "TODO" "|"  "CANCELED" "DONE" )))
+(setq org-todo-keywords
+      '((sequence "TODO" "BACKLOG" "HOLD" "CANCELED" "|" "DONE" )))
+
+(setq org-todo-keyword-faces
+      '(
+        ("TODO" . (:foreground "SpringGreen3" :weight bold))
+        ("BACKLOG" . (:foreground "royal blue" :weight bold))
+        ("HOLD" . (:foreground "gold3" :weight bold))
+        ("CANCELED" . (:foreground "OrangeRed4" :weight bold))
+        ))
+
+
 
 ;;save clocks history between sessions
 ;; clock-in C-c C-x C-i
@@ -813,25 +823,25 @@ tab-stop-list (quote (4 8))
     :ensure t)
 
 ;;===Web-mode 
-;; (use-package web-mode
-;;     :config
-;;     :mode
-;;         (("\\.phtml\\'" . web-mode))
-;;         (("\\.tpl\\.php\\'" . web-mode))
-;;         (("\\.[agj]sp\\'" . web-mode))
-;;         (("\\.as[cp]x\\'" . web-mode))
-;;         (("\\.erb\\'" . web-mode))
-;;         (("\\.mustache\\'" . web-mode))
-;;         (("\\.djhtml\\'" . web-mode))
-;;         (("\\.html?\\'" . web-mode))
-;;      :config
-;;         (setq web-mode-engines-alist
-;;             '(("php"    . "\\.phtml\\'")
-;;               ("blade"  . "\\.blade\\.")
-;;               ("go"  . "\\.tpl\\.")
-;;               )
-;;         )
-;; )
+(use-package web-mode
+    :config
+    :mode
+        (("\\.phtml\\'" . web-mode))
+        (("\\.tpl\\.php\\'" . web-mode))
+        (("\\.[agj]sp\\'" . web-mode))
+        (("\\.as[cp]x\\'" . web-mode))
+        (("\\.erb\\'" . web-mode))
+        (("\\.mustache\\'" . web-mode))
+        (("\\.djhtml\\'" . web-mode))
+        (("\\.html?\\'" . web-mode))
+     :config
+        (setq web-mode-engines-alist
+            '(("php"    . "\\.phtml\\'")
+              ("blade"  . "\\.blade\\.")
+              ("go"  . "\\.tpl\\.")
+              )
+        )
+)
 
 ;; kubernetes.el
 ;; magit-like k8s client
@@ -909,28 +919,12 @@ tab-stop-list (quote (4 8))
 ;;Echo commands I haven’t finished quicker than the default of 1 second:
 (setq echo-keystrokes 0.4)
 
-;; escape quits
-;; escape from any opened stuff like minibuffers etc
-;; (defun minibuffer-keyboard-quit ()
-;; 	(interactive)
-;; 	(if (and delete-selection-mode transient-mark-mode mark-active)
-;; 		(setq deactivate-mark  t)
-;; 		(when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-;; 		(abort-recursive-edit)))
-;; (define-key evil-normal-state-map [escape] 'keyboard-quit)
-;; (define-key evil-visual-state-map [escape] 'keyboard-quit)
-;; (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
-;; (global-set-key [escape] 'evil-exit-emacs-state)
-
 ;; Meow
 (use-package meow
     :config
     (setq meow-use-clipboard t)
-
+    (setf meow-expand-hint-remove-delay 2)
+    
 )
 
 (defun meow-setup ()
@@ -940,7 +934,6 @@ tab-stop-list (quote (4 8))
    '("k" . meow-prev)
    '("<escape>" . ignore))
   (meow-leader-define-key
-   ;; SPC j/k will run the original command in MOTION state.
    '("j" . "H-j")
    '("k" . "H-k")
    ;; Use SPC (0-9) for digit arguments.
@@ -957,7 +950,7 @@ tab-stop-list (quote (4 8))
    '("/" . meow-keypad-describe-key)
    '("?" . meow-cheatsheet))
   (meow-normal-define-key
-   '("0" . meow-expand-0)
+   '("0" . beginning-of-line)
    '("9" . meow-expand-9)
    '("8" . meow-expand-8)
    '("7" . meow-expand-7)
@@ -973,17 +966,20 @@ tab-stop-list (quote (4 8))
    '("." . meow-bounds-of-thing)
    '("[" . meow-beginning-of-thing)
    '("]" . meow-end-of-thing)
+   '("A" . meow-to-block)
    '("a" . meow-append)
-   '("A" . meow-open-below)
+   '("o" . meow-open-below)
+   '("O" . meow-block)
    '("b" . meow-back-word)
    '("B" . meow-back-symbol)
    '("c" . meow-change)
+   '("s" . meow-kill)
+   '("x" . meow-visual-line-expand)
    '("d" . meow-delete)
    '("D" . meow-backward-delete)
    '("e" . meow-next-word)
    '("E" . meow-next-symbol)
    '("f" . meow-find)
-   '("g" . meow-cancel-selection)
    '("G" . meow-grab)
    '("h" . meow-left)
    '("H" . meow-left-expand)
@@ -997,35 +993,40 @@ tab-stop-list (quote (4 8))
    '("v" . meow-right-expand)
    '("m" . meow-join)
    '("n" . meow-search)
-   '("o" . meow-block)
-   '("O" . meow-to-block)
    '("p" . meow-yank)
-   '("q" . meow-quit)
    '("Q" . meow-goto-line)
    '("r" . meow-replace)
    '("R" . meow-swap-grab)
-   '("s" . meow-kill)
    '("t" . meow-till)
    '("u" . meow-undo)
    '("U" . meow-undo-in-selection)
    '("w" . meow-mark-word)
    '("W" . meow-mark-symbol)
-   '("x" . meow-line)
-   '("X" . meow-goto-line)
    '("y" . meow-save)
    '("Y" . meow-sync-grab)
    '("z" . meow-pop-selection)
    '("'" . repeat)
-   '("<M-2>" . split-window-horizontally)
    '("/" . consult-line)
-   '("<escape>" . ignore)))
-    ;; (define-key map (kbd "/") 'consult-line)
+   '("<escape>" . meow-cancel-selection)))
 
 (meow-setup)
 (meow-global-mode 1)
 
-    
+;; override vterm keybindings to use it as ordinary buffer (copy,move e.t.c)
+(with-eval-after-load 'meow
+  (push '(vterm-mode . insert) meow-mode-state-list)
+  (add-hook 'vterm-mode-hook
+            (lambda ()
+              (add-hook 'meow-insert-enter-hook
+                        (lambda () (vterm-copy-mode -1))
+                        nil t)
+              (add-hook 'meow-insert-exit-hook
+                        (lambda () (vterm-copy-mode 1))
+                        nil t))))
+;;meow in dired-mode 
+;;  (push '(dired-mode . insert) meow-mode-state-list))
 
+    
 ;; Custom keyboard mode to my personal keybindings
 ;; in above custom minor mode
 (define-minor-mode mykbd-minor-mode
@@ -1047,13 +1048,11 @@ tab-stop-list (quote (4 8))
     (define-key map (kbd "C-c f") 'consult-find)
     (define-key map (kbd "C-S-t") 'new-vterm)
     (define-key map (kbd "C-M-5") 'query-replace-regexp)
-    (define-key org-mode-map (kbd "<normal-state> M-l") nil) ;;rm binding in org-mode
     (define-key map (kbd "M-k") 'kill-buffer)
     (define-key map (kbd "M-o") 'next-window-any-frame)
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
-    ;; (define-key map (kbd "M-2") 'split-window-horizontally)
-    ;;
+    ;;;;;
     map)
   "mykbd-minor-mode keymap.")
 
@@ -1078,7 +1077,4 @@ tab-stop-list (quote (4 8))
     (if (or force-reverting (not (buffer-modified-p)))
         (revert-buffer :ignore-auto :noconfirm)
         (error "The buffer has been modified"))))
-
-;;-------Autogenerated Emacs config goes below this line-----
-;; -----Do not touch config below
 

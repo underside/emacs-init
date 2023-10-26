@@ -9,3 +9,8 @@
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+# simple example
+{{- range $ten := {{ .Values.global.datastore }} }}
+                  
+{{ end }}
