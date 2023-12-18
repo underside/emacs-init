@@ -1,0 +1,11 @@
+SHELL := $(shell which bash)
+.DEFAULT_GOAL := help
+.SILENT:;
+.ONESHELL:;
+.EXPORT_ALL_VARIABLES: ;
+.PHONY: all;
+
+# integrate shell commands
+stand_name := $(shell yq eval '.global.namespace' values.yaml)
+
+

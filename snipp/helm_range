@@ -11,6 +11,6 @@
 {{- end -}}
 
 # simple example
-{{- range $ten := {{ .Values.global.datastore }} }}
+{{- range $ten := .Values.global.datastore }}
                   
 {{ end }}

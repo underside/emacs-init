@@ -1,0 +1,3 @@
+for host in "${hosts[@]}"; do
+  sshpass -p $pass ssh $user@${host} 'bash -s' < xxx.sh
+done

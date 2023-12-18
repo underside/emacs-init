@@ -230,17 +230,16 @@ tab-stop-list (quote (4 8))
 ;; (global-set-key (kbd "C-S-t") 'new-ansi-term) ;; mappe sur C-T
 
 ;; Eat terminal (eshell improvement)
-(use-package
-:ensure t
-:config
+;; (use-package eat
+;; :ensure t
+;; :config
 
-;; For `eat-eshell-mode'.
-(add-hook 'eshell-load-hook #'eat-eshell-mode)
+;; ;; For `eat-eshell-mode'.
+;; (add-hook 'eshell-load-hook #'eat-eshell-mode)
 
-;; For `eat-eshell-visual-command-mode'.
-(add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
-
-    )
+;; ;; For `eat-eshell-visual-command-mode'.
+;; (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
+;;     )
 
 
 ;; Setup interactive shell to add aliases from .bashrc
@@ -276,7 +275,8 @@ tab-stop-list (quote (4 8))
     (vterm-send-return)
     ))
 
-;;possibility to create multiple vterm buffers with uniq names
+;; possibility to create multiple vterm buffers with uniq names
+;; if vterm buffer exist and opened -> press C-S-t -> new vterm buffer with uniq name will be opened
 (defun new-vterm ()
   (interactive)
   (if (string= "*vterm*" (buffer-name))
@@ -330,32 +330,14 @@ tab-stop-list (quote (4 8))
     )
 
 ;;Add Linux PATH ENV variables to Emacs
-;; (use-package exec-path-from-shell
-;;   :ensure t
-;;   :config
-;; (when (memq window-system '(mac ns x))
-;;   (exec-path-from-shell-initialize))
-;;     )
-;;(setq shell-command-switch "-ic")
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+    )
 
-
-;;=== Doom Modeline settings
-;;Doom-modeline
-;;Run M-x all-the-icons-install-fonts for this package
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :init (doom-modeline-mode 1))
-;;   :config
-;;     (setq doom-modeline-height 8)
-;;     ;;fonts
-;;     (set-face-attribute 'mode-line nil :family "Hack" :height 110)
-;;     (set-face-attribute 'mode-line-inactive nil :family "Hack" :height 110)
-;;     ;; git info length
-;;     (setq doom-modeline-vcs-max-length 12)
-;;     ;;rm indent info
-;;     (setq doom-modeline-indent-info nil)
-;;     ;;remove encoding info
-;;     (setq doom-modeline-buffer-encoding nil)
+(setq shell-command-switch "-ic")
 
 
 ;;=== Custom Modeline
@@ -499,9 +481,7 @@ tab-stop-list (quote (4 8))
 (org-babel-do-load-languages
      'org-babel-load-languages
      '((python . t)
-       (go . t)
        (shell . t)
-       (http . t)
        ))
 
 ;; Agenda
@@ -612,6 +592,7 @@ tab-stop-list (quote (4 8))
     :hook
         (python-mode . lsp)
         (go-mode . lsp)
+        (clojure-mode . lsp)
     :commands lsp
     :config
    ;; performance improvments
@@ -631,11 +612,17 @@ tab-stop-list (quote (4 8))
         (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
         (add-hook 'go-mode-hook #'lsp-deferred)
         ;;gopls integration with lsp-mode
-        ;; (lsp-register-custom-settings
-        ;; '(("gopls.completeUnimported" t t)
-        ;; ("gopls.staticcheck" t t)))
-
-
+        (lsp-register-custom-settings
+        '(("gopls.completeUnimported" t t)
+          ("gopls.staticcheck" t t)))
+        ;; Python-specific
+        ;; ignore some error codes
+        ;; (setq lsp-pylsp-plugins-flake8-ignore ["D103" "E231" "E211"])
+        (setq lsp-pylsp-plugins-flake8-ignore ["D103" "E231" "E211"])
+        (setq lsp-pylsp-plugins-flake8-config "/home/i/.flake8rc")
+        ;; (setq lsp-pylsp-plugins-flake8-enabled nil)
+        (setq lsp-clients-python-settings '(:configurationSources ["pyflakes"]))
+        (setq lsp-pyls-plugins-pylint-enabled nil)
 )
 
 
@@ -898,20 +885,54 @@ tab-stop-list (quote (4 8))
   ;; `completion-at-point' is often bound to M-TAB.
   (setq tab-always-indent 'complete))
 
-;; (use-package haskell-mode
-;;     :config
-;;     ;; (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-;;     ;; hslint on the command line only likes this indentation mode;
-;;     ;; alternatives commented out below.
-;;     (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
-;;     ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-;;     ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
-;;     ;; Ignore compiled Haskell files in filename completions
-;;     (add-to-list 'completion-ignored-extensions ".hi")
-;;   )
+;; wgrep toggle
+(use-package wgrep
+
+
+)
+
+
+(use-package pyvenv
+:ensure t
+:defer t
+:diminish
+:config
+	;; (setenv "PY_VENV" <your-pyworkon-venvs-folder>)
+	; Show python venv name in modeline
+	;; (setq pyvenv-mode-line-indicator '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
+	(pyvenv-mode t))
+
+
+(use-package cider
+    :config
+    (setq cider-show-error-buffer t               ;'only-in-repl
+        cider-font-lock-dynamically nil         ; use lsp semantic tokens
+        cider-eldoc-display-for-symbol-at-point nil ; use lsp
+        cider-prompt-for-symbol nil
+        cider-use-xref nil                      ; use lsp
+
+        cider-repl-pop-to-buffer-on-connect nil ; REPL buffer shown at starup
+        clojure-enable-kaocha-runner t          ; enable Kaocha test runner
+        cider-repl-display-help-banner nil      ; disable help banner
+        cider-print-fn 'puget                   ; pretty printing with sorted keys / set values
+        cider-result-overlay-position 'at-point ; results shown right after expression
+        cider-overlays-use-font-lock t
+        cider-repl-buffer-size-limit 100        ; limit lines shown in REPL buffer
+        cider-repl-history-size 42
+        )
+  ;; use lsp completion
+  (add-hook 'cider-mode-hook (lambda () (remove-hook 'completion-at-point-functions #'cider-complete-at-point))))
+
+(use-package clojure-mode
+  :config
+  (setq clojure-indent-style 'align-arguments
+        clojure-align-forms-automatically t
+        clojure-toplevel-inside-comment-form t  ;; evaluate expressions in comment as top level
+))
 
 
 ;;========
+;; PACKAGES LINE
 ;;Add new package above this line, Keyboard config must be last to download to override previous stuff
 ;;========
 
@@ -923,7 +944,7 @@ tab-stop-list (quote (4 8))
 (use-package meow
     :config
     (setq meow-use-clipboard t)
-    (setf meow-expand-hint-remove-delay 2)
+    (setf meow-expand-hint-remove-delay 0)
     
 )
 
@@ -975,6 +996,7 @@ tab-stop-list (quote (4 8))
    '("c" . meow-change)
    '("s" . meow-kill)
    '("x" . meow-visual-line-expand)
+   '("X" . meow-line-expand)
    '("d" . meow-delete)
    '("D" . meow-backward-delete)
    '("e" . meow-next-word)
@@ -1022,11 +1044,32 @@ tab-stop-list (quote (4 8))
                         nil t)
               (add-hook 'meow-insert-exit-hook
                         (lambda () (vterm-copy-mode 1))
-                        nil t))))
+                        nil t)))
+  (add-hook 'dired-mode-hook
+              (lambda ()
+                (add-hook 'meow-insert-enter-hook
+                          (lambda () (vterm-copy-mode -1))
+                          nil t)
+                (add-hook 'meow-insert-exit-hook
+                          (lambda () (vterm-copy-mode 1))
+                          nil t)))
+
+
+  )
 ;;meow in dired-mode 
 ;;  (push '(dired-mode . insert) meow-mode-state-list))
 
-    
+;; revert any buffer by key
+(defun buffer-force-revert (&optional args)
+    (interactive "P")
+    ;;(message "force-reverting value is %s" force-reverting)
+    (if (or args (not (buffer-modified-p)))
+        (revert-buffer :ignore-auto :noconfirm)
+        (error "The buffer has been modified"))
+
+)
+
+
 ;; Custom keyboard mode to my personal keybindings
 ;; in above custom minor mode
 (define-minor-mode mykbd-minor-mode
@@ -1037,6 +1080,8 @@ tab-stop-list (quote (4 8))
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "<f3>") 'magit-branch-checkout)
     (define-key map (kbd "<f4>") 'magit-status)
+    (define-key map (kbd "<f8>") 'magit-discard)
+    (define-key map (kbd "<f5>") 'buffer-force-revert)
     (define-key map (kbd "<f6>") 'dired)
     (define-key map (kbd "<f7>") 'consult-ripgrep)
     (define-key map (kbd "<f11>") 'snipp) ;; custom snippet func
@@ -1052,6 +1097,8 @@ tab-stop-list (quote (4 8))
     (define-key map (kbd "M-o") 'next-window-any-frame)
     (define-key map (kbd "M-l") 'switch-to-buffer)
     (define-key map (kbd "M-y") 'consult-yank-from-kill-ring)
+    (define-key map (kbd "M-]") 'vterm-command)
+    (define-key dired-mode-map (kbd "/") 'consult-line)
     ;;;;;
     map)
   "mykbd-minor-mode keymap.")
@@ -1062,19 +1109,3 @@ tab-stop-list (quote (4 8))
   :init-value t
   :lighter " my-kbd-keys")
 (mykbd-minor-mode 1)
-
-
-;; revert buffer using F5 key 
-(global-set-key
-  (kbd "<f5>")
-  (lambda (&optional force-reverting)
-    "Interactive call to revert-buffer. Ignoring the auto-save
- file and not requesting for confirmation. When the current buffer
- is modified, the command refuses to revert it, unless you specify
- the optional argument: force-reverting to true."
-    (interactive "P")
-    ;;(message "force-reverting value is %s" force-reverting)
-    (if (or force-reverting (not (buffer-modified-p)))
-        (revert-buffer :ignore-auto :noconfirm)
-        (error "The buffer has been modified"))))
-

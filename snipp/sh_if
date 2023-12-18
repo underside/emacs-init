@@ -1,7 +1,11 @@
 if [ $env_type == "prod" ]; then
     echo "PROD"
-elif [ $env_type == "test" ]; then
-    echo "TEST"
+elif [ $env_type -eq 0 ]; then
+    echo "0"
+elif [ -z $env_type]; then
+    echo "Varialbe env_type is empty"
+elif [ ! -f $filepath]; then
+    echo "Needed file is not exist"
 else
     echo "UNKNOWN"
 fi
