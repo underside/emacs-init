@@ -1,0 +1,7 @@
+type Lambda func() string
+
+var baz Lambda = func() string {
+	return "Hello world"
+}
+
+baz()
