@@ -1,2 +1,5 @@
-{% if  %}        
-{% endif %}        
+{% if conf['instance'] %}
+  some
+{% else %}
+  someelse
+{% endif %}

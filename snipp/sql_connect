@@ -1,0 +1,8 @@
+(setq sql-connection-alist
+          '((jj (sql-product 'postgres)
+                      (sql-port 5300)
+                      (sql-server "host.com")
+                      (sql-user "jj_cc")
+                      (sql-password "pass")
+                      (sql-database "jj"))
+          ))
