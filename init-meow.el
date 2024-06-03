@@ -383,6 +383,7 @@ tab-stop-list (quote (4 8))
 ;; Enable vertico
 (use-package vertico
   :init
+  :ensure t
   (vertico-mode)
 
   ;; Different scroll margin

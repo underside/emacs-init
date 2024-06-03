@@ -177,21 +177,6 @@ lisp-body-indent   4
 tab-stop-list (quote (4 8))
 )
 
-;;---DB CONFIG---
-;; (add-hook 'sql-interactive-mode-hook
-;;           (lambda ()
-;;             (toggle-truncate-lines t)))
-;; (setq sql-postgres-login-params
-;;       '((user :default "threads" )
-;;         (database :default "threads")
-;;         (server :default "db.ecc.dte")
-;;         (port :default 5432)))
-
-(add-hook 'sql-interactive-mode-hook
-          (lambda ()
-            (toggle-truncate-lines t)))
-
-
 ;;===Ediff settings
 (setq-default ediff-forward-word-function 'forward-char)
 ;;Don't use strange separate control-window.
@@ -269,15 +254,7 @@ tab-stop-list (quote (4 8))
          (kill-buffer b))))
 
 (defun vterm-command (command)
-  "Execute string COMMAND in a new vterm.
-Interactively, prompt for COMMAND with the current buffer's file
-name supplied. When called from Dired, supply the name of the
-file at point.
-Like `async-shell-command`, but run in a vterm for full terminal features.
-The new vterm buffer is named in the form `*foo bar.baz*`, the
-command and its arguments in earmuffs.
-When the command terminates, the shell remains open, but when the
-shell exits, the buffer is killed."
+  "Execute string COMMAND in a new vterm"
   (interactive
    (list
     (let* ((f (cond (buffer-file-name)
@@ -305,7 +282,7 @@ shell exits, the buffer is killed."
 ;; vterm terminal (work only with native-compiled Emacs)
 ;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
 (use-package vterm
-    :ensure t)
+)
 
 ;;===Themes,fonts,UI
 ;; enable pixelwise resizing frames
@@ -324,7 +301,6 @@ shell exits, the buffer is killed."
 
 ;;nice pack of doom-themes
 (use-package doom-themes
-  :ensure t
   :config
    ;; Corrects (and improves) org-mode's native fontification.
    (doom-themes-org-config)
@@ -344,37 +320,15 @@ shell exits, the buffer is killed."
 
 ;;===bind-key for using kbd
 (use-package bind-key
-  :ensure t
     )
 
 ;;Add Linux PATH ENV variables to Emacs
 (use-package exec-path-from-shell
-  :ensure t
   :config
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
     )
 ;; (setq shell-command-switch "-ic")
-
-
-;;=== Doom Modeline settings
-;;Doom-modeline
-;;Run M-x all-the-icons-install-fonts for this package
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :init (doom-modeline-mode 1))
-;;   :config
-;;     (setq doom-modeline-height 8)
-;;     ;;fonts
-;;     (set-face-attribute 'mode-line nil :family "Hack" :height 110)
-;;     (set-face-attribute 'mode-line-inactive nil :family "Hack" :height 110)
-;;     ;; git info length
-;;     (setq doom-modeline-vcs-max-length 12)
-;;     ;;rm indent info
-;;     (setq doom-modeline-indent-info nil)
-;;     ;;remove encoding info
-;;     (setq doom-modeline-buffer-encoding nil)
-
 
 ;;=== Custom Modeline
 ;;M font size and family
@@ -420,7 +374,6 @@ shell exits, the buffer is killed."
 
 ;;rainbow delimiters
 (use-package rainbow-delimiters
-  :ensure t
   :config
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 )
@@ -428,7 +381,6 @@ shell exits, the buffer is killed."
 ;;===Incremental narrowing
 ;; Enable vertico
 (use-package vertico
-  :ensure t
   :init
   (vertico-mode)
 
@@ -436,7 +388,7 @@ shell exits, the buffer is killed."
   (setq vertico-scroll-margin 0)
 
   ;; Show more candidates
-  (setq vertico-count 20)
+  (setq vertico-count 10)
 
   ;; Grow and shrink the Vertico minibuffer
   (setq vertico-resize t)
@@ -447,7 +399,6 @@ shell exits, the buffer is killed."
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
-  :ensure t
   :init
   (savehist-mode))
 
@@ -477,7 +428,6 @@ shell exits, the buffer is killed."
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
-  :ensure t
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
@@ -499,13 +449,11 @@ shell exits, the buffer is killed."
 
 ;; consult: search, grep, project navigation 
 (use-package consult
-  :ensure t
   :demand t
     )
 
 ;; Undo replacement
 (use-package undo-fu
-  :ensure t
     )
 
 ;; Stuff that should be loaded before evil
@@ -559,18 +507,16 @@ shell exits, the buffer is killed."
 )
 
 ;;Evil-mode plugin evil-matchit
-(use-package evil-matchit
-  :ensure t
-  :config
-  (global-evil-matchit-mode 1)
-)
+;; (use-package evil-matchit
+;;  :config
+;;  (global-evil-matchit-mode 1)
+;;)
 
 ;;plugin evil-surround
-(use-package evil-surround
-  :ensure t
-  :after evil-mode
-  :config
-  (setq global-evil-surround-mode 1))
+;;(use-package evil-surround
+;;  :after evil-mode
+;;  :config
+;;  (setq global-evil-surround-mode 1))
 
 ;;Evil and vterm
 (defun evil-collection-vterm-escape-stay ()
@@ -600,12 +546,7 @@ not appropriate in some cases like terminals."
 )
 
 
-(use-package ob-http
-  :ensure t
-)
-
 (use-package ob-go
-  :ensure t
 )
 
 ;;Babel settings
@@ -614,7 +555,6 @@ not appropriate in some cases like terminals."
      '((python . t)
        (go . t)
        (shell . t)
-       (http . t)
        ))
 
 ;;async babel
@@ -649,13 +589,6 @@ not appropriate in some cases like terminals."
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
 
-;;Org-capture
-;;Template for TODO
-;; (setq org-capture-templates
-;;       '(("t" "Todo" entry (file+headline "~/ws/org/notes/todo.org" "org-capture")
-;;          "* TODO %?\n  %i\n  %a")
-;;         ("j" "Journal" entry (file+datetree "~/ws/org/notes/todo.org")
-;;          "* %?\nEntered on %U\n  %i\n  %a")))
 
 ;; gpg encryption
 ;;enter pass for gpg files inside Emacs
@@ -664,7 +597,6 @@ not appropriate in some cases like terminals."
 ;;Org-bullets
 ;;nice looking lists in org-mode with UTF-8 characters
 (use-package org-bullets
-  :ensure t
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
@@ -674,7 +606,6 @@ not appropriate in some cases like terminals."
 ;;add in /etc/ssh/ssh_config StrictHostKeyChecking no
 ;;connect to not default port C-x C-f /ssh:test@host#2222:/tmp
 (use-package tramp
-  :ensure t
   :config
   (setq tramp-chunksize "500")
   (setq tramp-debug-buffer t)
@@ -683,38 +614,9 @@ not appropriate in some cases like terminals."
   (setq tramp-default-method "ssh")
 )
 
-;;===Company-mode
-;;install shell-backend
-(use-package company-shell
-  :ensure t
-)
-(use-package company
-  :ensure t
-  :config
-  ;; add company backends
-  (add-to-list 'company-backends 'company-shell)
-  ;; (add-to-list 'company-backends 'company-python)
 
-  ;; company-hooks for different modes
-  ;; (add-hook 'after-init-hook 'global-company-mode)
-  (add-hook 'shell-mode-hook
-            (lambda ()
-                (set (make-local-variable 'company-backends) '(company-shell))))
-
-  ;; base settings
-  (setq company-tooltip-limit 20)
-  (setq company-idle-delay 0.3) 
-  (setq company-echo-delay 0.3)                          
-  (setq company-minimum-prefix-length 1)
-  (setq company-begin-commands '(self-insert-command))
-)
-
-;;===lsp-mode
-;;Golang -->  (see dt.org/Golang)
-;;Python -->  pip install 'python-language-server[all]'
-;;optional if you want which-key integration
+;; Which-key keybindings
 (use-package which-key
-    :ensure t
     :config
     (which-key-mode)
     (setq which-key-idle-delay 0.5)
@@ -723,13 +625,10 @@ not appropriate in some cases like terminals."
 
 (use-package lsp-mode
     :defer t
-    :ensure t
     :hook
         (python-mode . lsp)
         (go-mode . lsp)
         (groovy-mode . lsp)
-        (clojure-mode . lsp)
-        (rust-mode . lsp)
     :commands lsp
     ;;(Rust specific 
     :custom
@@ -768,9 +667,7 @@ not appropriate in some cases like terminals."
 
 ;;https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
 (use-package lsp-ui
-    :ensure t
     :config
-    
     ;; disable sideline fully
     ;; (setq lsp-ui-sideline-enable nil)
     ;; (setq lsp-ui-doc-show-with-cursor nil)
@@ -800,7 +697,6 @@ not appropriate in some cases like terminals."
     ;;         :env nil
     ;;         :envFile nil))
 (use-package dap-mode
-  :ensure t
   ;; :mode (("\\.go\\'" . go-mode))
   :commands dap-debug
   :config
@@ -866,7 +762,6 @@ not appropriate in some cases like terminals."
 
 ;;===go-mode
 (use-package go-mode
-  :ensure t
   :mode (("\\.go\\'" . go-mode))
   :config
   ;; must if you use dap-mode
@@ -891,17 +786,14 @@ not appropriate in some cases like terminals."
     (add-hook 'go-mode-hook 'my-go-mode-hook)
 
 
-
 ;;===yaml-mode
 (use-package yaml-mode
-  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 )
 
 ;;===Flycheck
 (use-package flycheck
-  :ensure t
   :init (global-flycheck-mode)
   :config
   (global-flycheck-mode 1)
@@ -915,7 +807,6 @@ not appropriate in some cases like terminals."
 
 ;;Flycheck-yamllint
 (use-package flycheck-yamllint
-  :ensure t
   :config
   (progn
     (eval-after-load 'flycheck
@@ -923,78 +814,8 @@ not appropriate in some cases like terminals."
     
 )
 
-;;===Treemacs
-;; (use-package treemacs
-;;   :ensure t
-;;   :defer t
-;;   :init
-;;   (with-eval-after-load 'winum
-;;     (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-;;   :config
-;;   (progn
-;;     (setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
-;;           treemacs-deferred-git-apply-delay      0.5
-;;           treemacs-directory-name-transformer    #'identity
-;;           treemacs-display-in-side-window        t
-;;           treemacs-eldoc-display                 t
-;;           treemacs-file-event-delay              5000
-;;           treemacs-file-extension-regex          treemacs-last-period-regex-value
-;;           treemacs-file-follow-delay             0.2
-;;           treemacs-file-name-transformer         #'identity
-;;           treemacs-follow-after-init             t
-;;           treemacs-git-command-pipe              ""
-;;           treemacs-goto-tag-strategy             'refetch-index
-;;           treemacs-indentation                   2
-;;           treemacs-indentation-string            " "
-;;           treemacs-is-never-other-window         nil
-;;           treemacs-max-git-entries               5000
-;;           treemacs-missing-project-action        'ask
-;;           treemacs-move-forward-on-expand        nil
-;;           treemacs-no-png-images                 nil
-;;           treemacs-no-delete-other-windows       t
-;;           treemacs-project-follow-cleanup        nil
-;;           treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-;;           treemacs-position                      'left
-;;           treemacs-recenter-distance             0.1
-;;           treemacs-recenter-after-file-follow    nil
-;;           treemacs-recenter-after-tag-follow     nil
-;;           treemacs-recenter-after-project-jump   'always
-;;           treemacs-recenter-after-project-expand 'on-distance
-;;           treemacs-show-cursor                   nil
-;;           treemacs-show-hidden-files             t
-;;           treemacs-silent-filewatch              nil
-;;           treemacs-silent-refresh                nil
-;;           treemacs-sorting                       'alphabetic-asc
-;;           treemacs-space-between-root-nodes      t
-;;           treemacs-tag-follow-cleanup            t
-;;           treemacs-tag-follow-delay              1.5
-;;           treemacs-user-mode-line-format         nil
-;;           treemacs-user-header-line-format       nil
-;;           treemacs-width                         38
-;;           treemacs-workspace-switch-cleanup      nil
-;;           )
-;;     (treemacs-filewatch-mode t)
-;;     (setq treemacs-text-scale -2)
-;;     (treemacs-fringe-indicator-mode t)
-;;     (pcase (cons (not (null (executable-find "git")))
-;;                  (not (null treemacs-python-executable)))
-;;       (`(t . t)
-;;        (treemacs-git-mode 'deferred))
-;;       (`(t . _)
-;;        (treemacs-git-mode 'simple))))
-;;   :bind
-;;   (:map global-map
-;;         ("<f8>"   . treemacs)
-;;         ))
-
-;; (use-package treemacs-evil
-;;   :after treemacs evil
-;;   :ensure t)
-
-
 ;;===Markdown mode
 (use-package markdown-mode
-  :ensure t
   :defer t
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -1004,7 +825,6 @@ not appropriate in some cases like terminals."
 
 ;;===Magit
 (use-package magit
-  :ensure t
 )
 
 
@@ -1031,14 +851,7 @@ not appropriate in some cases like terminals."
 ;; package used for export org files to Jira/Confluence markup 
 ; for export use M-x ox-jira-export-as-jira 
 (use-package ox-jira
-    :ensure t)
-
-;;===Restclient API testing
-(use-package restclient
-    :ensure t)
-
-(use-package ob-restclient
-    :ensure t)
+    )
 
 ;;===Web-mode 
 (use-package web-mode
@@ -1061,19 +874,8 @@ not appropriate in some cases like terminals."
         )
 )
 
-;;===kubernetes
-;; Magit-like client for K8s
-
-(use-package kubernetes
-    )
-
-(use-package kubernetes-evil
-  :after kubernetes)
-
-
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
-  :ensure t
   ;; Either bind `marginalia-cycle' globally or only in the minibuffer
   :bind (("M-A" . marginalia-cycle)
          :map minibuffer-local-map
@@ -1132,7 +934,6 @@ not appropriate in some cases like terminals."
 
 ;;big pack of evil-related libraries
 (use-package evil-collection
-  :ensure t
   :after evil
   :config
     (evil-collection-init)
@@ -1141,10 +942,7 @@ not appropriate in some cases like terminals."
 ;; search and replace in grep buffers
 ;; press i in grep buffer->query-replace-regexp->ZZ(to save changes)
 (use-package wgrep 
-  :ensure t
 )
-
-
 
 ;;========
 ;;Add new package above this line, Keyboard config must be last to download to override previous stuff
@@ -1202,13 +1000,6 @@ not appropriate in some cases like terminals."
     ;; (define-key eshell-mode-map (kbd "M-l") 'switch-to-buffer)
     map)
   "mykbd-minor-mode keymap.")
-
-
-
-(with-eval-after-load "ob"
-  (require 'org-babel-eval-in-repl)
-  (define-key org-mode-map (kbd "C-<return>") 'ober-eval-in-repl)
-  )
 
 
 ;; initiate above custom minor mode
