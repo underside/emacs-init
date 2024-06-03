@@ -287,7 +287,7 @@ tab-stop-list (quote (4 8))
 ;; vterm terminal (work only with native-compiled Emacs)
 ;; sudo apt install cmake libvterm libtool-bin  libvterm-dev
 (use-package vterm
-    :ensure t)
+    )
 
 ;;===Themes,fonts,UI
 ;; enable pixelwise resizing frames
@@ -306,7 +306,6 @@ tab-stop-list (quote (4 8))
 
 ;;nice pack of doom-themes
 (use-package doom-themes
-  :ensure t
   :config
    ;; Corrects (and improves) org-mode's native fontification.
    (doom-themes-org-config)
@@ -383,18 +382,14 @@ tab-stop-list (quote (4 8))
 ;; Enable vertico
 (use-package vertico
   :init
-  :ensure t
+  :config
   (vertico-mode)
-
   ;; Different scroll margin
   (setq vertico-scroll-margin 0)
-
   ;; Show more candidates
   (setq vertico-count 10)
-
   ;; Grow and shrink the Vertico minibuffer
   (setq vertico-resize t)
-
   ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
   (setq vertico-cycle t)
   )
@@ -451,13 +446,11 @@ tab-stop-list (quote (4 8))
 
 ;; consult: search, grep, project navigation 
 (use-package consult
-  :ensure t
   :demand t
     )
 
 ;; Undo replacement
 (use-package undo-fu
-  :ensure t
     )
 
 ;; ;;===Org-mode settings
@@ -528,7 +521,6 @@ tab-stop-list (quote (4 8))
 ;;Org-bullets
 ;;nice looking lists in org-mode with UTF-8 characters
 (use-package org-bullets
-  :ensure t
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
@@ -538,40 +530,12 @@ tab-stop-list (quote (4 8))
 ;;add in /etc/ssh/ssh_config StrictHostKeyChecking no
 ;;connect to not default port C-x C-f /ssh:test@host#2222:/tmp
 (use-package tramp
-  :ensure t
   :config
   (setq tramp-chunksize "500")
   (setq tramp-debug-buffer t)
   ;(setq tramp-verbose 10)
   (setq password-cache-expiry nil)
   (setq tramp-default-method "ssh")
-)
-
-;;===Company-mode
-;;install shell-backend
-(use-package company-shell
-  :ensure t
-  )
-
-(use-package company
-  :ensure t
-  :config
-  ;; add company backends
-  (add-to-list 'company-backends 'company-shell)
-  ;; (add-to-list 'company-backends 'company-python)
-
-  ;; company-hooks for different modes
-  (add-hook 'after-init-hook 'global-company-mode)
-  (add-hook 'shell-mode-hook
-            (lambda ()
-                (set (make-local-variable 'company-backends) '(company-shell))))
-
-  ;; base settings
-  (setq company-tooltip-limit 20)
-  (setq company-idle-delay 0.3) 
-  (setq company-echo-delay 0.3)                          
-  (setq company-minimum-prefix-length 1)
-  (setq company-begin-commands '(self-insert-command))
 )
 
 ;;===lsp-mode
@@ -584,7 +548,6 @@ tab-stop-list (quote (4 8))
     :config
     (which-key-mode)
     (setq which-key-idle-delay 0.5)
-
     )
 
 (use-package lsp-mode
@@ -593,7 +556,6 @@ tab-stop-list (quote (4 8))
     :hook
         (python-mode . lsp)
         (go-mode . lsp)
-        (clojure-mode . lsp)
     :commands lsp
     :config
    ;; performance improvments
@@ -629,7 +591,6 @@ tab-stop-list (quote (4 8))
 
 ;;https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
 (use-package lsp-ui
-    :ensure t
     :config
      ;; disable sideline fully
     ;; (setq lsp-ui-sideline-enable nil)
@@ -660,8 +621,7 @@ tab-stop-list (quote (4 8))
     ;;         :env nil
     ;;         :envFile nil))
 (use-package dap-mode
-  :ensure t
-  ;; :mode (("\\.go\\'" . go-mode))
+  ;; :mode (("\\.go\\" . go-mode))
   :commands dap-debug
   :config
   (dap-mode 1)
@@ -711,7 +671,6 @@ tab-stop-list (quote (4 8))
 
 ;;===go-mode
 (use-package go-mode
-  :ensure t
   :mode (("\\.go\\'" . go-mode))
   ;; :config
   ;; must if you use dap-mode
@@ -739,14 +698,12 @@ tab-stop-list (quote (4 8))
 
 ;;===yaml-mode
 (use-package yaml-mode
-  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 )
 
 ;;===Flycheck
 (use-package flycheck
-  :ensure t
   :init (global-flycheck-mode)
   :config
   (global-flycheck-mode 1)
@@ -760,7 +717,6 @@ tab-stop-list (quote (4 8))
 
 ;;Flycheck-yamllint
 (use-package flycheck-yamllint
-  :ensure t
   :config
   (progn
     (eval-after-load 'flycheck
@@ -771,7 +727,6 @@ tab-stop-list (quote (4 8))
 
 ;;===Markdown mode
 (use-package markdown-mode
-  :ensure t
   :defer t
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -780,9 +735,7 @@ tab-stop-list (quote (4 8))
 
 
 ;;===Magit
-(use-package magit
-  :ensure t
-)
+(use-package magit)
 
 
 ;;===Spell check
@@ -807,8 +760,7 @@ tab-stop-list (quote (4 8))
 
 ;; package used for export org files to Jira/Confluence markup 
 ; for export use M-x ox-jira-export-as-jira 
-(use-package ox-jira
-    :ensure t)
+(use-package ox-jira)
 
 ;;===Web-mode 
 (use-package web-mode
@@ -840,10 +792,6 @@ tab-stop-list (quote (4 8))
 (use-package marginalia
   :ensure t
   ;; Either bind `marginalia-cycle' globally or only in the minibuffer
-  :bind (("M-A" . marginalia-cycle)
-         :map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
-
   ;; The :init configuration is always executed (Not lazy!)
   ;; Must be in the :init section of use-package such that the mode gets
   ;; enabled right away. Note that this forces loading the package.
@@ -894,7 +842,6 @@ tab-stop-list (quote (4 8))
 
 
 (use-package pyvenv
-:ensure t
 :defer t
 :diminish
 :config
@@ -1110,3 +1057,16 @@ tab-stop-list (quote (4 8))
   :init-value t
   :lighter " my-kbd-keys")
 (mykbd-minor-mode 1)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(meow cider pyvenv wgrep corfu marginalia web-mode ox-jira magit flycheck-yamllint flycheck yaml-mode go-mode dap-mode lsp-ui lsp-mode which-key company-shell org-bullets undo-fu consult orderless rainbow-delimiters exec-path-from-shell doom-themes vterm)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
